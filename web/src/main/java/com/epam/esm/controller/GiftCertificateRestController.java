@@ -1,6 +1,5 @@
 package com.epam.esm.controller;
 
-import com.epam.esm.domain.GiftCertificate;
 import com.epam.esm.dto.GiftCertificateDto;
 import com.epam.esm.service.impl.GiftCertificateServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -17,15 +16,15 @@ public class GiftCertificateRestController {
     public final GiftCertificateServiceImpl giftCertificateService;
 
     @GetMapping
-    public ResponseEntity<List<GiftCertificate>> findAllGiftCertificates() {
+    public ResponseEntity<List<GiftCertificateDto>> findAllGiftCertificates() {
         return ResponseEntity.ok(giftCertificateService.findAll());
     }
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<GiftCertificateDto> findGiftCertificateById(@PathVariable Long id) {
-        GiftCertificateDto giftCertificate = giftCertificateService.findById(id);
-        return ResponseEntity.ok(giftCertificate);
+        GiftCertificateDto giftCertificateDto = giftCertificateService.findById(id);
+        return ResponseEntity.ok(giftCertificateDto);
     }
 
     @PostMapping

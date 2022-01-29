@@ -3,6 +3,7 @@ package com.epam.esm.repository.impl;
 import com.epam.esm.domain.GiftCertificate;
 import com.epam.esm.repository.GiftCertificateRepository;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -61,7 +62,6 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
 
     @Override
     public List<GiftCertificate> findAll() {
-        log.info("Invoking method 'find all gift certificates'");
         return namedParameterJdbcTemplate.query(FIND_ALL_QUERY, this::getGiftCertificateRowMapper);
     }
 
@@ -69,9 +69,15 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
     public GiftCertificate findById(Long key) {
         MapSqlParameterSource parameterSource = new MapSqlParameterSource();
         parameterSource.addValue("id", key);
+        GiftCertificate giftCertificate = null;
 
-        log.info("Invoking method 'find gift certificate by id'");
-        return namedParameterJdbcTemplate.queryForObject(FIND_BY_ID_QUERY, parameterSource, this::getGiftCertificateRowMapper);
+        try {
+            giftCertificate = namedParameterJdbcTemplate.queryForObject(FIND_BY_ID_QUERY, parameterSource, this::getGiftCertificateRowMapper);
+        } catch (EmptyResultDataAccessException ex) {
+            log.error("Method 'find gift certificate by id' was not implemented" + ex.getMessage());
+        }
+
+        return giftCertificate;
     }
 
     @Override
@@ -89,7 +95,6 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
 
         namedParameterJdbcTemplate.update(CREATE_QUERY, parameterSource, keyHolder, new String[]{"id"});
         long createdGiftCertificateId = Objects.requireNonNull(keyHolder.getKey()).longValue();
-        log.info("Invoking method 'create gift certificate'");
         return findById(createdGiftCertificateId);
     }
 
@@ -106,7 +111,6 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
         parameterSource.addValue("id", id);
 
         namedParameterJdbcTemplate.update(UPDATE_QUERY, parameterSource);
-        log.info("Invoking method 'update gift certificate'");
         return findById(id);
     }
 
@@ -114,8 +118,6 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
     public void deleteById(Long id) {
         MapSqlParameterSource parameterSource = new MapSqlParameterSource();
         parameterSource.addValue("id", id);
-
-        log.info("Invoking method 'delete gift certificate'");
         namedParameterJdbcTemplate.update(DELETE_QUERY, parameterSource);
     }
 }

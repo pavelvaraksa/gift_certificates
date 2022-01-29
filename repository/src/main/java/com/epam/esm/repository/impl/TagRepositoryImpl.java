@@ -3,6 +3,7 @@ package com.epam.esm.repository.impl;
 import com.epam.esm.domain.Tag;
 import com.epam.esm.repository.TagRepository;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -40,7 +41,6 @@ public class TagRepositoryImpl implements TagRepository {
 
     @Override
     public List<Tag> findAll() {
-        log.info("Invoking method 'find all tags'.");
         return namedParameterJdbcTemplate.query(FIND_ALL_QUERY, this::getTagRowMapper);
     }
 
@@ -48,9 +48,15 @@ public class TagRepositoryImpl implements TagRepository {
     public Tag findById(Long key) {
         MapSqlParameterSource parameterSource = new MapSqlParameterSource();
         parameterSource.addValue("id", key);
+        Tag tag = null;
 
-        log.info("Invoking method 'find tag by id'.");
-        return namedParameterJdbcTemplate.queryForObject(FIND_BY_ID_QUERY, parameterSource, this::getTagRowMapper);
+        try {
+            tag = namedParameterJdbcTemplate.queryForObject(FIND_BY_ID_QUERY, parameterSource, this::getTagRowMapper);
+        } catch (EmptyResultDataAccessException ex) {
+            log.error("Method 'find tag by id' was not implemented" + ex.getMessage());
+        }
+
+        return tag;
     }
 
     @Override
@@ -61,7 +67,6 @@ public class TagRepositoryImpl implements TagRepository {
 
         namedParameterJdbcTemplate.update(CREATE_QUERY, parameterSource, keyHolder, new String[]{"id"});
         long createdTagId = Objects.requireNonNull(keyHolder.getKey()).longValue();
-        log.info("Invoking method 'create tag'.");
         return findById(createdTagId);
     }
 
@@ -74,8 +79,6 @@ public class TagRepositoryImpl implements TagRepository {
     public void deleteById(Long id) {
         MapSqlParameterSource parameterSource = new MapSqlParameterSource();
         parameterSource.addValue("id", id);
-
-        log.info("Invoking method 'delete tag'.");
         namedParameterJdbcTemplate.update(DELETE_QUERY, parameterSource);
     }
 }

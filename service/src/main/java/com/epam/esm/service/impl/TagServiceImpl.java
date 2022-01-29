@@ -1,73 +1,67 @@
 package com.epam.esm.service.impl;
 
 import com.epam.esm.domain.Tag;
+import com.epam.esm.dto.TagDto;
+import com.epam.esm.exception.ServiceNotFoundException;
 import com.epam.esm.repository.impl.TagRepositoryImpl;
 import com.epam.esm.service.TagService;
 import com.epam.esm.validator.StringValidator;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Log4j2
 @Service
+@RequiredArgsConstructor
 public class TagServiceImpl implements TagService {
     private final TagRepositoryImpl tagRepository;
+    private final ModelMapper modelMapper;
 
-    public TagServiceImpl(TagRepositoryImpl tagRepository) {
-        this.tagRepository = tagRepository;
+    @Override
+    public List<TagDto> findAll() {
+        List<Tag> listTag = tagRepository.findAll();
+        return listTag
+                .stream()
+                .map(tag -> modelMapper.map(tag, TagDto.class))
+                .collect(Collectors.toList());
     }
 
     @Override
-    public List<Tag> findAll() {
-        return tagRepository.findAll();
-    }
+    public TagDto findById(Long id) {
+        Tag tag = tagRepository.findById(id);
 
-    @Override
-    public Tag findById(Long id) {
-        Tag findById;
-
-
-        findById = tagRepository.findById(id);
-        if (findById == null) {
-            String errorMessage = "Tag id cannot be null.";
-            log.error(errorMessage);
-            //throw new ServiceException(errorMessage);
+        if (tag != null) {
+            return modelMapper.map(tag, TagDto.class);
         }
 
-        log.info("Tag with id " + id + " exists.");
-        return tagRepository.findById(id);
+        throw new ServiceNotFoundException("Tag with id " + id + " was not found");
     }
 
 
     @Override
-    public Tag create(Tag tag) {
+    public TagDto create(TagDto tagDto) {
+        Tag tag = modelMapper.map(tagDto, Tag.class);
+        StringValidator.isTagValid(tagDto);
 
-        if (StringValidator.isTagValid(tag)) {
-            //throw new ServiceException("Entered string for create tag was not passed.");
-        }
-
-        List<Tag> existingAllTags = tagRepository.findAll();
-
-        for (Tag existingTags : existingAllTags) {
-            boolean hasSameTag = existingTags.getName().equals(tag.getName());
-
-            if (hasSameTag) {
-                String errorMessage = "Tag with name " + tag.getName() + " already exists.";
-                log.error(errorMessage);
-               // throw new ServiceException(errorMessage);
-            }
-        }
-
-        Tag newTag = tagRepository.create(tag);
-        log.info("Tag with name " + tag.getName() + " saved.");
-        return newTag;
+        log.info("Tag with name " + tag.getName() + " saved");
+        return modelMapper.map(tagRepository.create(tag), TagDto.class);
     }
 
     @Override
     public void deleteById(Long id) {
+        Tag tag = tagRepository.findById(id);
 
-        log.info("Tag with id " + id + " deleted.");
+        if (tag == null) {
+            String errorMessage = "Tag with id " + id + " was not found";
+            log.error(errorMessage);
+            throw new ServiceNotFoundException(errorMessage);
+        }
+
+        log.info("Tag with id " + id + " deleted");
         tagRepository.deleteById(id);
     }
 }

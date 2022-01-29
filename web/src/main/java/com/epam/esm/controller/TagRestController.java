@@ -1,6 +1,6 @@
 package com.epam.esm.controller;
 
-import com.epam.esm.domain.Tag;
+import com.epam.esm.dto.TagDto;
 import com.epam.esm.service.impl.TagServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,27 +16,28 @@ public class TagRestController {
     public final TagServiceImpl tagService;
 
     @GetMapping
-    public ResponseEntity<List<Tag>> findAllTags() {
-        return new ResponseEntity<>(tagService.findAll(), HttpStatus.OK);
+    public ResponseEntity<List<TagDto>> findAllTags() {
+        return ResponseEntity.ok(tagService.findAll());
     }
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public Tag findTagById(@PathVariable Long id) {
-        return tagService.findById(id);
+    public ResponseEntity<TagDto> findTagById(@PathVariable Long id) {
+        TagDto tagDto = tagService.findById(id);
+        return ResponseEntity.ok(tagDto);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Tag createTag(@RequestBody Tag tag) {
-        Tag newTag = new Tag();
-        newTag.setName(tag.getName());
-        return tagService.create(newTag);
+    public ResponseEntity<TagDto> createTag(@RequestBody TagDto tagDto) {
+        TagDto newTagDto = tagService.create(tagDto);
+        return ResponseEntity.ok(newTagDto);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public void deleteTag(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteTag(@PathVariable Long id) {
         tagService.deleteById(id);
+        return ResponseEntity.ok().build();
     }
 }

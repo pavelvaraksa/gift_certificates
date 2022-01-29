@@ -12,7 +12,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Log4j2
 @Service
@@ -22,28 +22,32 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     private final ModelMapper modelMapper;
 
     @Override
-    public List<GiftCertificate> findAll() {
-        return giftCertificateRepository.findAll();
+    public List<GiftCertificateDto> findAll() {
+        List<GiftCertificate> listGiftCertificate = giftCertificateRepository.findAll();
+
+        return listGiftCertificate
+                .stream()
+                .map(giftCertificate -> modelMapper.map(giftCertificate, GiftCertificateDto.class))
+                .collect(Collectors.toList());
     }
 
     @Override
     public GiftCertificateDto findById(Long id) {
-        Optional<GiftCertificate> giftCertificate = Optional.ofNullable(giftCertificateRepository.findById(id));
+        GiftCertificate giftCertificate = giftCertificateRepository.findById(id);
 
-        if (giftCertificate.isPresent()) {
-            return modelMapper.map(giftCertificate.get(), GiftCertificateDto.class);
+        if (giftCertificate != null) {
+            return modelMapper.map(giftCertificate, GiftCertificateDto.class);
         }
 
-        throw new ServiceValidException("mistake");
+        throw new ServiceNotFoundException("Gift certificate with id " + id + " was not found");
     }
 
     @Override
     public GiftCertificateDto create(GiftCertificateDto giftCertificateDto) {
         GiftCertificate giftCertificate = modelMapper.map(giftCertificateDto, GiftCertificate.class);
-
         StringValidator.isGiftCertificateValid(giftCertificateDto);
 
-        log.info("Gift certificate with name " + giftCertificate.getName() + " saved.");
+        log.info("Gift certificate with name " + giftCertificate.getName() + " saved");
         return modelMapper.map(giftCertificateRepository.create(giftCertificate), GiftCertificateDto.class);
     }
 
@@ -51,37 +55,48 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     public GiftCertificateDto updateById(Long id, GiftCertificateDto giftCertificateDto) {
         GiftCertificate updatedGiftCertificate = modelMapper.map(giftCertificateDto, GiftCertificate.class);
 
-        GiftCertificate giftCertificateById = giftCertificateRepository.findById(id);
+        GiftCertificate giftCertificate = giftCertificateRepository.findById(id);
+
+        if (giftCertificate == null) {
+            String errorMessage = "Gift certificate with id " + id + " was not updated";
+            log.error(errorMessage);
+            throw new ServiceNotFoundException(errorMessage);
+        }
+
+        StringValidator.isGiftCertificateValid(giftCertificateDto);
 
         if (giftCertificateDto.getName() == null) {
-            updatedGiftCertificate.setName(giftCertificateById.getName());
+            updatedGiftCertificate.setName(giftCertificate.getName());
         }
 
         if (giftCertificateDto.getDescription() == null) {
-            updatedGiftCertificate.setDescription(giftCertificateById.getDescription());
+            updatedGiftCertificate.setDescription(giftCertificate.getDescription());
         }
 
         if (giftCertificateDto.getPrice() == null) {
-            updatedGiftCertificate.setPrice(giftCertificateById.getPrice());
+            updatedGiftCertificate.setPrice(giftCertificate.getPrice());
         }
 
         if (giftCertificateDto.getDuration() == null) {
-            updatedGiftCertificate.setDuration(giftCertificateById.getDuration());
+            updatedGiftCertificate.setDuration(giftCertificate.getDuration());
         }
 
-        log.info("Gift certificate with name " + giftCertificateDto.getName() + " updated.");
+        log.info("Gift certificate with name " + giftCertificateDto.getName() + " updated");
         return modelMapper.map(giftCertificateRepository.updateById(id, updatedGiftCertificate), GiftCertificateDto.class);
     }
 
     @Override
     public void deleteById(Long id) {
-        Optional<GiftCertificate> giftCertificate = Optional.ofNullable(giftCertificateRepository.findById(id));
+        GiftCertificate giftCertificate = giftCertificateRepository.findById(id);
 
-        if (giftCertificate.isPresent()) {
-            log.info("Gift certificate with id " + id + " deleted.");
-            giftCertificateRepository.deleteById(id);
-        } else {
-            throw new ServiceValidException("not found");
+        if (giftCertificate == null) {
+            String errorMessage = "Gift certificate with id " + id + " was not found";
+            log.error(errorMessage);
+            throw new ServiceNotFoundException(errorMessage);
         }
+
+        log.info("Gift certificate with id " + id + " deleted");
+        giftCertificateRepository.deleteById(id);
     }
 }
+
