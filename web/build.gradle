@@ -1,0 +1,30 @@
+plugins {
+    id 'java-library'
+    id 'war'
+}
+
+group 'com.epam.esm'
+version '1.0'
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+subprojects {
+
+}
+
+dependencies {
+    api project(':repository')
+    api project(':service')
+
+    compileOnly 'javax.servlet:javax.servlet-api:4.0.1'
+    compileOnly 'javax.servlet.jsp:javax.servlet.jsp-api:2.3.3'
+    compileOnly 'org.projectlombok:lombok:1.18.20'
+    annotationProcessor 'org.projectlombok:lombok:1.18.20'
+}
+
+test {
+    useJUnitPlatform()
+}

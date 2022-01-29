@@ -1,0 +1,17 @@
+plugins {
+    id 'java'
+}
+
+group 'com.epam.esm'
+version '1.0'
+
+
+
+
+
+
+
+
+
+
+

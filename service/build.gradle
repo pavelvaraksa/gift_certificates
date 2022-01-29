@@ -1,0 +1,27 @@
+plugins {
+    id 'java-library'
+}
+
+group 'com.epam.esm'
+version '1.0'
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+allprojects {
+
+}
+
+dependencies {
+    api project(':repository')
+
+    compileOnly 'org.projectlombok:lombok:1.18.20'
+    annotationProcessor 'org.projectlombok:lombok:1.18.20'
+}
+
+test {
+    useJUnitPlatform()
+}
+
