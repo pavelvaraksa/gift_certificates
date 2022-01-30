@@ -53,7 +53,7 @@ public class TagRepositoryImpl implements TagRepository {
         try {
             tag = namedParameterJdbcTemplate.queryForObject(FIND_BY_ID_QUERY, parameterSource, this::getTagRowMapper);
         } catch (EmptyResultDataAccessException ex) {
-            log.error("Method 'find tag by id' was not implemented" + ex.getMessage());
+            log.error("Method 'find tag by id' was not implemented." + ex.getMessage());
         }
 
         return tag;

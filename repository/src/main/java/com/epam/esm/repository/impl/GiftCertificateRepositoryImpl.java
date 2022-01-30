@@ -74,7 +74,7 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
         try {
             giftCertificate = namedParameterJdbcTemplate.queryForObject(FIND_BY_ID_QUERY, parameterSource, this::getGiftCertificateRowMapper);
         } catch (EmptyResultDataAccessException ex) {
-            log.error("Method 'find gift certificate by id' was not implemented" + ex.getMessage());
+            log.error("Method 'find gift certificate by id' was not implemented." + ex.getMessage());
         }
 
         return giftCertificate;

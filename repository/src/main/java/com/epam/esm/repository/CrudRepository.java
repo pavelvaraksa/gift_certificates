@@ -1,12 +1,11 @@
 package com.epam.esm.repository;
 
-import javax.management.ServiceNotFoundException;
 import java.util.List;
 
 public interface CrudRepository<K, V> {
     List<V> findAll();
 
-    V findById(K key) throws ServiceNotFoundException;
+    V findById(K key);
 
     V create(V object);
 

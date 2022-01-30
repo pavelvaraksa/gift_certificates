@@ -11,6 +11,8 @@ import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import static com.epam.esm.exception.ExceptionMessage.CERTIFICATE_NOT_FOUND;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -39,7 +41,8 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             return modelMapper.map(giftCertificate, GiftCertificateDto.class);
         }
 
-        throw new ServiceNotFoundException("Gift certificate with id " + id + " was not found");
+        log.error("Gift certificate was not found");
+        throw new ServiceNotFoundException(CERTIFICATE_NOT_FOUND);
     }
 
     @Override
@@ -58,12 +61,9 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         GiftCertificate giftCertificate = giftCertificateRepository.findById(id);
 
         if (giftCertificate == null) {
-            String errorMessage = "Gift certificate with id " + id + " was not updated";
-            log.error(errorMessage);
-            throw new ServiceNotFoundException(errorMessage);
+            log.error("Gift certificate was not found");
+            throw new ServiceNotFoundException(CERTIFICATE_NOT_FOUND);
         }
-
-        StringValidator.isGiftCertificateValid(giftCertificateDto);
 
         if (giftCertificateDto.getName() == null) {
             updatedGiftCertificate.setName(giftCertificate.getName());
@@ -90,9 +90,8 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         GiftCertificate giftCertificate = giftCertificateRepository.findById(id);
 
         if (giftCertificate == null) {
-            String errorMessage = "Gift certificate with id " + id + " was not found";
-            log.error(errorMessage);
-            throw new ServiceNotFoundException(errorMessage);
+            log.error("Gift certificate was not found");
+            throw new ServiceNotFoundException(CERTIFICATE_NOT_FOUND);
         }
 
         log.info("Gift certificate with id " + id + " deleted");
