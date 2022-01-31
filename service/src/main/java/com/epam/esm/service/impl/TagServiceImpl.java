@@ -11,7 +11,7 @@ import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import static com.epam.esm.exception.ExceptionMessage.TAG_NOT_FOUND;
+import static com.epam.esm.exception.MessageException.TAG_NOT_FOUND;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -34,14 +34,13 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public TagDto findById(Long id) {
-        Tag tag = tagRepository.findById(id);
+        Tag tagById = tagRepository.findById(id);
 
-        if (tag != null) {
-            return modelMapper.map(tag, TagDto.class);
+        if (tagById == null) {
+            log.error("Tag was not found");
+            throw new ServiceNotFoundException(TAG_NOT_FOUND);
         }
-
-        log.error("Tag was not found");
-        throw new ServiceNotFoundException(TAG_NOT_FOUND);
+        return modelMapper.map(tagById, TagDto.class);
     }
 
 
@@ -56,9 +55,9 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public void deleteById(Long id) {
-        Tag tag = tagRepository.findById(id);
+        Tag tagById = tagRepository.findById(id);
 
-        if (tag == null) {
+        if (tagById == null) {
             log.error("Tag was not found");
             throw new ServiceNotFoundException(TAG_NOT_FOUND);
         }

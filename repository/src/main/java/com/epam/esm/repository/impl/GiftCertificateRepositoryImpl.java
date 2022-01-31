@@ -30,6 +30,7 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
 
     private static final String FIND_ALL_QUERY = "select * from gift_certificate";
     private static final String FIND_BY_ID_QUERY = "select * from gift_certificate where id = :id";
+    private static final String FIND_BY_NAME_QUERY = "select * from gift_certificate where name = :name";
     private static final String CREATE_QUERY = "insert into gift_certificate " +
             "(name, description, price, duration, create_date, last_update_date) " +
             "values (:name, :description, :price, :duration, :create_date, :last_update_date);";
@@ -53,7 +54,7 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
         giftCertificate.setId(resultSet.getLong(ID));
         giftCertificate.setName(resultSet.getString(NAME));
         giftCertificate.setDescription(resultSet.getString(DESCRIPTION));
-        giftCertificate.setPrice(resultSet.getDouble(PRICE));
+        giftCertificate.setPrice(resultSet.getBigDecimal(PRICE));
         giftCertificate.setDuration(resultSet.getInt(DURATION));
         giftCertificate.setCreateDate(resultSet.getTimestamp(CREATE_DATE).toLocalDateTime());
         giftCertificate.setLastUpdateDate(resultSet.getTimestamp(LAST_UPDATE_DATE).toLocalDateTime());
@@ -74,9 +75,19 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
         try {
             giftCertificate = namedParameterJdbcTemplate.queryForObject(FIND_BY_ID_QUERY, parameterSource, this::getGiftCertificateRowMapper);
         } catch (EmptyResultDataAccessException ex) {
-            log.error("Method 'find gift certificate by id' was not implemented." + ex.getMessage());
+            log.error("Method 'find gift certificate by id' was not implemented");
         }
 
+        return giftCertificate;
+    }
+
+    @Override
+    public List<GiftCertificate> findByName(String name) {
+        MapSqlParameterSource parameterSource = new MapSqlParameterSource();
+        parameterSource.addValue("name", name);
+        List<GiftCertificate> giftCertificate;
+
+        giftCertificate = namedParameterJdbcTemplate.query(FIND_BY_NAME_QUERY, parameterSource, this::getGiftCertificateRowMapper);
         return giftCertificate;
     }
 

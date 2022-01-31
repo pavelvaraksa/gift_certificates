@@ -11,7 +11,8 @@ import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import static com.epam.esm.exception.ExceptionMessage.CERTIFICATE_NOT_FOUND;
+import static com.epam.esm.exception.MessageException.CERTIFICATE_NOT_FOUND;
+import static com.epam.esm.exception.MessageException.CERTIFICATE_EXIST;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -37,18 +38,25 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     public GiftCertificateDto findById(Long id) {
         GiftCertificate giftCertificate = giftCertificateRepository.findById(id);
 
-        if (giftCertificate != null) {
-            return modelMapper.map(giftCertificate, GiftCertificateDto.class);
+        if (giftCertificate == null) {
+            log.error("Gift certificate with id " + id + " was not found");
+            throw new ServiceNotFoundException(CERTIFICATE_NOT_FOUND);
         }
 
-        log.error("Gift certificate was not found");
-        throw new ServiceNotFoundException(CERTIFICATE_NOT_FOUND);
+        return modelMapper.map(giftCertificate, GiftCertificateDto.class);
     }
 
     @Override
     public GiftCertificateDto create(GiftCertificateDto giftCertificateDto) {
         GiftCertificate giftCertificate = modelMapper.map(giftCertificateDto, GiftCertificate.class);
         StringValidator.isGiftCertificateValid(giftCertificateDto);
+
+        List<GiftCertificate> giftCertificateByName = giftCertificateRepository.findByName(giftCertificateDto.getName());
+
+        if (!giftCertificateByName.isEmpty()) {
+            log.error("Gift certificate name " + giftCertificateDto.getName() + " already exist");
+            throw new ServiceExistException(CERTIFICATE_EXIST);
+        }
 
         log.info("Gift certificate with name " + giftCertificate.getName() + " saved");
         return modelMapper.map(giftCertificateRepository.create(giftCertificate), GiftCertificateDto.class);
@@ -58,38 +66,47 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     public GiftCertificateDto updateById(Long id, GiftCertificateDto giftCertificateDto) {
         GiftCertificate updatedGiftCertificate = modelMapper.map(giftCertificateDto, GiftCertificate.class);
 
-        GiftCertificate giftCertificate = giftCertificateRepository.findById(id);
+        GiftCertificate giftCertificateById = giftCertificateRepository.findById(id);
 
-        if (giftCertificate == null) {
+        if (giftCertificateById == null) {
             log.error("Gift certificate was not found");
             throw new ServiceNotFoundException(CERTIFICATE_NOT_FOUND);
         }
 
+        List<GiftCertificate> GiftCertificateByName = giftCertificateRepository.findByName(giftCertificateDto.getName());
+
+        if (!GiftCertificateByName.isEmpty()) {
+            log.error("Gift certificate name " + giftCertificateDto.getName() + " already exist");
+            throw new ServiceExistException(CERTIFICATE_EXIST);
+        }
+
         if (giftCertificateDto.getName() == null) {
-            updatedGiftCertificate.setName(giftCertificate.getName());
+            updatedGiftCertificate.setName(giftCertificateById.getName());
         }
 
         if (giftCertificateDto.getDescription() == null) {
-            updatedGiftCertificate.setDescription(giftCertificate.getDescription());
+            updatedGiftCertificate.setDescription(giftCertificateById.getDescription());
         }
 
         if (giftCertificateDto.getPrice() == null) {
-            updatedGiftCertificate.setPrice(giftCertificate.getPrice());
+            updatedGiftCertificate.setPrice(giftCertificateById.getPrice());
         }
 
         if (giftCertificateDto.getDuration() == null) {
-            updatedGiftCertificate.setDuration(giftCertificate.getDuration());
+            updatedGiftCertificate.setDuration(giftCertificateById.getDuration());
         }
 
-        log.info("Gift certificate with name " + giftCertificateDto.getName() + " updated");
+        StringValidator.isGiftCertificateValid(modelMapper.map(updatedGiftCertificate, GiftCertificateDto.class));
+
+        log.info("Gift certificate with name " + updatedGiftCertificate.getName() + " updated");
         return modelMapper.map(giftCertificateRepository.updateById(id, updatedGiftCertificate), GiftCertificateDto.class);
     }
 
     @Override
     public void deleteById(Long id) {
-        GiftCertificate giftCertificate = giftCertificateRepository.findById(id);
+        GiftCertificate giftCertificateById = giftCertificateRepository.findById(id);
 
-        if (giftCertificate == null) {
+        if (giftCertificateById == null) {
             log.error("Gift certificate was not found");
             throw new ServiceNotFoundException(CERTIFICATE_NOT_FOUND);
         }

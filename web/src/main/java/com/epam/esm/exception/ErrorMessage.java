@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class FrameError {
-    private ErrorCode errorCode;
+public class ErrorMessage {
+    private Integer errorCode;
     private String errorMessage;
 }

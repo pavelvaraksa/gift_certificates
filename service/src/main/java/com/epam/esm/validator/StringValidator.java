@@ -5,10 +5,12 @@ import com.epam.esm.dto.TagDto;
 import com.epam.esm.exception.ServiceValidException;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
+
+import java.math.BigDecimal;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static com.epam.esm.exception.ExceptionMessage.*;
+import static com.epam.esm.exception.MessageException.*;
 
 @Log4j2
 @Component
@@ -28,7 +30,7 @@ public class StringValidator {
     public static void isGiftCertificateValid(GiftCertificateDto giftCertificateDto) {
         String name = giftCertificateDto.getName();
         String description = giftCertificateDto.getDescription();
-        Double price = giftCertificateDto.getPrice();
+        BigDecimal price = giftCertificateDto.getPrice();
         Integer duration = giftCertificateDto.getDuration();
 
         boolean result = !(isGiftCertificateNameValid(name)
@@ -46,13 +48,11 @@ public class StringValidator {
     private static boolean isGiftCertificateNameValid(String name) {
 
         if (name == null) {
-            String errorMessage = CERTIFICATE_NAME_NOT_FILLED;
-            log.error(errorMessage);
-            throw new ServiceValidException(errorMessage);
+            log.error("Gift certificate name was not filled");
+            throw new ServiceValidException(CERTIFICATE_NAME_NOT_FILLED);
         } else if (!isMatcherValid(REGEXP_NAME, name)) {
-            String errorMessage = CERTIFICATE_NAME_INCORRECT;
-            log.error(errorMessage);
-            throw new ServiceValidException(errorMessage);
+            log.error("Entered name was not correct.Use words,numbers,underscore and hyphen.Max size is 30 symbols");
+            throw new ServiceValidException(CERTIFICATE_NAME_INCORRECT);
         }
 
         return true;
@@ -61,13 +61,11 @@ public class StringValidator {
     private static boolean isDescriptionValid(String description) {
 
         if (description == null) {
-            String errorMessage = DESCRIPTION_NOT_FILLED;
-            log.error(errorMessage);
-            throw new ServiceValidException(errorMessage);
+            log.error("Gift certificate description was not filled");
+            throw new ServiceValidException(DESCRIPTION_NOT_FILLED);
         } else if (!isMatcherValid(REGEXP_DESCRIPTION, description)) {
-            String errorMessage = DESCRIPTION_INCORRECT;
-            log.error(errorMessage);
-            throw new ServiceValidException(errorMessage);
+            log.error("Entered description was not correct.Use words,numbers,underscore and hyphen.Max size is 50 symbols");
+            throw new ServiceValidException(DESCRIPTION_INCORRECT);
         }
 
         return true;
@@ -76,13 +74,11 @@ public class StringValidator {
     private static boolean isPriceValid(String price) {
 
         if (price.equals("null")) {
-            String errorMessage = PRICE_NOT_FILLED;
-            log.error(errorMessage);
-            throw new ServiceValidException(errorMessage);
+            log.error("Gift certificate price was not filled");
+            throw new ServiceValidException(PRICE_NOT_FILLED);
         } else if (!isMatcherValid(REGEXP_PRICE, price)) {
-            String errorMessage = PRICE_INCORRECT;
-            log.error(errorMessage);
-            throw new ServiceValidException(errorMessage);
+            log.error("Entered gift certificate price was not correct.Use fractional positive number");
+            throw new ServiceValidException(PRICE_INCORRECT);
         }
 
         return true;
@@ -91,13 +87,11 @@ public class StringValidator {
     private static boolean isDurationValid(String duration) {
 
         if (duration.equals("null")) {
-            String errorMessage = DURATION_NOT_FILLED;
-            log.error(errorMessage);
-            throw new ServiceValidException(errorMessage);
+            log.error("Gift certificate duration was not filled");
+            throw new ServiceValidException(DURATION_NOT_FILLED);
         } else if (!isMatcherValid(REGEXP_DURATION, duration)) {
-            String errorMessage = DURATION_INCORRECT;
-            log.error(errorMessage);
-            throw new ServiceValidException(errorMessage);
+            log.error("Entered gift certificate duration was not correct.Use integer positive number");
+            throw new ServiceValidException(DURATION_INCORRECT);
         }
 
         return true;
@@ -106,13 +100,11 @@ public class StringValidator {
     private static boolean isTagNameValid(String name) {
 
         if (name == null) {
-            String errorMessage = TAG_NAME_NOT_FILLED;
-            log.error(errorMessage);
-            throw new ServiceValidException(errorMessage);
-        } else if (isMatcherValid(REGEXP_NAME, name)) {
-            String errorMessage = TAG_INCORRECT;
-            log.error(errorMessage);
-            throw new ServiceValidException(errorMessage);
+            log.error("Tag name was not filled");
+            throw new ServiceValidException(TAG_NAME_NOT_FILLED);
+        } else if (!isMatcherValid(REGEXP_NAME, name)) {
+            log.error("Entered tag name was not correct.Use words,numbers,underscore and hyphen");
+            throw new ServiceValidException(TAG_INCORRECT);
         }
 
         return true;

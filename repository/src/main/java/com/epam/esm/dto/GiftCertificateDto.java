@@ -3,6 +3,7 @@ package com.epam.esm.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
@@ -11,7 +12,7 @@ public class GiftCertificateDto {
 
     private String description;
 
-    private Double price;
+    private BigDecimal price;
 
     private Integer duration;
 
