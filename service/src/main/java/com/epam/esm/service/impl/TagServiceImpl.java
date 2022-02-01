@@ -5,7 +5,7 @@ import com.epam.esm.dto.TagDto;
 import com.epam.esm.exception.ServiceNotFoundException;
 import com.epam.esm.repository.impl.TagRepositoryImpl;
 import com.epam.esm.service.TagService;
-import com.epam.esm.validator.StringValidator;
+import com.epam.esm.validator.TagValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
@@ -47,7 +47,7 @@ public class TagServiceImpl implements TagService {
     @Override
     public TagDto create(TagDto tagDto) {
         Tag tag = modelMapper.map(tagDto, Tag.class);
-        StringValidator.isTagValid(tagDto);
+        TagValidator.isTagValid(tagDto);
 
         log.info("Tag with name " + tag.getName() + " saved");
         return modelMapper.map(tagRepository.create(tag), TagDto.class);

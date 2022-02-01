@@ -5,7 +5,7 @@ import com.epam.esm.dto.GiftCertificateDto;
 import com.epam.esm.exception.*;
 import com.epam.esm.repository.impl.GiftCertificateRepositoryImpl;
 import com.epam.esm.service.GiftCertificateService;
-import com.epam.esm.validator.StringValidator;
+import com.epam.esm.validator.GiftCertificateValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
@@ -49,7 +49,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Override
     public GiftCertificateDto create(GiftCertificateDto giftCertificateDto) {
         GiftCertificate giftCertificate = modelMapper.map(giftCertificateDto, GiftCertificate.class);
-        StringValidator.isGiftCertificateValid(giftCertificateDto);
+        GiftCertificateValidator.isGiftCertificateValid(giftCertificateDto);
 
         List<GiftCertificate> giftCertificateByName = giftCertificateRepository.findByName(giftCertificateDto.getName());
 
@@ -96,7 +96,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             updatedGiftCertificate.setDuration(giftCertificateById.getDuration());
         }
 
-        StringValidator.isGiftCertificateValid(modelMapper.map(updatedGiftCertificate, GiftCertificateDto.class));
+        GiftCertificateValidator.isGiftCertificateValid(modelMapper.map(updatedGiftCertificate, GiftCertificateDto.class));
 
         log.info("Gift certificate with name " + updatedGiftCertificate.getName() + " updated");
         return modelMapper.map(giftCertificateRepository.updateById(id, updatedGiftCertificate), GiftCertificateDto.class);
