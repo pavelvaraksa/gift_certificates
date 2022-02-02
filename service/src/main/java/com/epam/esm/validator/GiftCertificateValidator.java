@@ -1,6 +1,6 @@
 package com.epam.esm.validator;
 
-import com.epam.esm.dto.GiftCertificateDto;
+import com.epam.esm.domain.GiftCertificate;
 import com.epam.esm.exception.ServiceValidException;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
@@ -27,11 +27,11 @@ public class GiftCertificateValidator {
         return matcher.matches();
     }
 
-    public static boolean isGiftCertificateValid(GiftCertificateDto giftCertificateDto) {
-        String name = giftCertificateDto.getName();
-        String description = giftCertificateDto.getDescription();
-        BigDecimal price = giftCertificateDto.getPrice();
-        Integer duration = giftCertificateDto.getDuration();
+    public static boolean isGiftCertificateValid(GiftCertificate giftCertificate) {
+        String name = giftCertificate.getName();
+        String description = giftCertificate.getDescription();
+        BigDecimal price = giftCertificate.getPrice();
+        Integer duration = giftCertificate.getDuration();
 
         return isGiftCertificateNameValid(name)
                 && isDescriptionValid(description)

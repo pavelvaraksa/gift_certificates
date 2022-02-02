@@ -4,6 +4,8 @@ import com.epam.esm.domain.Tag;
 import com.epam.esm.repository.TagRepository;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -12,8 +14,7 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Log4j2
 @Repository
@@ -23,13 +24,21 @@ public class TagRepositoryImpl implements TagRepository {
 
     private static final String FIND_ALL_QUERY = "select * from tag";
     private static final String FIND_BY_ID_QUERY = "select * from tag where id = :id";
+    private static final String FIND_BY_NAME_QUERY = "select * from tag where name = ?";
     private static final String CREATE_QUERY = "insert into tag (name) values (:name)";
     private static final String DELETE_QUERY = "delete from tag where id = :id";
+    private static final String FIND_TAGS_BY_CERTIFICATE_ID_QUERY = "select id, name from tag " +
+            " join gift_certificate_to_tag on gift_certificate_to_tag.tag_id = id " +
+            " where gift_certificate_to_tag.gift_certificate_id = ?";
+    private static final String DELETE_GIFT_CERTIFICATE_TO_TAG_BY_ID_QUERY = "delete from gift_certificate_to_tag " +
+            "where gift_certificate_id = ?";
 
+    private final JdbcTemplate jdbcTemplate;
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
-    public TagRepositoryImpl(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
+    public TagRepositoryImpl(NamedParameterJdbcTemplate namedParameterJdbcTemplate, JdbcTemplate jdbcTemplate) {
         this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     private Tag getTagRowMapper(ResultSet resultSet, int rowNumber) throws SQLException {
@@ -47,7 +56,7 @@ public class TagRepositoryImpl implements TagRepository {
     @Override
     public Tag findById(Long key) {
         MapSqlParameterSource parameterSource = new MapSqlParameterSource();
-        parameterSource.addValue("id", key);
+        parameterSource.addValue(ID, key);
         Tag tag = null;
 
         try {
@@ -60,10 +69,23 @@ public class TagRepositoryImpl implements TagRepository {
     }
 
     @Override
+    public Optional<Tag> findByName(String name) {
+        Optional<Tag> optionalTag;
+
+        try {
+            optionalTag = Optional.ofNullable(jdbcTemplate.queryForObject(FIND_BY_NAME_QUERY, new BeanPropertyRowMapper<>(Tag.class), name));
+        } catch (EmptyResultDataAccessException e) {
+            optionalTag = Optional.empty();
+        }
+
+        return optionalTag;
+    }
+
+    @Override
     public Tag create(Tag tag) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         MapSqlParameterSource parameterSource = new MapSqlParameterSource();
-        parameterSource.addValue("name", tag.getName());
+        parameterSource.addValue(NAME, tag.getName());
 
         namedParameterJdbcTemplate.update(CREATE_QUERY, parameterSource, keyHolder, new String[]{"id"});
         long createdTagId = Objects.requireNonNull(keyHolder.getKey()).longValue();
@@ -78,7 +100,17 @@ public class TagRepositoryImpl implements TagRepository {
     @Override
     public void deleteById(Long id) {
         MapSqlParameterSource parameterSource = new MapSqlParameterSource();
-        parameterSource.addValue("id", id);
+        parameterSource.addValue(ID, id);
         namedParameterJdbcTemplate.update(DELETE_QUERY, parameterSource);
+    }
+
+    @Override
+    public Set<Tag> findByGiftCertificateId(Long id) {
+        return new HashSet<>(jdbcTemplate.query(FIND_TAGS_BY_CERTIFICATE_ID_QUERY, new BeanPropertyRowMapper<>(Tag.class), id));
+    }
+
+    @Override
+    public void deleteAllTagsByGiftCertificateId(Long giftCertificateId) {
+        jdbcTemplate.update(DELETE_GIFT_CERTIFICATE_TO_TAG_BY_ID_QUERY, giftCertificateId);
     }
 }
