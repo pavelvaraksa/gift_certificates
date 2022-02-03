@@ -36,18 +36,24 @@ public class GiftCertificateRestController {
         return ResponseEntity.ok(modelMapper.map(giftCertificate, GiftCertificateDto.class));
     }
 
-    @GetMapping("/{name}")
+    @GetMapping("/part_name/{partName}")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<GiftCertificateDto> findGiftCertificateByPartName(@PathVariable String name) {
-        Optional<GiftCertificate> giftCertificate = giftCertificateService.findByPartName(name);
-        return ResponseEntity.ok(modelMapper.map(giftCertificate, GiftCertificateDto.class));
+    public ResponseEntity<List<GiftCertificateDto>> findGiftCertificateByPartName(@PathVariable String partName) {
+        List<GiftCertificate> giftCertificates = giftCertificateService.findByPartName(partName);
+        return ResponseEntity.ok(giftCertificates
+                .stream()
+                .map(giftCertificate -> modelMapper.map(giftCertificate, GiftCertificateDto.class))
+                .collect(Collectors.toList()));
     }
 
-    @GetMapping("/{description}")
+    @GetMapping("/part_description/{partDescription}")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<GiftCertificateDto> findGiftCertificateByPartDescription(@PathVariable String description) {
-        Optional<GiftCertificate> giftCertificate = giftCertificateService.findByPartDescription(description);
-        return ResponseEntity.ok(modelMapper.map(giftCertificate, GiftCertificateDto.class));
+    public ResponseEntity<List<GiftCertificateDto>> findGiftCertificateByPartDescription(@PathVariable String partDescription) {
+        List<GiftCertificate> giftCertificates = giftCertificateService.findByPartDescription(partDescription);
+        return ResponseEntity.ok(giftCertificates
+                .stream()
+                .map(giftCertificate -> modelMapper.map(giftCertificate, GiftCertificateDto.class))
+                .collect(Collectors.toList()));
     }
 
     @PostMapping

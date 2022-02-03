@@ -2,6 +2,7 @@ package com.epam.esm.repository.impl;
 
 import com.epam.esm.domain.GiftCertificate;
 import com.epam.esm.repository.GiftCertificateRepository;
+import com.epam.esm.util.SqlQuery;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -34,10 +35,11 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
     private static final String FIND_ALL_QUERY = "select * from gift_certificate";
     private static final String FIND_BY_ID_QUERY = "select * from gift_certificate where id = :id";
     private static final String FIND_BY_NAME_QUERY = "select * from gift_certificate where name = ?";
-    private static final String FIND_BY_PART_NAME_QUERY = "select * from gift_certificate where name like :name";
-    private static final String FIND_BY_PART_DESCRIPTION_QUERY = "select * from gift_certificate where description like :description";
-    private static final String FIND_BY_TAG_ID_QUERY = "select * from gift_certificate inner join gift_certificate_to_tag on " +
-            " gift_certificate.id = gift_certificate_to_tag.gift_certificate_id";
+    private static final String FIND_BY_PART_NAME_QUERY = "select * from gift_certificate where name like ?";
+    private static final String FIND_BY_PART_DESCRIPTION_QUERY = "select * from gift_certificate where description like ?";
+    private static final String FIND_BY_TAG_ID_QUERY = "select gc.id, gc.name, gc.description," + " gc.price, gc.duration, " +
+            "gc.create_date, gc.last_update_date from gift_certificate as gc inner join gift_certificate_to_tag on " +
+            " gc.id = gift_certificate_to_tag.gift_certificate_id";
     private static final String CREATE_QUERY = "insert into gift_certificate " +
             "(name, description, price, duration, create_date, last_update_date) " +
             "values (:name, :description, :price, :duration, :create_date, :last_update_date);";
@@ -105,31 +107,17 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
     }
 
     @Override
-    public Optional<GiftCertificate> findByPartName(String name) {
-        Optional<GiftCertificate> optionalGiftCertificate;
-
-        try {
-            optionalGiftCertificate = Optional.ofNullable(jdbcTemplate.queryForObject(FIND_BY_PART_NAME_QUERY,
-                    new BeanPropertyRowMapper<>(GiftCertificate.class), name));
-        } catch (EmptyResultDataAccessException ex) {
-            optionalGiftCertificate = Optional.empty();
-        }
-
-        return optionalGiftCertificate;
+    public List<GiftCertificate> findByPartName(String partName) {
+        String sqlQuery = SqlQuery.accessQuery(partName);
+        return jdbcTemplate.query(FIND_BY_PART_NAME_QUERY,
+                new BeanPropertyRowMapper<>(GiftCertificate.class), sqlQuery);
     }
 
     @Override
-    public Optional<GiftCertificate> findByPartDescription(String description) {
-        Optional<GiftCertificate> optionalGiftCertificate;
-
-        try {
-            optionalGiftCertificate = Optional.ofNullable(jdbcTemplate.queryForObject(FIND_BY_PART_DESCRIPTION_QUERY,
-                    new BeanPropertyRowMapper<>(GiftCertificate.class), description));
-        } catch (EmptyResultDataAccessException ex) {
-            optionalGiftCertificate = Optional.empty();
-        }
-
-        return optionalGiftCertificate;
+    public List<GiftCertificate> findByPartDescription(String partDescription) {
+        String sqlQuery = SqlQuery.accessQuery(partDescription);
+        return jdbcTemplate.query(FIND_BY_PART_DESCRIPTION_QUERY,
+                new BeanPropertyRowMapper<>(GiftCertificate.class), sqlQuery);
     }
 
     @Override

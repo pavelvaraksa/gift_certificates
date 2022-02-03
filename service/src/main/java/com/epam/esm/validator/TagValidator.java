@@ -4,9 +4,7 @@ import com.epam.esm.domain.Tag;
 import com.epam.esm.exception.ServiceValidException;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
-import org.springframework.util.ObjectUtils;
 
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -24,10 +22,6 @@ public class TagValidator {
 
         return matcher.matches();
     }
-//
-//    public static boolean isValid(Set<Tag> tags) {
-//        return !ObjectUtils.isEmpty(tags) && tags.stream().allMatch(TagValidator::isTagValid);
-//    }
 
     public static boolean isTagValid(Tag tag) {
         String name = tag.getName();

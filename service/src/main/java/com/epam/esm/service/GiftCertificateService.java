@@ -10,9 +10,9 @@ public interface GiftCertificateService {
 
     GiftCertificate findById(Long id);
 
-    Optional<GiftCertificate> findByPartName(String partName);
+    List<GiftCertificate> findByPartName(String partName);
 
-    Optional<GiftCertificate> findByPartDescription(String partDescription);
+    List<GiftCertificate> findByPartDescription(String partDescription);
 
     GiftCertificate create(GiftCertificate giftCertificate);
 

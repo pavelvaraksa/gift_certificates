@@ -13,7 +13,6 @@ import com.epam.esm.validator.TagValidator;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.ObjectUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -41,7 +40,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Override
     public List<GiftCertificate> findAll() {
         List<GiftCertificate> giftCertificates = giftCertificateRepository.findAll();
-        findAndSetTags(giftCertificates);
+        findSetTagsForEach(giftCertificates);
 
         return giftCertificates;
     }
@@ -62,27 +61,31 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    public Optional<GiftCertificate> findByPartName(String partName) {
-        Optional<GiftCertificate> giftCertificate = giftCertificateRepository.findByPartName(partName);
+    public List<GiftCertificate> findByPartName(String partName) {
+        List<GiftCertificate> giftCertificates = giftCertificateRepository.findByPartName(partName);
 
-        if (giftCertificate.isEmpty()) {
-            log.error("Gift certificate by part of name " + giftCertificate + " not found");
+        if (giftCertificates == null || giftCertificates.isEmpty()) {
+            log.error("Gift certificate by part of name " + partName + " not found");
             throw new ServiceExistException(CERTIFICATE_NOT_FOUND);
+        } else {
+            findSetTagsForEach(giftCertificates);
         }
 
-        return giftCertificate;
+        return giftCertificates;
     }
 
     @Override
-    public Optional<GiftCertificate> findByPartDescription(String partDescription) {
-        Optional<GiftCertificate> giftCertificate = giftCertificateRepository.findByPartDescription(partDescription);
+    public List<GiftCertificate> findByPartDescription(String partDescription) {
+        List<GiftCertificate> giftCertificates = giftCertificateRepository.findByPartDescription(partDescription);
 
-        if (giftCertificate.isEmpty()) {
-            log.error("Gift certificate by part of description " + giftCertificate + " not found");
+        if (giftCertificates == null || giftCertificates.isEmpty()) {
+            log.error("Gift certificate by part of description " + partDescription + " not found");
             throw new ServiceExistException(CERTIFICATE_NOT_FOUND);
+        } else {
+            findSetTagsForEach(giftCertificates);
         }
 
-        return giftCertificate;
+        return giftCertificates;
     }
 
     @Override
@@ -165,7 +168,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         GiftCertificateValidator.isGiftCertificateValid(giftCertificate);
 
         GiftCertificate updatedGiftCertificate = giftCertificateRepository.updateById(id, giftCertificate);
-        findAndSetTags(updatedGiftCertificate);
+        findSetTag(updatedGiftCertificate);
 
         log.info("Gift certificate with name " + giftCertificate.getName() + " updated");
         return updatedGiftCertificate;
@@ -185,7 +188,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         giftCertificateRepository.deleteById(id);
     }
 
-    private void findAndSetTags(List<GiftCertificate> giftCertificates) {
+    private void findSetTagsForEach(List<GiftCertificate> giftCertificates) {
         giftCertificates.forEach(giftCertificate -> {
             long id = giftCertificate.getId();
             Set<Tag> tags = tagRepository.findByGiftCertificateId(id);
@@ -193,7 +196,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         });
     }
 
-    private void findAndSetTags(GiftCertificate giftCertificate) {
+    private void findSetTag(GiftCertificate giftCertificate) {
         long id = giftCertificate.getId();
         Set<Tag> tags = tagRepository.findByGiftCertificateId(id);
         giftCertificate.setTags(tags);

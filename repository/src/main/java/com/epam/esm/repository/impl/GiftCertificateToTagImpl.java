@@ -8,18 +8,13 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 import java.util.Optional;
 
 @Log4j2
 @Repository
 public class GiftCertificateToTagImpl implements GiftCertificateToTag {
-    private static final String FIND_ALL_BY_GIFT_CERTIFICATE_ID_QUERY
-            = "select gift_certificate_id, tag_id from gift_certificate_to_tag where gift_certificate_id = ?";
     private static final String CREATE_LINK_QUERY = "insert into gift_certificate_to_tag (gift_certificate_id, tag_id) " +
             "values (?, ?)";
-    private static final String DELETE_LINK_QUERY = "delete from gift_certificate_to_tag " +
-            "where gift_certificate_id = ? and tag_id = ?";
     private static final String FIND_LINK_QUERY
             = "select gift_certificate_id, tag_id from gift_certificate_to_tag " +
             "where gift_certificate_id = ? and tag_id = ?";
@@ -49,16 +44,5 @@ public class GiftCertificateToTagImpl implements GiftCertificateToTag {
         }
 
         return link;
-    }
-
-    @Override
-    public List<GiftCertificateToTag> findAllByGiftCertificateId(Long id) {
-        return jdbcTemplate.query(FIND_ALL_BY_GIFT_CERTIFICATE_ID_QUERY, new BeanPropertyRowMapper<>(), id);
-    }
-
-    @Override
-    public boolean deleteLink(Long giftCertificateId, Long tagId) {
-        int createdRowLines = jdbcTemplate.update(DELETE_LINK_QUERY, giftCertificateId, tagId);
-        return createdRowLines == 1;
     }
 }
