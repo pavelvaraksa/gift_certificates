@@ -2,6 +2,8 @@ package com.epam.esm.repository.impl;
 
 import com.epam.esm.domain.GiftCertificate;
 import com.epam.esm.repository.GiftCertificateRepository;
+import com.epam.esm.util.ColumnName;
+import com.epam.esm.util.SortType;
 import com.epam.esm.util.SqlQuery;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -17,9 +19,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @Log4j2
 @Repository
@@ -78,6 +78,13 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
     }
 
     @Override
+    public List<GiftCertificate> findAllSorted(Set<ColumnName> orderBy, SortType sortType) {
+        String sqlQuery = SqlQuery.findAllSorted(orderBy, sortType);
+
+        return namedParameterJdbcTemplate.query(sqlQuery, this::getGiftCertificateRowMapper);
+    }
+
+    @Override
     public GiftCertificate findById(Long key) {
         MapSqlParameterSource parameterSource = new MapSqlParameterSource();
         parameterSource.addValue(ID, key);
@@ -108,14 +115,14 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
 
     @Override
     public List<GiftCertificate> findByPartName(String partName) {
-        String sqlQuery = SqlQuery.accessQuery(partName);
+        String sqlQuery = SqlQuery.accessQueryForPercent(partName);
         return jdbcTemplate.query(FIND_BY_PART_NAME_QUERY,
                 new BeanPropertyRowMapper<>(GiftCertificate.class), sqlQuery);
     }
 
     @Override
     public List<GiftCertificate> findByPartDescription(String partDescription) {
-        String sqlQuery = SqlQuery.accessQuery(partDescription);
+        String sqlQuery = SqlQuery.accessQueryForPercent(partDescription);
         return jdbcTemplate.query(FIND_BY_PART_DESCRIPTION_QUERY,
                 new BeanPropertyRowMapper<>(GiftCertificate.class), sqlQuery);
     }

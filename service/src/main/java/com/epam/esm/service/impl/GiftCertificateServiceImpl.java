@@ -8,11 +8,14 @@ import com.epam.esm.repository.impl.GiftCertificateRepositoryImpl;
 import com.epam.esm.repository.impl.GiftCertificateToTagImpl;
 import com.epam.esm.repository.impl.TagRepositoryImpl;
 import com.epam.esm.service.GiftCertificateService;
+import com.epam.esm.util.ColumnName;
+import com.epam.esm.util.SortType;
 import com.epam.esm.validator.GiftCertificateValidator;
 import com.epam.esm.validator.TagValidator;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -40,6 +43,14 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Override
     public List<GiftCertificate> findAll() {
         List<GiftCertificate> giftCertificates = giftCertificateRepository.findAll();
+        findSetTagsForEach(giftCertificates);
+
+        return giftCertificates;
+    }
+
+    @Override
+    public List<GiftCertificate> findAllSorted(Set<ColumnName> columnNames, SortType sortType) {
+        List<GiftCertificate> giftCertificates = giftCertificateRepository.findAllSorted(columnNames, sortType);
         findSetTagsForEach(giftCertificates);
 
         return giftCertificates;
@@ -88,6 +99,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         return giftCertificates;
     }
 
+    @Transactional()
     @Override
     public GiftCertificate create(GiftCertificate giftCertificate) {
         GiftCertificateValidator.isGiftCertificateValid(giftCertificate);
@@ -133,6 +145,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         return giftCertificate;
     }
 
+    @Transactional
     @Override
     public GiftCertificate updateById(Long id, GiftCertificate giftCertificate) {
         GiftCertificate giftCertificateById = giftCertificateRepository.findById(id);
@@ -174,6 +187,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         return updatedGiftCertificate;
     }
 
+    @Transactional
     @Override
     public void deleteById(Long id) {
         GiftCertificate giftCertificateById = giftCertificateRepository.findById(id);
