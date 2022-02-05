@@ -18,6 +18,8 @@ public interface GiftCertificateService {
 
     List<GiftCertificate> findByPartDescription(String partDescription);
 
+    List<GiftCertificate> findByTagName(String tagName);
+
     GiftCertificate create(GiftCertificate giftCertificate);
 
     GiftCertificate updateById(Long id, GiftCertificate giftCertificateDto);

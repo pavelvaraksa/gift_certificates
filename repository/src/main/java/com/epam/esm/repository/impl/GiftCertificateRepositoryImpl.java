@@ -39,7 +39,8 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
     private static final String FIND_BY_PART_DESCRIPTION_QUERY = "select * from gift_certificate where description like ?";
     private static final String FIND_BY_TAG_ID_QUERY = "select gc.id, gc.name, gc.description," + " gc.price, gc.duration, " +
             "gc.create_date, gc.last_update_date from gift_certificate as gc inner join gift_certificate_to_tag on " +
-            " gc.id = gift_certificate_to_tag.gift_certificate_id";
+            "gc.id = gift_certificate_to_tag.gift_certificate_id " +
+            "where gift_certificate_to_tag.tag_id = ?";
     private static final String CREATE_QUERY = "insert into gift_certificate " +
             "(name, description, price, duration, create_date, last_update_date) " +
             "values (:name, :description, :price, :duration, :create_date, :last_update_date);";

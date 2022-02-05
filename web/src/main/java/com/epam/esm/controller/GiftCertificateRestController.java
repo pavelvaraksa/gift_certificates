@@ -71,6 +71,16 @@ public class GiftCertificateRestController {
                 .collect(Collectors.toList());
     }
 
+    @GetMapping("/tag-name/{tagName}")
+    @ResponseStatus(HttpStatus.OK)
+    public List<GiftCertificateDto> findGiftCertificateByTagName(@PathVariable String tagName) {
+        List<GiftCertificate> giftCertificates = giftCertificateService.findByTagName(tagName);
+        return giftCertificates
+                .stream()
+                .map(giftCertificate -> modelMapper.map(giftCertificate, GiftCertificateDto.class))
+                .collect(Collectors.toList());
+    }
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public GiftCertificateDto createGiftCertificate(@RequestBody GiftCertificate giftCertificate) {

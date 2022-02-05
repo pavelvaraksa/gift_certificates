@@ -76,7 +76,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         List<GiftCertificate> giftCertificates = giftCertificateRepository.findByPartName(partName);
 
         if (giftCertificates == null || giftCertificates.isEmpty()) {
-            log.error("Gift certificate by part of name " + partName + " not found");
+            log.error("Gift certificate by part of name " + partName + " was not found");
             throw new ServiceExistException(CERTIFICATE_NOT_FOUND);
         } else {
             findSetTagsForEach(giftCertificates);
@@ -90,10 +90,32 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         List<GiftCertificate> giftCertificates = giftCertificateRepository.findByPartDescription(partDescription);
 
         if (giftCertificates == null || giftCertificates.isEmpty()) {
-            log.error("Gift certificate by part of description " + partDescription + " not found");
+            log.error("Gift certificate by part of description " + partDescription + " was not found");
             throw new ServiceExistException(CERTIFICATE_NOT_FOUND);
         } else {
             findSetTagsForEach(giftCertificates);
+        }
+
+        return giftCertificates;
+    }
+
+    @Override
+    public List<GiftCertificate> findByTagName(String tagName) {
+        Optional<Tag> optionalTag = tagRepository.findByName(tagName);
+
+        if (optionalTag.isEmpty()) {
+            log.error("Tag with name " + tagName + " was not found");
+            throw new ServiceNotFoundException(TAG_NOT_FOUND);
+        }
+
+        Long tagId = optionalTag.get().getId();
+        List<GiftCertificate> giftCertificates = giftCertificateRepository.findByTagId(tagId);
+
+        if (!giftCertificates.isEmpty()) {
+            findSetTagsForEach(giftCertificates);
+        } else {
+            log.error("Gift certificate by tag name " + tagName + " was not found");
+            throw new ServiceNotFoundException(CERTIFICATE_NOT_FOUND);
         }
 
         return giftCertificates;
