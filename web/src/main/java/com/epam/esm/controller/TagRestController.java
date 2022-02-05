@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -31,7 +32,7 @@ public class TagRestController {
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public TagDto findTagById(@PathVariable Long id) {
-        Tag tag = tagService.findById(id);
+        Optional<Tag> tag = tagService.findById(id);
         return modelMapper.map(tag, TagDto.class);
     }
 

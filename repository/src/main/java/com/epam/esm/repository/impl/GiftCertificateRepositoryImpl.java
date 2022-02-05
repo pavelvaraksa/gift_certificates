@@ -33,7 +33,7 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
     private static final String LAST_UPDATE_DATE = "last_update_date";
 
     private static final String FIND_ALL_QUERY = "select * from gift_certificate";
-    private static final String FIND_BY_ID_QUERY = "select * from gift_certificate where id = :id";
+    private static final String FIND_BY_ID_QUERY = "select * from gift_certificate where id = ?";
     private static final String FIND_BY_NAME_QUERY = "select * from gift_certificate where name = ?";
     private static final String FIND_BY_PART_NAME_QUERY = "select * from gift_certificate where name like ?";
     private static final String FIND_BY_PART_DESCRIPTION_QUERY = "select * from gift_certificate where description like ?";
@@ -86,18 +86,18 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
     }
 
     @Override
-    public GiftCertificate findById(Long key) {
-        MapSqlParameterSource parameterSource = new MapSqlParameterSource();
-        parameterSource.addValue(ID, key);
-        GiftCertificate giftCertificate = null;
+    public Optional<GiftCertificate> findById(Long key) {
+        Optional<GiftCertificate> optionalGiftCertificate;
 
         try {
-            giftCertificate = namedParameterJdbcTemplate.queryForObject(FIND_BY_ID_QUERY, parameterSource, this::getGiftCertificateRowMapper);
-        } catch (EmptyResultDataAccessException ex) {
+            optionalGiftCertificate = Optional.ofNullable(jdbcTemplate.queryForObject(FIND_BY_ID_QUERY,
+                    new BeanPropertyRowMapper<>(GiftCertificate.class), key));
+        } catch (EmptyResultDataAccessException e) {
             log.error("Method 'find gift certificate by id' was not implemented");
+            optionalGiftCertificate = Optional.empty();
         }
 
-        return giftCertificate;
+        return optionalGiftCertificate;
     }
 
     @Override
@@ -148,7 +148,9 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
 
         namedParameterJdbcTemplate.update(CREATE_QUERY, parameterSource, keyHolder, new String[]{"id"});
         long createdGiftCertificateId = Objects.requireNonNull(keyHolder.getKey()).longValue();
-        return findById(createdGiftCertificateId);
+        giftCertificate.setId(createdGiftCertificateId);
+
+        return giftCertificate;
     }
 
     @Override
@@ -164,14 +166,17 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
         parameterSource.addValue(ID, id);
 
         namedParameterJdbcTemplate.update(UPDATE_QUERY, parameterSource);
-        return findById(id);
+        giftCertificate.setId(id);
+
+        return giftCertificate;
     }
 
     @Override
-    public void deleteById(Long id) {
+    public boolean deleteById(Long id) {
         MapSqlParameterSource parameterSource = new MapSqlParameterSource();
         parameterSource.addValue(ID, id);
         namedParameterJdbcTemplate.update(DELETE_QUERY, parameterSource);
+        return true;
     }
 }
 

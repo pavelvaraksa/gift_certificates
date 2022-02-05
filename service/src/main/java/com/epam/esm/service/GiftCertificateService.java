@@ -3,8 +3,10 @@ package com.epam.esm.service;
 import com.epam.esm.domain.GiftCertificate;
 import com.epam.esm.util.ColumnName;
 import com.epam.esm.util.SortType;
+import com.fasterxml.jackson.annotation.OptBoolean;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 public interface GiftCertificateService {
@@ -12,7 +14,7 @@ public interface GiftCertificateService {
 
     List<GiftCertificate> findAllSorted(Set<ColumnName> columnNames, SortType sortType);
 
-    GiftCertificate findById(Long id);
+    Optional<GiftCertificate> findById(Long id);
 
     List<GiftCertificate> findByPartName(String partName);
 

@@ -1,15 +1,16 @@
 package com.epam.esm.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface CrudRepository<K, V> {
     List<V> findAll();
 
-    V findById(K key);
+    Optional<V> findById(K key);
 
     V create(V object);
 
     V updateById(K key, V object);
 
-    void deleteById(K key);
+    boolean deleteById(K key);
 }

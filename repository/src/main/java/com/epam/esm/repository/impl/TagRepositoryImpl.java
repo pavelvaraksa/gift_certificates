@@ -23,7 +23,7 @@ public class TagRepositoryImpl implements TagRepository {
     private static final String NAME = "name";
 
     private static final String FIND_ALL_QUERY = "select * from tag";
-    private static final String FIND_BY_ID_QUERY = "select * from tag where id = :id";
+    private static final String FIND_BY_ID_QUERY = "select * from tag where id = ?";
     private static final String FIND_BY_NAME_QUERY = "select * from tag where name = ?";
     private static final String CREATE_QUERY = "insert into tag (name) values (:name)";
     private static final String DELETE_QUERY = "delete from tag where id = :id";
@@ -54,18 +54,18 @@ public class TagRepositoryImpl implements TagRepository {
     }
 
     @Override
-    public Tag findById(Long key) {
-        MapSqlParameterSource parameterSource = new MapSqlParameterSource();
-        parameterSource.addValue(ID, key);
-        Tag tag = null;
+    public Optional<Tag> findById(Long key) {
+        Optional<Tag> optionalTag;
 
         try {
-            tag = namedParameterJdbcTemplate.queryForObject(FIND_BY_ID_QUERY, parameterSource, this::getTagRowMapper);
-        } catch (EmptyResultDataAccessException ex) {
+            optionalTag = Optional.ofNullable(jdbcTemplate.queryForObject(FIND_BY_ID_QUERY,
+                    new BeanPropertyRowMapper<>(Tag.class), key));
+        } catch (EmptyResultDataAccessException e) {
             log.error("Method 'find tag by id' was not implemented");
+            optionalTag = Optional.empty();
         }
 
-        return tag;
+        return optionalTag;
     }
 
     @Override
@@ -89,7 +89,9 @@ public class TagRepositoryImpl implements TagRepository {
 
         namedParameterJdbcTemplate.update(CREATE_QUERY, parameterSource, keyHolder, new String[]{"id"});
         long createdTagId = Objects.requireNonNull(keyHolder.getKey()).longValue();
-        return findById(createdTagId);
+        tag.setId(createdTagId);
+
+        return tag;
     }
 
     @Override
@@ -98,10 +100,11 @@ public class TagRepositoryImpl implements TagRepository {
     }
 
     @Override
-    public void deleteById(Long id) {
+    public boolean deleteById(Long id) {
         MapSqlParameterSource parameterSource = new MapSqlParameterSource();
         parameterSource.addValue(ID, id);
         namedParameterJdbcTemplate.update(DELETE_QUERY, parameterSource);
+        return true;
     }
 
     @Override

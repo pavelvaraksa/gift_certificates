@@ -57,16 +57,16 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    public GiftCertificate findById(Long id) {
-        GiftCertificate giftCertificate = giftCertificateRepository.findById(id);
+    public Optional<GiftCertificate> findById(Long id) {
+        Optional<GiftCertificate> giftCertificate = giftCertificateRepository.findById(id);
 
-        if (giftCertificate == null) {
+        if (giftCertificate.isEmpty()) {
             log.error("Gift certificate with id " + id + " was not found");
             throw new ServiceNotFoundException(CERTIFICATE_NOT_FOUND);
         }
 
         Set<Tag> tagList = tagRepository.findByGiftCertificateId(id);
-        giftCertificate.setTags(tagList);
+        giftCertificate.get().setTags(tagList);
 
         return giftCertificate;
     }
@@ -170,9 +170,9 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Transactional
     @Override
     public GiftCertificate updateById(Long id, GiftCertificate giftCertificate) {
-        GiftCertificate giftCertificateById = giftCertificateRepository.findById(id);
+        Optional<GiftCertificate> giftCertificateById = giftCertificateRepository.findById(id);
 
-        if (giftCertificateById == null) {
+        if (giftCertificateById.isEmpty()) {
             log.error("Gift certificate was not found");
             throw new ServiceNotFoundException(CERTIFICATE_NOT_FOUND);
         }
@@ -185,19 +185,19 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         }
 
         if (giftCertificate.getName() == null) {
-            giftCertificate.setName(giftCertificateById.getName());
+            giftCertificate.setName(giftCertificateById.get().getName());
         }
 
         if (giftCertificate.getDescription() == null) {
-            giftCertificate.setDescription(giftCertificateById.getDescription());
+            giftCertificate.setDescription(giftCertificateById.get().getDescription());
         }
 
         if (giftCertificate.getPrice() == null) {
-            giftCertificate.setPrice(giftCertificateById.getPrice());
+            giftCertificate.setPrice(giftCertificateById.get().getPrice());
         }
 
         if (giftCertificate.getDuration() == null) {
-            giftCertificate.setDuration(giftCertificateById.getDuration());
+            giftCertificate.setDuration(giftCertificateById.get().getDuration());
         }
 
         GiftCertificateValidator.isGiftCertificateValid(giftCertificate);
@@ -212,9 +212,9 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Transactional
     @Override
     public void deleteById(Long id) {
-        GiftCertificate giftCertificateById = giftCertificateRepository.findById(id);
+        Optional<GiftCertificate> giftCertificateById = giftCertificateRepository.findById(id);
 
-        if (giftCertificateById == null) {
+        if (giftCertificateById.isEmpty()) {
             log.error("Gift certificate was not found");
             throw new ServiceNotFoundException(CERTIFICATE_NOT_FOUND);
         }

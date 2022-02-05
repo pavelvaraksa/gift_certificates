@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -47,7 +48,7 @@ public class GiftCertificateRestController {
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public GiftCertificateDto findGiftCertificateById(@PathVariable Long id) {
-        GiftCertificate giftCertificate = giftCertificateService.findById(id);
+        Optional<GiftCertificate> giftCertificate = giftCertificateService.findById(id);
         return modelMapper.map(giftCertificate, GiftCertificateDto.class);
     }
 
