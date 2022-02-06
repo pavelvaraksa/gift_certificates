@@ -33,7 +33,7 @@ public class TagRestController {
     @ResponseStatus(HttpStatus.OK)
     public TagDto findTagById(@PathVariable Long id) {
         Optional<Tag> tag = tagService.findById(id);
-        return modelMapper.map(tag, TagDto.class);
+        return modelMapper.map(tag.get(), TagDto.class);
     }
 
     @PostMapping

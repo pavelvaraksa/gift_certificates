@@ -24,24 +24,24 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @SpringJUnitConfig(ConfigTest.class)
 @Sql(scripts = "classpath:database/schema.sql")
 @Sql(scripts = "classpath:database/h2-data.sql")
-public class GiftCertificateImplTest {
+public class GiftCertificateRepositoryImplTest {
     private final static Long ID_POSITIVE = 1L;
-    private final static Long ID_FOR_CREATE = 4L;
     private final static Long ID_NEGATIVE = -1L;
     private final static Long ID_NOT_EXIST = 55L;
     private static final String NAME_POSITIVE = "Certificate_1";
-    private static final String NAME_FOR_CREATE = "Certificate_4";
     private static final String NAME_NEGATIVE = "Certificate  1";
     private static final String NAME_NOT_EXIST = "Certificate_not_exist";
-    private static final String DESCRIPTION_POSITIVE = "Description_1";
-    private static final BigDecimal PRICE_POSITIVE = BigDecimal.valueOf(1.10);
-    private static final Integer DURATION_POSITIVE = 4;
-    private static final LocalDateTime CREATE_DATE_POSITIVE = LocalDateTime.of(2021, 10, 4, 17, 5, 53, 126);
-    private static final LocalDateTime LAST_UPDATE_DATE_POSITIVE = LocalDateTime.of(2021, 10, 4, 17, 5, 53, 126);
     private static final String PART_NAME_POSITIVE = "Certificate";
     private static final String PART_NAME_NEGATIVE = "-";
     private static final String PART_DESCRIPTION_POSITIVE = "Description";
     private static final String PART_DESCRIPTION_NEGATIVE = "-";
+    private final static Long ID_FOR_CREATE = 4L;
+    private static final String NAME_FOR_CREATE = "Certificate_4";
+    private static final String DESCRIPTION_FOR_CREATE = "Description_4";
+    private static final BigDecimal PRICE_FOR_CREATE = BigDecimal.valueOf(1.1);
+    private static final Integer DURATION_FOR_CREATE = 4;
+    private static final LocalDateTime CREATE_DATE = LocalDateTime.of(2022, 2, 5, 11, 43, 51, 126);
+    private static final LocalDateTime LAST_UPDATE_DATE = LocalDateTime.of(2022, 2, 5, 11, 43, 51, 126);
     private static GiftCertificate EXPECTED_GIFT_CERTIFICATE;
     private static GiftCertificate EXPECTED_GIFT_CERTIFICATE_FIRST;
     private static GiftCertificate EXPECTED_GIFT_CERTIFICATE_SECOND;
@@ -50,7 +50,7 @@ public class GiftCertificateImplTest {
     private final GiftCertificateRepositoryImpl giftCertificateRepository;
 
     @Autowired
-    public GiftCertificateImplTest(GiftCertificateRepositoryImpl giftCertificateRepository) {
+    public GiftCertificateRepositoryImplTest(GiftCertificateRepositoryImpl giftCertificateRepository) {
         this.giftCertificateRepository = giftCertificateRepository;
     }
 
@@ -59,16 +59,16 @@ public class GiftCertificateImplTest {
         EXPECTED_GIFT_CERTIFICATE = new GiftCertificate();
         EXPECTED_GIFT_CERTIFICATE.setId(ID_FOR_CREATE);
         EXPECTED_GIFT_CERTIFICATE.setName(NAME_FOR_CREATE);
-        EXPECTED_GIFT_CERTIFICATE.setDescription(DESCRIPTION_POSITIVE);
-        EXPECTED_GIFT_CERTIFICATE.setPrice(PRICE_POSITIVE);
-        EXPECTED_GIFT_CERTIFICATE.setDuration(DURATION_POSITIVE);
-        EXPECTED_GIFT_CERTIFICATE.setCreateDate(CREATE_DATE_POSITIVE);
-        EXPECTED_GIFT_CERTIFICATE.setLastUpdateDate(LAST_UPDATE_DATE_POSITIVE);
+        EXPECTED_GIFT_CERTIFICATE.setDescription(DESCRIPTION_FOR_CREATE);
+        EXPECTED_GIFT_CERTIFICATE.setPrice(PRICE_FOR_CREATE);
+        EXPECTED_GIFT_CERTIFICATE.setDuration(DURATION_FOR_CREATE);
+        EXPECTED_GIFT_CERTIFICATE.setCreateDate(CREATE_DATE);
+        EXPECTED_GIFT_CERTIFICATE.setLastUpdateDate(LAST_UPDATE_DATE);
 
         EXPECTED_GIFT_CERTIFICATE_FIRST = new GiftCertificate(1L,
                 "Certificate_1",
                 "Description_1",
-                BigDecimal.valueOf(1),
+                BigDecimal.valueOf(1.15),
                 1,
                 LocalDateTime.of(2022, 2, 1, 13, 1, 22, 126000000),
                 LocalDateTime.of(2022, 2, 1, 13, 1, 22, 126000000),
@@ -77,7 +77,7 @@ public class GiftCertificateImplTest {
         EXPECTED_GIFT_CERTIFICATE_SECOND = new GiftCertificate(2L,
                 "Certificate_2",
                 "Description_2",
-                BigDecimal.valueOf(2),
+                BigDecimal.valueOf(2.15),
                 2,
                 LocalDateTime.of(2022, 2, 2, 13, 1, 22, 126000000),
                 LocalDateTime.of(2022, 2, 2, 13, 1, 22, 126000000),
@@ -86,7 +86,7 @@ public class GiftCertificateImplTest {
         EXPECTED_GIFT_CERTIFICATE_THIRD = new GiftCertificate(3L,
                 "Certificate_3",
                 "Description_3",
-                BigDecimal.valueOf(3),
+                BigDecimal.valueOf(3.15),
                 3,
                 LocalDateTime.of(2022, 2, 3, 13, 1, 22, 126000000),
                 LocalDateTime.of(2022, 2, 3, 13, 1, 22, 126000000),

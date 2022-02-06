@@ -15,7 +15,7 @@ public interface GiftCertificateRepository extends CrudRepository<Long, GiftCert
 
     List<GiftCertificate> findByPartDescription(String name);
 
-    List<GiftCertificate> findAllSorted(Set<ColumnName> columnNames, SortType sortType);
-
     List<GiftCertificate> findByTagId(Long id);
+
+    List<GiftCertificate> findAllSorted(Set<ColumnName> columnNames, SortType sortType);
 }
