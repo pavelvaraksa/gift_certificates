@@ -2,7 +2,7 @@ package com.epam.esm.controller;
 
 import com.epam.esm.domain.GiftCertificate;
 import com.epam.esm.dto.GiftCertificateDto;
-import service.impl.GiftCertificateServiceImpl;
+import com.epam.esm.service.impl.GiftCertificateServiceImpl;
 import com.epam.esm.util.ColumnName;
 import com.epam.esm.util.SortType;
 import lombok.RequiredArgsConstructor;

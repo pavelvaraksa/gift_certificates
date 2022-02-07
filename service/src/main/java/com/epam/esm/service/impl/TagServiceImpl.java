@@ -1,9 +1,9 @@
-package service.impl;
+package com.epam.esm.service.impl;
 
 import com.epam.esm.domain.Tag;
 import com.epam.esm.exception.ServiceNotFoundException;
 import com.epam.esm.repository.impl.TagRepositoryImpl;
-import service.TagService;
+import com.epam.esm.service.TagService;
 import com.epam.esm.validator.TagValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;

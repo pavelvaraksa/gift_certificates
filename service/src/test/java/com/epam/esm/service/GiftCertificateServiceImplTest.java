@@ -6,7 +6,7 @@ import com.epam.esm.exception.ServiceNotFoundException;
 import com.epam.esm.repository.impl.GiftCertificateRepositoryImpl;
 import com.epam.esm.repository.impl.GiftCertificateToTagRepositoryImpl;
 import com.epam.esm.repository.impl.TagRepositoryImpl;
-import service.impl.GiftCertificateServiceImpl;
+import com.epam.esm.service.impl.GiftCertificateServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;

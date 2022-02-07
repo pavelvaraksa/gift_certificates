@@ -1,4 +1,4 @@
-package service.impl;
+package com.epam.esm.service.impl;
 
 import com.epam.esm.domain.GiftCertificate;
 import com.epam.esm.domain.Tag;
@@ -7,7 +7,7 @@ import com.epam.esm.repository.GiftCertificateToTagRepository;
 import com.epam.esm.repository.impl.GiftCertificateRepositoryImpl;
 import com.epam.esm.repository.impl.GiftCertificateToTagRepositoryImpl;
 import com.epam.esm.repository.impl.TagRepositoryImpl;
-import service.GiftCertificateService;
+import com.epam.esm.service.GiftCertificateService;
 import com.epam.esm.util.ColumnName;
 import com.epam.esm.util.SortType;
 import com.epam.esm.validator.GiftCertificateValidator;
