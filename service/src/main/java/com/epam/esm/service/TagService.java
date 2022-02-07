@@ -12,5 +12,5 @@ public interface TagService {
 
     Tag create(Tag tag);
 
-    void deleteById(Long id);
+    boolean deleteById(Long id);
 }

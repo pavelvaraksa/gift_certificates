@@ -47,7 +47,7 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public void deleteById(Long id) {
+    public boolean deleteById(Long id) {
         Optional<Tag> tagById = tagRepository.findById(id);
 
         if (tagById.isEmpty()) {
@@ -56,6 +56,6 @@ public class TagServiceImpl implements TagService {
         }
 
         log.info("Tag with id " + id + " deleted");
-        tagRepository.deleteById(id);
+        return tagRepository.deleteById(id);
     }
 }

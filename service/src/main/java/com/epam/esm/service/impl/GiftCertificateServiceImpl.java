@@ -211,7 +211,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     @Transactional
     @Override
-    public void deleteById(Long id) {
+    public boolean deleteById(Long id) {
         Optional<GiftCertificate> giftCertificateById = giftCertificateRepository.findById(id);
 
         if (giftCertificateById.isEmpty()) {
@@ -221,7 +221,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
         log.info("Gift certificate with id " + id + " deleted");
         tagRepository.deleteAllTagsByGiftCertificateId(id);
-        giftCertificateRepository.deleteById(id);
+        return giftCertificateRepository.deleteById(id);
     }
 
     private void findSetTagsForEach(List<GiftCertificate> giftCertificates) {
