@@ -2,7 +2,7 @@ package com.epam.esm.controller;
 
 import com.epam.esm.domain.Tag;
 import com.epam.esm.dto.TagDto;
-import com.epam.esm.service.impl.TagServiceImpl;
+import service.impl.TagServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;

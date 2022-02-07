@@ -1,4 +1,4 @@
-package com.epam.esm.service.impl;
+package service.impl;
 
 import com.epam.esm.domain.GiftCertificate;
 import com.epam.esm.domain.Tag;
@@ -7,7 +7,7 @@ import com.epam.esm.repository.GiftCertificateToTagRepository;
 import com.epam.esm.repository.impl.GiftCertificateRepositoryImpl;
 import com.epam.esm.repository.impl.GiftCertificateToTagRepositoryImpl;
 import com.epam.esm.repository.impl.TagRepositoryImpl;
-import com.epam.esm.service.GiftCertificateService;
+import service.GiftCertificateService;
 import com.epam.esm.util.ColumnName;
 import com.epam.esm.util.SortType;
 import com.epam.esm.validator.GiftCertificateValidator;
@@ -24,6 +24,9 @@ import java.util.Set;
 
 import static com.epam.esm.exception.MessageException.*;
 
+/**
+ * Gift certificate service implementation.
+ */
 @Log4j2
 @Service
 public class GiftCertificateServiceImpl implements GiftCertificateService {

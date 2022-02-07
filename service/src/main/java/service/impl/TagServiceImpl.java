@@ -1,10 +1,9 @@
-package com.epam.esm.service.impl;
+package service.impl;
 
-import com.epam.esm.domain.GiftCertificate;
 import com.epam.esm.domain.Tag;
 import com.epam.esm.exception.ServiceNotFoundException;
 import com.epam.esm.repository.impl.TagRepositoryImpl;
-import com.epam.esm.service.TagService;
+import service.TagService;
 import com.epam.esm.validator.TagValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -15,6 +14,9 @@ import static com.epam.esm.exception.MessageException.TAG_NOT_FOUND;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Tag service implementation.
+ */
 @Log4j2
 @Service
 @RequiredArgsConstructor

@@ -14,7 +14,6 @@ public class MessageException {
     public static final String DURATION_INCORRECT = "duration.incorrect";
     public static final String CERTIFICATE_NOT_FOUND = "certificate.not.found";
     public static final String CERTIFICATE_EXIST = "certificate.exist";
-
     public static final String TAG_NAME_NOT_FILLED = "tag.name.not.filled";
     public static final String TAG_INCORRECT = "tag.name.incorrect";
     public static final String TAG_NOT_FOUND = "tag.not.found";

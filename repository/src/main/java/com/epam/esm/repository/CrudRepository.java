@@ -11,7 +11,7 @@ public interface CrudRepository<K, V> {
     /**
      * Find all objects.
      *
-     * @return - List of objects or empty list.
+     * @return - list of objects or empty list.
      */
     List<V> findAll();
 
