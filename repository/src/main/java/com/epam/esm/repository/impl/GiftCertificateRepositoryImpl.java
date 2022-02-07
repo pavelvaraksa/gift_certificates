@@ -21,6 +21,9 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.*;
 
+/**
+ * Gift certificate repository implementation.
+ */
 @Log4j2
 @Repository
 public class GiftCertificateRepositoryImpl implements GiftCertificateRepository {

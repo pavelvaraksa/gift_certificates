@@ -9,6 +9,9 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Set;
 
+/**
+ * Gift certificate domain.
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

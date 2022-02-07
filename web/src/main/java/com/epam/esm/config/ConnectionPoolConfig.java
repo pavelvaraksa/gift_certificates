@@ -2,6 +2,7 @@ package com.epam.esm.config;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
@@ -19,6 +20,7 @@ public class ConnectionPoolConfig {
         return new NamedParameterJdbcTemplate(dataSource);
     }
 
+    @Profile({"dev", "prod"})
     @Bean
     public DataSource hikariDatasource(DatabaseConfig databaseConfig) {
         HikariDataSource hikariDataSource = new HikariDataSource();

@@ -16,6 +16,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 
+/**
+ * Tag repository implementation.
+ */
 @Log4j2
 @Repository
 public class TagRepositoryImpl implements TagRepository {

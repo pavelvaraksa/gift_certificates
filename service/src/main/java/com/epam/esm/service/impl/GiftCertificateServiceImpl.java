@@ -3,9 +3,9 @@ package com.epam.esm.service.impl;
 import com.epam.esm.domain.GiftCertificate;
 import com.epam.esm.domain.Tag;
 import com.epam.esm.exception.*;
-import com.epam.esm.repository.GiftCertificateToTag;
+import com.epam.esm.repository.GiftCertificateToTagRepository;
 import com.epam.esm.repository.impl.GiftCertificateRepositoryImpl;
-import com.epam.esm.repository.impl.GiftCertificateToTagImpl;
+import com.epam.esm.repository.impl.GiftCertificateToTagRepositoryImpl;
 import com.epam.esm.repository.impl.TagRepositoryImpl;
 import com.epam.esm.service.GiftCertificateService;
 import com.epam.esm.util.ColumnName;
@@ -28,12 +28,12 @@ import static com.epam.esm.exception.MessageException.*;
 @Service
 public class GiftCertificateServiceImpl implements GiftCertificateService {
     private final GiftCertificateRepositoryImpl giftCertificateRepository;
-    private final GiftCertificateToTagImpl giftCertificateToTag;
+    private final GiftCertificateToTagRepositoryImpl giftCertificateToTag;
     private final TagRepositoryImpl tagRepository;
 
     @Autowired
     public GiftCertificateServiceImpl(GiftCertificateRepositoryImpl giftCertificateRepository,
-                                      GiftCertificateToTagImpl giftCertificateToTag,
+                                      GiftCertificateToTagRepositoryImpl giftCertificateToTag,
                                       TagRepositoryImpl tagRepository) {
         this.giftCertificateRepository = giftCertificateRepository;
         this.giftCertificateToTag = giftCertificateToTag;
@@ -152,7 +152,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
                 if (optionalTag.isPresent()) {
                     Tag existTag = optionalTag.get();
                     tagId = existTag.getId();
-                    Optional<GiftCertificateToTag> link = giftCertificateToTag.findLink(giftCertificateId, tagId);
+                    Optional<GiftCertificateToTagRepository> link = giftCertificateToTag.findLink(giftCertificateId, tagId);
 
                     if (!link.isPresent()) {
                         giftCertificateToTag.createLink(giftCertificateId, tagId);

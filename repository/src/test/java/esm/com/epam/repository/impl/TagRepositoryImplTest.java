@@ -6,6 +6,7 @@ import esm.com.epam.repository.config.ConfigTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
@@ -15,10 +16,11 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
+//@ActiveProfiles("dev")
 @SpringJUnitConfig(ConfigTest.class)
 @Sql(scripts = "classpath:database/schema.sql")
 @Sql(scripts = "classpath:database/h2-data.sql")
-public class TagRepositoryImpTest {
+public class TagRepositoryImplTest {
     private final static int EXPECTED_COUNT_TAGS_POSITIVE = 3;
     private final static int EXPECTED_COUNT_TAGS_NEGATIVE = 5;
     private final static long EXPECTED_TAG_ID_POSITIVE = 1;
@@ -35,7 +37,7 @@ public class TagRepositoryImpTest {
     private final TagRepositoryImpl tagRepository;
 
     @Autowired
-    public TagRepositoryImpTest(TagRepositoryImpl tagRepository) {
+    public TagRepositoryImplTest(TagRepositoryImpl tagRepository) {
         this.tagRepository = tagRepository;
     }
 

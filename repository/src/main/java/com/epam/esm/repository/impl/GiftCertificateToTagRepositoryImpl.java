@@ -1,6 +1,6 @@
 package com.epam.esm.repository.impl;
 
-import com.epam.esm.repository.GiftCertificateToTag;
+import com.epam.esm.repository.GiftCertificateToTagRepository;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -10,9 +10,12 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
+/**
+ * Gift certificate to tag repository implementation.
+ */
 @Log4j2
 @Repository
-public class GiftCertificateToTagImpl implements GiftCertificateToTag {
+public class GiftCertificateToTagRepositoryImpl implements GiftCertificateToTagRepository {
     private static final String CREATE_LINK_QUERY = "insert into gift_certificate_to_tag (gift_certificate_id, tag_id) " +
             "values (?, ?)";
     private static final String FIND_LINK_QUERY
@@ -22,7 +25,7 @@ public class GiftCertificateToTagImpl implements GiftCertificateToTag {
     private final JdbcTemplate jdbcTemplate;
 
     @Autowired
-    public GiftCertificateToTagImpl(JdbcTemplate jdbcTemplate) {
+    public GiftCertificateToTagRepositoryImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
@@ -33,12 +36,12 @@ public class GiftCertificateToTagImpl implements GiftCertificateToTag {
     }
 
     @Override
-    public Optional<GiftCertificateToTag> findLink(Long giftCertificateId, Long tagId) {
-        Optional<GiftCertificateToTag> link;
+    public Optional<GiftCertificateToTagRepository> findLink(Long giftCertificateId, Long tagId) {
+        Optional<GiftCertificateToTagRepository> link;
 
         try {
             link = Optional.ofNullable(jdbcTemplate.queryForObject(FIND_LINK_QUERY,
-                    new BeanPropertyRowMapper<>(GiftCertificateToTag.class), giftCertificateId, tagId));
+                    new BeanPropertyRowMapper<>(GiftCertificateToTagRepository.class), giftCertificateId, tagId));
         } catch (EmptyResultDataAccessException ex) {
             link = Optional.empty();
         }
