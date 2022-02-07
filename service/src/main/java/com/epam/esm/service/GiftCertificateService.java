@@ -3,7 +3,6 @@ package com.epam.esm.service;
 import com.epam.esm.domain.GiftCertificate;
 import com.epam.esm.util.ColumnName;
 import com.epam.esm.util.SortType;
-import com.fasterxml.jackson.annotation.OptBoolean;
 
 import java.util.List;
 import java.util.Optional;

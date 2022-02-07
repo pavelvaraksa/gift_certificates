@@ -6,7 +6,6 @@ import esm.com.epam.repository.config.ConfigTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
@@ -16,7 +15,6 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
-//@ActiveProfiles("dev")
 @SpringJUnitConfig(ConfigTest.class)
 @Sql(scripts = "classpath:database/schema.sql")
 @Sql(scripts = "classpath:database/h2-data.sql")

@@ -22,7 +22,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-//@ActiveProfiles("dev")
 @SpringJUnitConfig(ConfigTest.class)
 @Sql(scripts = "classpath:database/schema.sql")
 @Sql(scripts = "classpath:database/h2-data.sql")
