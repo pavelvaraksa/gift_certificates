@@ -9,8 +9,14 @@ import java.math.BigDecimal;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static com.epam.esm.exception.MessageException.*;
+import static com.epam.esm.exception.MessageException.CERTIFICATE_NAME_NOT_FILLED;
+import static com.epam.esm.exception.MessageException.CERTIFICATE_NAME_INCORRECT;
+import static com.epam.esm.exception.MessageException.DESCRIPTION_NOT_FILLED;
+import static com.epam.esm.exception.MessageException.DESCRIPTION_INCORRECT;
+import static com.epam.esm.exception.MessageException.PRICE_INCORRECT;
+import static com.epam.esm.exception.MessageException.PRICE_NOT_FILLED;
 import static com.epam.esm.exception.MessageException.DURATION_INCORRECT;
+import static com.epam.esm.exception.MessageException.DURATION_NOT_FILLED;
 
 @Log4j2
 @Component

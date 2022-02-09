@@ -22,7 +22,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import static com.epam.esm.exception.MessageException.*;
+import static com.epam.esm.exception.MessageException.TAG_NOT_FOUND;
+import static com.epam.esm.exception.MessageException.CERTIFICATE_NOT_FOUND;
+import static com.epam.esm.exception.MessageException.CERTIFICATE_EXIST;
 
 /**
  * Gift certificate service implementation.

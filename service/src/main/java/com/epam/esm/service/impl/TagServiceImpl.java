@@ -45,7 +45,7 @@ public class TagServiceImpl implements TagService {
         TagValidator.isTagValid(tag);
 
         log.info("Tag with name " + tag.getName() + " saved");
-        return tag;
+        return tagRepository.create(tag);
     }
 
     @Override

@@ -10,10 +10,6 @@ repositories {
     mavenCentral()
 }
 
-allprojects {
-
-}
-
 dependencies {
     api project(':repository')
 

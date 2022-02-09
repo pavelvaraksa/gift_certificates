@@ -12,7 +12,9 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 
 import java.util.Locale;
 
-import static com.epam.esm.exception.ErrorCode.*;
+import static com.epam.esm.exception.ErrorCode.ITEM_VALID_EXCEPTION;
+import static com.epam.esm.exception.ErrorCode.ITEM_DUPLICATE_NAME_EXCEPTION;
+import static com.epam.esm.exception.ErrorCode.ITEM_NOT_FOUND_EXCEPTION;
 
 @ControllerAdvice
 @AllArgsConstructor

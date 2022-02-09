@@ -28,7 +28,6 @@ dependencies {
     api 'com.fasterxml.jackson.core:jackson-databind:2.13.1'
     api 'org.springframework:spring-test:5.3.14'
     api 'com.h2database:h2:1.4.200'
-
     compileOnly 'org.projectlombok:lombok:1.18.20'
     annotationProcessor 'org.projectlombok:lombok:1.18.20'
 }

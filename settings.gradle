@@ -1,6 +1,3 @@
-rootProject.name = 'gift_certificates'
-
 include 'web'
 include 'repository'
 include 'service'
-
