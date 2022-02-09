@@ -7,6 +7,9 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 import javax.sql.DataSource;
 
+/**
+ * Connection pool configuration.
+ */
 public class ConnectionPoolConfig {
 
     @Bean
@@ -22,13 +25,11 @@ public class ConnectionPoolConfig {
     @Bean
     public DataSource hikariDatasource(DatabaseConfig databaseConfig) {
         HikariDataSource hikariDataSource = new HikariDataSource();
-
         hikariDataSource.setDriverClassName(databaseConfig.getDriverName());
         hikariDataSource.setJdbcUrl(databaseConfig.getUrl());
         hikariDataSource.setUsername(databaseConfig.getLogin());
         hikariDataSource.setPassword(databaseConfig.getPassword());
         hikariDataSource.setMaximumPoolSize(10);
-
         return hikariDataSource;
     }
 }

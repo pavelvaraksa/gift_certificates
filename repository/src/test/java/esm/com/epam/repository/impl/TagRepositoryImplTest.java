@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 @SpringJUnitConfig(ConfigTest.class)
 @Sql(scripts = "classpath:database/schema.sql")
-@Sql(scripts = "classpath:database/h2-data.sql")
+@Sql(scripts = "classpath:database/data.sql")
 public class TagRepositoryImplTest {
     private final static int EXPECTED_COUNT_TAGS_POSITIVE = 3;
     private final static int EXPECTED_COUNT_TAGS_NEGATIVE = 5;

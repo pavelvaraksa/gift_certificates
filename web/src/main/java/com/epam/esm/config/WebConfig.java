@@ -10,6 +10,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.Locale;
 
+/**
+ * Main application configuration.
+ */
 @Configuration
 @EnableWebMvc
 @ComponentScan("com.epam.esm")
