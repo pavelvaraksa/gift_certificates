@@ -15,6 +15,12 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Gift certificate controller.
+ * Works with the gift certificate service layer.
+ *
+ * @see com.epam.esm.service.impl.GiftCertificateServiceImpl
+ */
 @RestController
 @RequestMapping("/certificates")
 @RequiredArgsConstructor
@@ -22,6 +28,11 @@ public class GiftCertificateRestController {
     public final GiftCertificateServiceImpl giftCertificateService;
     private final ModelMapper modelMapper;
 
+    /**
+     * Find list of gift certificates.
+     *
+     * @return - list of gift certificates or empty list.
+     */
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<GiftCertificateDto> findAllGiftCertificates() {
@@ -32,12 +43,17 @@ public class GiftCertificateRestController {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Find sort list of gift certificates by different columns and two sort types.
+     *
+     * @return - sort list of gift certificates or empty list.
+     */
     @GetMapping("/sort")
     @ResponseStatus(HttpStatus.OK)
-    public List<GiftCertificateDto> findAllSortedGiftCertificates(@RequestParam Set<ColumnName> sortBy,
-                                                                  @RequestParam SortType sortType) {
+    public List<GiftCertificateDto> findAllSortedGiftCertificates(@RequestParam Set<ColumnName> column,
+                                                                  @RequestParam SortType type) {
         {
-            List<GiftCertificate> listGiftCertificate = giftCertificateService.findAllSorted(sortBy, sortType);
+            List<GiftCertificate> listGiftCertificate = giftCertificateService.findAllSorted(column, type);
             return listGiftCertificate
                     .stream()
                     .map(giftCertificate -> modelMapper.map(giftCertificate, GiftCertificateDto.class))
@@ -45,6 +61,12 @@ public class GiftCertificateRestController {
         }
     }
 
+    /**
+     * Find gift certificate by ID.
+     *
+     * @param id - gift certificate ID.
+     * @return - gift certificate.
+     */
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public GiftCertificateDto findGiftCertificateById(@PathVariable Long id) {
@@ -53,7 +75,13 @@ public class GiftCertificateRestController {
         return modelMapper.map(giftCertificate.get(), GiftCertificateDto.class);
     }
 
-    @GetMapping("/part-name/{partName}")
+    /**
+     * Find gift certificate by part of name.
+     *
+     * @param partName - part of part of name.
+     * @return - list of gift certificates or empty list.
+     */
+    @GetMapping("/partname/{partName}")
     @ResponseStatus(HttpStatus.OK)
     public List<GiftCertificateDto> findGiftCertificateByPartName(@PathVariable String partName) {
         List<GiftCertificate> giftCertificates = giftCertificateService.findByPartName(partName);
@@ -63,7 +91,13 @@ public class GiftCertificateRestController {
                 .collect(Collectors.toList());
     }
 
-    @GetMapping("/part-description/{partDescription}")
+    /**
+     * Find gift certificate by part of description.
+     *
+     * @param partDescription - part of description.
+     * @return - list of gift certificates or empty list.
+     */
+    @GetMapping("/partdescription/{partDescription}")
     @ResponseStatus(HttpStatus.OK)
     public List<GiftCertificateDto> findGiftCertificateByPartDescription(@PathVariable String partDescription) {
         List<GiftCertificate> giftCertificates = giftCertificateService.findByPartDescription(partDescription);
@@ -73,7 +107,13 @@ public class GiftCertificateRestController {
                 .collect(Collectors.toList());
     }
 
-    @GetMapping("/tag-name/{tagName}")
+    /**
+     * Find gift certificate by tag name.
+     *
+     * @param tagName - tag name.
+     * @return - list of gift certificates or empty list.
+     */
+    @GetMapping("/tagname/{tagName}")
     @ResponseStatus(HttpStatus.OK)
     public List<GiftCertificateDto> findGiftCertificateByTagName(@PathVariable String tagName) {
         List<GiftCertificate> giftCertificates = giftCertificateService.findByTagName(tagName);
@@ -83,6 +123,12 @@ public class GiftCertificateRestController {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Create gift certificate.
+     *
+     * @param giftCertificate - gift certificate.
+     * @return - gift certificate.
+     */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public GiftCertificateDto createGiftCertificate(@RequestBody GiftCertificate giftCertificate) {
@@ -90,6 +136,12 @@ public class GiftCertificateRestController {
         return modelMapper.map(newGiftCertificate, GiftCertificateDto.class);
     }
 
+    /**
+     * Update gift certificate by ID.
+     *
+     * @param id              - gift certificate ID.
+     * @param giftCertificate - gift certificate.
+     */
     @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public GiftCertificateDto updateGiftCertificate(@PathVariable Long id,
@@ -99,6 +151,11 @@ public class GiftCertificateRestController {
         return modelMapper.map(updatedGiftCertificate, GiftCertificateDto.class);
     }
 
+    /**
+     * Delete gift certificate by ID.
+     *
+     * @param id - gift certificate ID.
+     */
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public void deleteGiftCertificate(@PathVariable Long id) {

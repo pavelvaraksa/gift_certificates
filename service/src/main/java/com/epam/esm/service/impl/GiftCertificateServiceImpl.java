@@ -180,9 +180,9 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             throw new ServiceNotFoundException(CERTIFICATE_NOT_FOUND);
         }
 
-        Optional<GiftCertificate> GiftCertificateByName = giftCertificateRepository.findByName(giftCertificate.getName());
+        Optional<GiftCertificate> giftCertificateByName = giftCertificateRepository.findByName(giftCertificate.getName());
 
-        if (GiftCertificateByName.isPresent()) {
+        if (giftCertificateByName.isPresent()) {
             log.error("Gift certificate name " + giftCertificate.getName() + " already exist");
             throw new ServiceExistException(CERTIFICATE_EXIST);
         }
@@ -204,6 +204,8 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         }
 
         GiftCertificateValidator.isGiftCertificateValid(giftCertificate);
+        giftCertificate.setCreateDate(giftCertificateById.get().getCreateDate());
+        giftCertificate.setLastUpdateDate(giftCertificateById.get().getLastUpdateDate());
 
         GiftCertificate updatedGiftCertificate = giftCertificateRepository.updateById(id, giftCertificate);
         findSetTag(updatedGiftCertificate);

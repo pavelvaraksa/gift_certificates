@@ -106,6 +106,7 @@ public class TagRepositoryImpl implements TagRepository {
     public boolean deleteById(Long id) {
         MapSqlParameterSource parameterSource = new MapSqlParameterSource();
         parameterSource.addValue(ID, id);
+
         namedParameterJdbcTemplate.update(DELETE_QUERY, parameterSource);
         return true;
     }

@@ -19,6 +19,11 @@ public class TagRestController {
     public final TagServiceImpl tagService;
     private final ModelMapper modelMapper;
 
+    /**
+     * Find list of tags.
+     *
+     * @return - list of tags or empty list.
+     */
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<TagDto> findAllTags() {
@@ -29,6 +34,12 @@ public class TagRestController {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Find tag by ID.
+     *
+     * @param id - tag ID.
+     * @return - tag.
+     */
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public TagDto findTagById(@PathVariable Long id) {
@@ -36,6 +47,12 @@ public class TagRestController {
         return modelMapper.map(tag.get(), TagDto.class);
     }
 
+    /**
+     * Create tag.
+     *
+     * @param tag - tag.
+     * @return - tag.
+     */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public TagDto createTag(@RequestBody Tag tag) {
@@ -43,6 +60,11 @@ public class TagRestController {
         return modelMapper.map(newTag, TagDto.class);
     }
 
+    /**
+     * Delete tag by ID.
+     *
+     * @param id - tag ID.
+     */
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public void deleteTag(@PathVariable Long id) {
