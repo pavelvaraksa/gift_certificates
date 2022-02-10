@@ -87,6 +87,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         } else {
             giftCertificates = findByPartName;
             giftCertificates.addAll(findByPartDescription);
+            findSetTagsForEach(giftCertificates);
         }
         return giftCertificates;
     }

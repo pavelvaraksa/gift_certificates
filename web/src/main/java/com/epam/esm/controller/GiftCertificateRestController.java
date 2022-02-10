@@ -57,6 +57,8 @@ public class GiftCertificateRestController {
     /**
      * Find sort list of gift certificates by different columns and two sort types.
      *
+     * @param column - gift certificate column.
+     * @param type - sort type.
      * @return - sort list of gift certificates or empty list.
      */
     @GetMapping("/sort")
@@ -133,11 +135,6 @@ public class GiftCertificateRestController {
     @ResponseStatus(CREATED)
     public GiftCertificateDto createGiftCertificate(@RequestBody GiftCertificate giftCertificate) {
         GiftCertificate newGiftCertificate = giftCertificateService.create(giftCertificate);
-//        URI location = ServletUriComponentsBuilder
-//                .fromCurrentRequest()
-//                .path("/{id}")
-//                .buildAndExpand(giftCertificate.getId())
-//                .toUri();
 
         return modelMapper.map(newGiftCertificate, GiftCertificateDto.class);
     }
