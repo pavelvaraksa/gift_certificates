@@ -173,20 +173,6 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
 
         return giftCertificate;
 
-
-
-//        Timestamp updateTimestamp = Timestamp.from(Instant.now());
-//
-//        jdbcTemplate.update(UPDATE_QUERY,
-//                giftCertificate.getName(),
-//                giftCertificate.getDescription(),
-//                giftCertificate.getPrice(),
-//                giftCertificate.getDuration(),
-//                updateTimestamp,
-//                id);
-//
-//        giftCertificate.setId(id);
-//        return giftCertificate;
     }
 
     @Override

@@ -36,20 +36,13 @@ public interface GiftCertificateService {
     Optional<GiftCertificate> findById(Long id);
 
     /**
-     * Find a gift certificate by part of name.
-     *
-     * @param partName - part of the gift certificate name.
-     * @return - gift certificate or some gift certificates.
-     */
-    List<GiftCertificate> findByPartName(String partName);
-
-    /**
-     * Find a gift certificate by part of description.
-     *
-     * @param partDescription - part of the gift certificate description.
-     * @return - gift certificate or some gift certificates.
-     */
-    List<GiftCertificate> findByPartDescription(String partDescription);
+     //     * Find a gift certificate by part of name or description.
+     //     *
+     //     * @param partname - part of the gift certificate name.
+     //     * @param partDescription - part of the gift certificate description.
+     //     * @return - gift certificate or empty list.
+     //     */
+    List<GiftCertificate> search(String partname, String partDescription);
 
     /**
      * Find a gift certificate by tag name.

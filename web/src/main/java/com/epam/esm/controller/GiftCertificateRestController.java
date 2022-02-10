@@ -8,21 +8,23 @@ import com.epam.esm.util.SortType;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static org.springframework.http.HttpStatus.CREATED;
 
 /**
  * Gift certificate controller.
@@ -85,35 +87,24 @@ public class GiftCertificateRestController {
     }
 
     /**
-     * Find gift certificate by part of name.
+     * Find gift certificate by part of name or part of description.
      *
-     * @param partName - part of part of name.
+     * @param name        - part of name.
+     * @param description - part of description.
      * @return - list of gift certificates or empty list.
      */
-    @GetMapping("/partname/{partName}")
+    @GetMapping("/search")
     @ResponseStatus(HttpStatus.OK)
-    public List<GiftCertificateDto> findGiftCertificateByPartName(@PathVariable String partName) {
-        List<GiftCertificate> giftCertificates = giftCertificateService.findByPartName(partName);
-        return giftCertificates
-                .stream()
-                .map(giftCertificate -> modelMapper.map(giftCertificate, GiftCertificateDto.class))
-                .collect(Collectors.toList());
-    }
+    public List<GiftCertificateDto> findGiftCertificateByPart(@RequestParam String name,
+                                                              @RequestParam String description) {
+        {
+            List<GiftCertificate> giftCertificates = giftCertificateService.search(name, description);
 
-    /**
-     * Find gift certificate by part of description.
-     *
-     * @param partDescription - part of description.
-     * @return - list of gift certificates or empty list.
-     */
-    @GetMapping("/partdescription/{partDescription}")
-    @ResponseStatus(HttpStatus.OK)
-    public List<GiftCertificateDto> findGiftCertificateByPartDescription(@PathVariable String partDescription) {
-        List<GiftCertificate> giftCertificates = giftCertificateService.findByPartDescription(partDescription);
-        return giftCertificates
-                .stream()
-                .map(giftCertificate -> modelMapper.map(giftCertificate, GiftCertificateDto.class))
-                .collect(Collectors.toList());
+            return giftCertificates
+                    .stream()
+                    .map(giftCertificate -> modelMapper.map(giftCertificate, GiftCertificateDto.class))
+                    .collect(Collectors.toList());
+        }
     }
 
     /**
@@ -139,9 +130,15 @@ public class GiftCertificateRestController {
      * @return - gift certificate.
      */
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseStatus(CREATED)
     public GiftCertificateDto createGiftCertificate(@RequestBody GiftCertificate giftCertificate) {
         GiftCertificate newGiftCertificate = giftCertificateService.create(giftCertificate);
+//        URI location = ServletUriComponentsBuilder
+//                .fromCurrentRequest()
+//                .path("/{id}")
+//                .buildAndExpand(giftCertificate.getId())
+//                .toUri();
+
         return modelMapper.map(newGiftCertificate, GiftCertificateDto.class);
     }
 

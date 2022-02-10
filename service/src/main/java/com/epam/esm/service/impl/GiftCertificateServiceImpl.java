@@ -77,30 +77,17 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    public List<GiftCertificate> findByPartName(String partName) {
-        List<GiftCertificate> giftCertificates = giftCertificateRepository.findByPartName(partName);
+    public List<GiftCertificate> search(String partname,String partDescription) {
+        List<GiftCertificate> giftCertificates;
+        List<GiftCertificate> findByPartName = giftCertificateRepository.findByPartName(partname);
+        List<GiftCertificate> findByPartDescription = giftCertificateRepository.findByPartDescription(partDescription);
 
-        if (giftCertificates == null || giftCertificates.isEmpty()) {
-            log.error("Gift certificate by part of name " + partName + " was not found");
-            throw new ServiceExistException(CERTIFICATE_NOT_FOUND);
+        if (partname.isEmpty()) {
+            giftCertificates = findByPartDescription;
         } else {
-            findSetTagsForEach(giftCertificates);
+            giftCertificates = findByPartName;
+            giftCertificates.addAll(findByPartDescription);
         }
-
-        return giftCertificates;
-    }
-
-    @Override
-    public List<GiftCertificate> findByPartDescription(String partDescription) {
-        List<GiftCertificate> giftCertificates = giftCertificateRepository.findByPartDescription(partDescription);
-
-        if (giftCertificates == null || giftCertificates.isEmpty()) {
-            log.error("Gift certificate by part of description " + partDescription + " was not found");
-            throw new ServiceExistException(CERTIFICATE_NOT_FOUND);
-        } else {
-            findSetTagsForEach(giftCertificates);
-        }
-
         return giftCertificates;
     }
 
