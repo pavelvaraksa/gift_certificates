@@ -172,7 +172,6 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
         giftCertificate.setId(id);
 
         return giftCertificate;
-
     }
 
     @Override

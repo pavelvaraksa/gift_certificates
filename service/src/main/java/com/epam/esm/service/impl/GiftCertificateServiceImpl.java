@@ -2,7 +2,8 @@ package com.epam.esm.service.impl;
 
 import com.epam.esm.domain.GiftCertificate;
 import com.epam.esm.domain.Tag;
-import com.epam.esm.exception.*;
+import com.epam.esm.exception.ServiceNotFoundException;
+import com.epam.esm.exception.ServiceExistException;
 import com.epam.esm.repository.GiftCertificateToTagRepository;
 import com.epam.esm.repository.impl.GiftCertificateRepositoryImpl;
 import com.epam.esm.repository.impl.GiftCertificateToTagRepositoryImpl;
@@ -82,7 +83,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         List<GiftCertificate> findByPartName = giftCertificateRepository.findByPartName(partname);
         List<GiftCertificate> findByPartDescription = giftCertificateRepository.findByPartDescription(partDescription);
 
-        if (partname.isEmpty()) {
+        if (partname == null) {
             giftCertificates = findByPartDescription;
         } else {
             giftCertificates = findByPartName;

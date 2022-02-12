@@ -3,24 +3,28 @@ package com.epam.esm.config;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.context.MessageSource;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.support.ResourceBundleMessageSource;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
+import javax.sql.DataSource;
 import java.util.Locale;
 
 /**
- * Main application configuration.
+ * Bean configuration.
  */
-@Configuration
-@EnableWebMvc
-@ComponentScan("com.epam.esm")
-@Import({ConnectionPoolConfig.class, DatabaseConfig.class})
-public class WebConfig implements WebMvcConfigurer {
+public class BeanConfig {
+
+    @Bean
+    public JdbcTemplate jdbcTemplate(DataSource dataSource) {
+        return new JdbcTemplate(dataSource);
+    }
+
+    @Bean
+    public NamedParameterJdbcTemplate namedParameterJdbcTemplate(DataSource dataSource) {
+        return new NamedParameterJdbcTemplate(dataSource);
+    }
 
     @Bean
     public ModelMapper modelMapper() {
@@ -38,3 +42,4 @@ public class WebConfig implements WebMvcConfigurer {
         return messageSource;
     }
 }
+

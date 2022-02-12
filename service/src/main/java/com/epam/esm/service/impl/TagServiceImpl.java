@@ -1,6 +1,7 @@
 package com.epam.esm.service.impl;
 
 import com.epam.esm.domain.Tag;
+import com.epam.esm.exception.ServiceExistException;
 import com.epam.esm.exception.ServiceNotFoundException;
 import com.epam.esm.repository.impl.TagRepositoryImpl;
 import com.epam.esm.service.TagService;
@@ -9,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
+import static com.epam.esm.exception.MessageException.TAG_EXIST;
 import static com.epam.esm.exception.MessageException.TAG_NOT_FOUND;
 
 import java.util.List;
@@ -43,6 +45,13 @@ public class TagServiceImpl implements TagService {
     @Override
     public Tag create(Tag tag) {
         TagValidator.isTagValid(tag);
+        String tagName = tag.getName();
+        Optional<Tag> optionalTag = tagRepository.findByName(tagName);
+
+        if (optionalTag.isPresent()) {
+            log.error("Tag name " + tag.getName() + " already exist");
+            throw new ServiceExistException(TAG_EXIST);
+        }
 
         log.info("Tag with name " + tag.getName() + " saved");
         return tagRepository.create(tag);

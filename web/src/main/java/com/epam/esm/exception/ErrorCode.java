@@ -7,7 +7,7 @@ public enum ErrorCode {
 
     ITEM_DUPLICATE_NAME_EXCEPTION(40002),
 
-    ITEM_NOT_FOUND_EXCEPTION(40003);
+    ITEM_NOT_FOUND_EXCEPTION(40403);
 
     @JsonValue
     private final Integer httpCustomErrorCode;

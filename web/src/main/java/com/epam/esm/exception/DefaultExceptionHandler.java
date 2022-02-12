@@ -12,10 +12,6 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 
 import java.util.Locale;
 
-import static com.epam.esm.exception.ErrorCode.ITEM_VALID_EXCEPTION;
-import static com.epam.esm.exception.ErrorCode.ITEM_DUPLICATE_NAME_EXCEPTION;
-import static com.epam.esm.exception.ErrorCode.ITEM_NOT_FOUND_EXCEPTION;
-
 @ControllerAdvice
 @AllArgsConstructor
 public class DefaultExceptionHandler {
@@ -27,19 +23,19 @@ public class DefaultExceptionHandler {
     @ExceptionHandler(ServiceValidException.class)
     public ResponseEntity<FrameException> handleValidException(ServiceValidException ex, Locale locale) {
 
-        return createResponseEntity(ex, locale, ITEM_VALID_EXCEPTION, HttpStatus.BAD_REQUEST);
+        return createResponseEntity(ex, locale, ErrorCode.ITEM_VALID_EXCEPTION, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(ServiceNotFoundException.class)
     public ResponseEntity<FrameException> handleNotFoundException(ServiceNotFoundException ex, Locale locale) {
 
-        return createResponseEntity(ex, locale, ITEM_NOT_FOUND_EXCEPTION, HttpStatus.NOT_FOUND);
+        return createResponseEntity(ex, locale, ErrorCode.ITEM_NOT_FOUND_EXCEPTION, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(ServiceExistException.class)
     public ResponseEntity<FrameException> handleDuplicateNameException(ServiceExistException ex, Locale locale) {
 
-        return createResponseEntity(ex, locale, ITEM_DUPLICATE_NAME_EXCEPTION, HttpStatus.BAD_REQUEST);
+        return createResponseEntity(ex, locale, ErrorCode.ITEM_DUPLICATE_NAME_EXCEPTION, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
