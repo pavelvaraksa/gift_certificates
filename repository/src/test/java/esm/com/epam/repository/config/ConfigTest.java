@@ -9,26 +9,26 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
-@Configuration
-@ComponentScan("com.epam.esm")
+//@Configuration
+//@ComponentScan("com.epam.esm")
 public class ConfigTest {
 
-    @Bean
-    public EmbeddedDatabase embeddedDatabase() {
-        return new EmbeddedDatabaseBuilder()
-                .setType(EmbeddedDatabaseType.H2)
-                .generateUniqueName(true)
-                .setScriptEncoding("UTF-8")
-                .build();
-    }
-
-    @Bean
-    public JdbcTemplate jdbcTemplate() {
-        return new JdbcTemplate(embeddedDatabase());
-    }
-
-    @Bean
-    public NamedParameterJdbcTemplate namedParameterJdbcTemplate() {
-        return new NamedParameterJdbcTemplate(embeddedDatabase());
-    }
+//    @Bean
+//    public EmbeddedDatabase embeddedDatabase() {
+//        return new EmbeddedDatabaseBuilder()
+//                .setType(EmbeddedDatabaseType.H2)
+//                .generateUniqueName(true)
+//                .setScriptEncoding("UTF-8")
+//                .build();
+//    }
+//
+//    @Bean
+//    public JdbcTemplate jdbcTemplate() {
+//        return new JdbcTemplate(embeddedDatabase());
+//    }
+//
+//    @Bean
+//    public NamedParameterJdbcTemplate namedParameterJdbcTemplate() {
+//        return new NamedParameterJdbcTemplate(embeddedDatabase());
+//    }
 }

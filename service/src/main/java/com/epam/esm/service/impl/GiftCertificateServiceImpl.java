@@ -49,7 +49,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Override
     public List<GiftCertificate> findAll() {
         List<GiftCertificate> giftCertificates = giftCertificateRepository.findAll();
-        findSetTagsForEach(giftCertificates);
+        //findSetTagsForEach(giftCertificates);
 
         return giftCertificates;
     }
@@ -57,7 +57,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Override
     public List<GiftCertificate> findAllSorted(Set<ColumnName> columnNames, SortType sortType) {
         List<GiftCertificate> giftCertificates = giftCertificateRepository.findAllSorted(columnNames, sortType);
-        findSetTagsForEach(giftCertificates);
+        //findSetTagsForEach(giftCertificates);
 
         return giftCertificates;
     }
@@ -72,7 +72,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         }
 
         Set<Tag> tagList = tagRepository.findByGiftCertificateId(id);
-        giftCertificate.get().setTags(tagList);
+        //giftCertificate.get().setTags(tagList);
 
         return giftCertificate;
     }
@@ -88,7 +88,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         } else {
             giftCertificates = findByPartName;
             giftCertificates.addAll(findByPartDescription);
-            findSetTagsForEach(giftCertificates);
+            //findSetTagsForEach(giftCertificates);
         }
         return giftCertificates;
     }
@@ -106,7 +106,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         List<GiftCertificate> giftCertificates = giftCertificateRepository.findByTagId(tagId);
 
         if (!giftCertificates.isEmpty()) {
-            findSetTagsForEach(giftCertificates);
+            //findSetTagsForEach(giftCertificates);
         } else {
             log.error("Gift certificate by tag name " + tagName + " was not found");
             throw new ServiceNotFoundException(CERTIFICATE_NOT_FOUND);
@@ -131,33 +131,34 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         giftCertificate.setLastUpdateDate(LocalDateTime.now());
         GiftCertificate newGiftCertificate = giftCertificateRepository.create(giftCertificate);
 
-        if (giftCertificate.getTags() == null) {
-            return newGiftCertificate;
-        }
+//        if (giftCertificate.getTags() == null) {
+//            return newGiftCertificate;
+//        }
 
-        giftCertificate.getTags().forEach(tag -> {
-            if (TagValidator.isTagValid(tag)) {
-                String tagName = tag.getName();
-                Optional<Tag> optionalTag = tagRepository.findByName(tagName);
-
-                Long giftCertificateId = newGiftCertificate.getId();
-                Long tagId;
-
-                if (optionalTag.isPresent()) {
-                    Tag existTag = optionalTag.get();
-                    tagId = existTag.getId();
-                    Optional<GiftCertificateToTagRepository> link = giftCertificateToTag.findLink(giftCertificateId, tagId);
-
-                    if (!link.isPresent()) {
-                        giftCertificateToTag.createLink(giftCertificateId, tagId);
-                    }
-                } else {
-                    Tag createdTag = tagRepository.create(tag);
-                    tagId = createdTag.getId();
-                    giftCertificateToTag.createLink(giftCertificateId, tagId);
-                }
-            }
-        });
+//        giftCertificate.getTags().forEach(tag -> {
+//            if (TagValidator.isTagValid(tag)) {
+//                String tagName = tag.getName();
+//                Optional<Tag> optionalTag = tagRepository.findByName(tagName);
+//
+//                Long giftCertificateId = newGiftCertificate.getId();
+//                Long tagId;
+//
+//                if (optionalTag.isPresent()) {
+//                    Tag existTag = optionalTag.get();
+//                    tagId = existTag.getId();
+//                    Optional<GiftCertificateToTagRepository> link = giftCertificateToTag.findLink(giftCertificateId, tagId);
+//
+//                    if (!link.isPresent()) {
+//                        giftCertificateToTag.createLink(giftCertificateId, tagId);
+//                    }
+//                } else {
+//                    Tag createdTag = tagRepository.create(tag);
+//                    tagId = createdTag.getId();
+//                    giftCertificateToTag.createLink(giftCertificateId, tagId);
+//                }
+//            }
+//        });
+//        return giftCertificate;
         return giftCertificate;
     }
 
@@ -199,7 +200,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         giftCertificate.setLastUpdateDate(giftCertificateById.get().getLastUpdateDate());
 
         GiftCertificate updatedGiftCertificate = giftCertificateRepository.updateById(id, giftCertificate);
-        findSetTag(updatedGiftCertificate);
+        //findSetTag(updatedGiftCertificate);
 
         log.info("Gift certificate with name " + giftCertificate.getName() + " updated");
         return updatedGiftCertificate;
@@ -220,17 +221,17 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         return giftCertificateRepository.deleteById(id);
     }
 
-    private void findSetTagsForEach(List<GiftCertificate> giftCertificates) {
-        giftCertificates.forEach(giftCertificate -> {
-            long id = giftCertificate.getId();
-            Set<Tag> tags = tagRepository.findByGiftCertificateId(id);
-            giftCertificate.setTags(tags);
-        });
-    }
-
-    private void findSetTag(GiftCertificate giftCertificate) {
-        long id = giftCertificate.getId();
-        Set<Tag> tags = tagRepository.findByGiftCertificateId(id);
-        giftCertificate.setTags(tags);
-    }
+//    private void findSetTagsForEach(List<GiftCertificate> giftCertificates) {
+//        giftCertificates.forEach(giftCertificate -> {
+//            long id = giftCertificate.getId();
+//            Set<Tag> tags = tagRepository.findByGiftCertificateId(id);
+//            giftCertificate.setTags(tags);
+//        });
+//    }
+//
+//    private void findSetTag(GiftCertificate giftCertificate) {
+//        long id = giftCertificate.getId();
+//        Set<Tag> tags = tagRepository.findByGiftCertificateId(id);
+//        giftCertificate.setTags(tags);
+//    }
 }
