@@ -1,9 +1,7 @@
 package com.epam.esm.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -21,15 +19,12 @@ import java.util.Objects;
 /**
  * Gift certificate domain.
  */
-@AllArgsConstructor
-@NoArgsConstructor
 @Getter
 @Setter
 @ToString
 @Entity
 @Table(name = "gift_certificate")
 public class GiftCertificate implements Serializable {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
