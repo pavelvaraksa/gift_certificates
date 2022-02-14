@@ -64,9 +64,9 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     @Override
     public Optional<GiftCertificate> findById(Long id) {
-        Optional<GiftCertificate> giftCertificate = giftCertificateRepository.findById(id);
+        GiftCertificate giftCertificate = giftCertificateRepository.findById(id);
 
-        if (giftCertificate.isEmpty()) {
+        if (giftCertificate == null) {
             log.error("Gift certificate with id " + id + " was not found");
             throw new ServiceNotFoundException(CERTIFICATE_NOT_FOUND);
         }
@@ -74,7 +74,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         Set<Tag> tagList = tagRepository.findByGiftCertificateId(id);
         //giftCertificate.get().setTags(tagList);
 
-        return giftCertificate;
+        return Optional.ofNullable(giftCertificate);
     }
 
     @Override
@@ -165,9 +165,9 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Transactional
     @Override
     public GiftCertificate updateById(Long id, GiftCertificate giftCertificate) {
-        Optional<GiftCertificate> giftCertificateById = giftCertificateRepository.findById(id);
+        GiftCertificate giftCertificateById = giftCertificateRepository.findById(id);
 
-        if (giftCertificateById.isEmpty()) {
+        if (giftCertificateById == null) {
             log.error("Gift certificate was not found");
             throw new ServiceNotFoundException(CERTIFICATE_NOT_FOUND);
         }
@@ -180,26 +180,28 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         }
 
         if (giftCertificate.getName() == null) {
-            giftCertificate.setName(giftCertificateById.get().getName());
+            giftCertificate.setName(giftCertificateById.getName());
+            giftCertificate.setName(giftCertificateById.getName());
         }
 
         if (giftCertificate.getDescription() == null) {
-            giftCertificate.setDescription(giftCertificateById.get().getDescription());
+            giftCertificate.setDescription(giftCertificateById.getDescription());
         }
 
         if (giftCertificate.getPrice() == null) {
-            giftCertificate.setPrice(giftCertificateById.get().getPrice());
+            giftCertificate.setPrice(giftCertificateById.getPrice());
         }
 
         if (giftCertificate.getDuration() == null) {
-            giftCertificate.setDuration(giftCertificateById.get().getDuration());
+            giftCertificate.setDuration(giftCertificateById.getDuration());
         }
 
         GiftCertificateValidator.isGiftCertificateValid(giftCertificate);
-        giftCertificate.setCreateDate(giftCertificateById.get().getCreateDate());
-        giftCertificate.setLastUpdateDate(giftCertificateById.get().getLastUpdateDate());
+        giftCertificate.setId(giftCertificateById.getId());
+        giftCertificate.setCreateDate(giftCertificateById.getCreateDate());
+        giftCertificate.setLastUpdateDate(LocalDateTime.now());
 
-        GiftCertificate updatedGiftCertificate = giftCertificateRepository.updateById(id, giftCertificate);
+        GiftCertificate updatedGiftCertificate = giftCertificateRepository.updateById(giftCertificate);
         //findSetTag(updatedGiftCertificate);
 
         log.info("Gift certificate with name " + giftCertificate.getName() + " updated");
@@ -209,16 +211,17 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Transactional
     @Override
     public boolean deleteById(Long id) {
-        Optional<GiftCertificate> giftCertificateById = giftCertificateRepository.findById(id);
+        GiftCertificate giftCertificateById = giftCertificateRepository.findById(id);
 
-        if (giftCertificateById.isEmpty()) {
+        if (giftCertificateById == null) {
             log.error("Gift certificate was not found");
             throw new ServiceNotFoundException(CERTIFICATE_NOT_FOUND);
         }
 
         log.info("Gift certificate with id " + id + " deleted");
-        tagRepository.deleteAllTagsByGiftCertificateId(id);
-        return giftCertificateRepository.deleteById(id);
+        //tagRepository.deleteAllTagsByGiftCertificateId(id);
+        giftCertificateRepository.deleteById(id);
+        return true;
     }
 
 //    private void findSetTagsForEach(List<GiftCertificate> giftCertificates) {

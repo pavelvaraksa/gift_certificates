@@ -32,14 +32,14 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public Optional<Tag> findById(Long id) {
-        Optional<Tag> tag = tagRepository.findById(id);
+        Tag tag = tagRepository.findById(id);
 
-        if (tag.isEmpty()) {
+        if (tag == null) {
             log.error("tag with id " + id + " was not found");
             throw new ServiceNotFoundException(TAG_NOT_FOUND);
         }
 
-        return tag;
+        return Optional.ofNullable(tag);
     }
 
     @Override
@@ -59,9 +59,9 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public boolean deleteById(Long id) {
-        Optional<Tag> tagById = tagRepository.findById(id);
+        Tag tagById = tagRepository.findById(id);
 
-        if (tagById.isEmpty()) {
+        if (tagById == null) {
             log.error("Tag was not found");
             throw new ServiceNotFoundException(TAG_NOT_FOUND);
         }

@@ -16,9 +16,7 @@ public class PersistentContextConfig {
         factoryBean.setDataSource(dataSource);
         factoryBean.setHibernateProperties(getAdditionalProperties());
         factoryBean.afterPropertiesSet();
-        SessionFactory sessionFactory = factoryBean.getObject();
-        System.out.println("getSessionFactory: " + sessionFactory);
-        return sessionFactory;
+        return factoryBean.getObject();
     }
 
     private Properties getAdditionalProperties() {

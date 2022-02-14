@@ -1,7 +1,6 @@
 package com.epam.esm.repository;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * CRUD repository interface layer.
@@ -21,7 +20,7 @@ public interface CrudRepository<K, V> {
      * @param key - object ID.
      * @return - optional of found object.
      */
-    Optional<V> findById(K key);
+    V findById(K key);
 
     /**
      * Create an object in the database.
@@ -34,11 +33,10 @@ public interface CrudRepository<K, V> {
     /**
      * Update an object in the database.
      *
-     * @param key - object ID.
      * @param object - updated object.
      * @return - operation result (object updated full or partly)
      */
-    V updateById(K key, V object);
+    V updateById(V object);
 
     /**
      * Delete an object in the database.
