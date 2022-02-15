@@ -22,7 +22,6 @@ import java.util.Objects;
 @Entity
 @Table(name = "tag")
 public class Tag implements Serializable {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

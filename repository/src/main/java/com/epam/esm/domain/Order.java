@@ -12,8 +12,10 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import java.io.Serializable;
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Objects;
 
 /**
  * Order domain.
@@ -23,7 +25,7 @@ import java.time.LocalDate;
 @ToString
 @Entity
 @Table(name = "order")
-public class Order {
+public class Order implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -32,7 +34,7 @@ public class Order {
     private BigDecimal price;
 
     @Column(name = "purchase_date")
-    private LocalDate purchaseDate;
+    private LocalDateTime purchaseDate;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -41,4 +43,21 @@ public class Order {
     @ManyToOne
     @JoinColumn(name = "gift_certificate_id")
     private GiftCertificate giftCertificate;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Order order = (Order) o;
+        return Objects.equals(id, order.id)
+                && Objects.equals(price, order.price)
+                && Objects.equals(purchaseDate, order.purchaseDate)
+                && Objects.equals(user, order.user)
+                && Objects.equals(giftCertificate, order.giftCertificate);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, price, purchaseDate, user, giftCertificate);
+    }
 }
