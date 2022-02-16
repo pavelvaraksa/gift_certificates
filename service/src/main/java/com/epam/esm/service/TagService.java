@@ -18,12 +18,20 @@ public interface TagService {
     List<Tag> findAll();
 
     /**
-     * Find a tag by ID.
+     * Find a tag by id.
      *
-     * @param id - tag ID.
+     * @param id - tag id.
      * @return - optional of found tag.
      */
     Optional<Tag> findById(Long id);
+
+    /**
+     * Find a tag name.
+     *
+     * @param name - tag name.
+     * @return - optional of found tag.
+     */
+    Optional<Tag> findByName(String name);
 
     /**
      * Create a tag.
@@ -31,13 +39,12 @@ public interface TagService {
      * @param tag - create a tag.
      * @return - created tag.
      */
-    Tag create(Tag tag);
+    Tag save(Tag tag);
 
     /**
      * Delete a tag.
      *
-     * @param id - tag ID.
-     * @return - operation result (tag deleted or not)
+     * @param id - tag id.
      */
-    boolean deleteById(Long id);
+    void deleteById(Long id);
 }

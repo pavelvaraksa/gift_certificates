@@ -1,13 +1,10 @@
 package esm.com.epam.repository.impl;
 
 import com.epam.esm.domain.GiftCertificate;
-import com.epam.esm.repository.impl.GiftCertificateRepositoryImpl;
 import esm.com.epam.repository.config.ConfigTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

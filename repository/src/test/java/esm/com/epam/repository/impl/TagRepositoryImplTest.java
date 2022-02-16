@@ -1,13 +1,10 @@
 package esm.com.epam.repository.impl;
 
 import com.epam.esm.domain.Tag;
-import com.epam.esm.repository.impl.TagRepositoryImpl;
 import esm.com.epam.repository.config.ConfigTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import java.util.Arrays;
 import java.util.List;
