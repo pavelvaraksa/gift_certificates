@@ -19,18 +19,15 @@ public class TagValidator {
     private static boolean isMatcherValid(String regexp, String stringFromUi) {
         Pattern pattern = Pattern.compile(regexp);
         Matcher matcher = pattern.matcher(stringFromUi);
-
         return matcher.matches();
     }
 
     public static boolean isTagValid(Tag tag) {
         String name = tag.getName();
-
         return isTagNameValid(name);
     }
 
     private static boolean isTagNameValid(String name) {
-
         if (name == null) {
             log.error("Tag name was not filled");
             throw new ServiceValidException(TAG_NAME_NOT_FILLED);
