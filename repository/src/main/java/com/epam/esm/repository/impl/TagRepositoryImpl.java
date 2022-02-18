@@ -39,7 +39,7 @@ public class TagRepositoryImpl implements TagRepository {
     public Optional<Tag> findByName(String name) {
         Criteria criteria = sessionFactory.openSession().createCriteria(Tag.class);
         criteria.add(Restrictions.like("name", name));
-        return Optional.ofNullable((Tag)criteria.uniqueResult());
+        return Optional.ofNullable((Tag) criteria.uniqueResult());
     }
 
     @Override
@@ -47,7 +47,13 @@ public class TagRepositoryImpl implements TagRepository {
         try (Session session = sessionFactory.openSession()) {
             Transaction transaction = session.getTransaction();
             transaction.begin();
-            session.saveOrUpdate(tag);
+
+            if (tag != null) {
+                session.save(tag);
+                return tag;
+            } else {
+                session.merge(tag);
+            }
             transaction.commit();
             return tag;
         }
