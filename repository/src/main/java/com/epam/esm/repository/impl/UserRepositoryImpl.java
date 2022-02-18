@@ -1,7 +1,7 @@
 package com.epam.esm.repository.impl;
 
-import com.epam.esm.domain.GiftCertificate;
-import com.epam.esm.repository.GiftCertificateRepository;
+import com.epam.esm.domain.User;
+import com.epam.esm.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.hibernate.Criteria;
@@ -17,61 +17,67 @@ import java.util.Optional;
 @Log4j2
 @Repository
 @RequiredArgsConstructor
-public class GiftCertificateRepositoryImpl implements GiftCertificateRepository {
+public class UserRepositoryImpl implements UserRepository {
     private final SessionFactory sessionFactory;
 
     @Override
-    public List<GiftCertificate> findAll() {
+    public List<User> findAll() {
         try (Session session = sessionFactory.openSession()) {
-            String hqlQuery = "select gc from GiftCertificate gc";
-            return session.createQuery(hqlQuery, GiftCertificate.class).list();
+            String hqlQuery = "select u from User u";
+            return session.createQuery(hqlQuery, User.class).list();
         }
     }
 
     @Override
-    public Optional<GiftCertificate> findById(Long id) {
+    public Optional<User> findById(Long id) {
         try (Session session = sessionFactory.openSession()) {
-            return Optional.ofNullable(session.find(GiftCertificate.class, id));
+            return Optional.ofNullable(session.find(User.class, id));
         }
     }
 
     @Override
-    public Optional<GiftCertificate> findByName(String name) {
-        Criteria criteria = sessionFactory.openSession().createCriteria(GiftCertificate.class);
-        criteria.add(Restrictions.like("name", name));
-        return Optional.ofNullable((GiftCertificate)criteria.uniqueResult());
+    public Optional<User> findByName(String name) {
+        Criteria criteria = sessionFactory.openSession().createCriteria(User.class);
+        criteria.add(Restrictions.like("firstName", name));
+        return Optional.ofNullable((User) criteria.uniqueResult());
     }
 
     @Override
-    public GiftCertificate save(GiftCertificate giftCertificate) {
+    public Optional<User> findByLogin(String login) {
+        Criteria criteria = sessionFactory.openSession().createCriteria(User.class);
+        criteria.add(Restrictions.like("login", login));
+        return Optional.ofNullable((User) criteria.uniqueResult());
+    }
+
+    @Override
+    public User save(User user) {
         try (Session session = sessionFactory.openSession()) {
             Transaction transaction = session.getTransaction();
             transaction.begin();
-            session.saveOrUpdate(giftCertificate);
-            session.refresh(giftCertificate);
+            session.save(user);
             transaction.commit();
-            return giftCertificate;
+            return user;
         }
     }
 
     @Override
-    public GiftCertificate updateById(GiftCertificate giftCertificate) {
+    public User updateById(User user) {
         try (Session session = sessionFactory.openSession()) {
             Transaction transaction = session.getTransaction();
             transaction.begin();
-            session.update(giftCertificate);
+            session.update(user);
             transaction.commit();
-            return giftCertificate;
+            return user;
         }
     }
 
     @Override
     public void deleteById(Long id) {
         try (Session session = sessionFactory.openSession()) {
-            GiftCertificate giftCertificate = session.find(GiftCertificate.class, id);
+            User user = session.find(User.class, id);
             Transaction transaction = session.getTransaction();
             transaction.begin();
-            session.delete(giftCertificate);
+            session.delete(user);
             transaction.commit();
         }
     }

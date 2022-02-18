@@ -1,15 +1,16 @@
 package com.epam.esm.service.impl;
 
 import com.epam.esm.domain.GiftCertificate;
+import com.epam.esm.domain.Tag;
 import com.epam.esm.exception.ServiceExistException;
 import com.epam.esm.exception.ServiceNotFoundException;
 import com.epam.esm.repository.GiftCertificateRepository;
+import com.epam.esm.repository.TagRepository;
 import com.epam.esm.service.GiftCertificateService;
 import com.epam.esm.validator.GiftCertificateValidator;
-import lombok.RequiredArgsConstructor;
+import com.epam.esm.validator.TagValidator;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -23,9 +24,14 @@ import static com.epam.esm.exception.MessageException.CERTIFICATE_NOT_FOUND;
  */
 @Log4j2
 @Service
-@RequiredArgsConstructor
 public class GiftCertificateServiceImpl implements GiftCertificateService {
     private final GiftCertificateRepository giftCertificateRepository;
+    private final TagRepository tagRepository;
+
+    public GiftCertificateServiceImpl(GiftCertificateRepository giftCertificateRepository, TagRepository tagRepository) {
+        this.giftCertificateRepository = giftCertificateRepository;
+        this.tagRepository = tagRepository;
+    }
 
     @Override
     public List<GiftCertificate> findAll() {
@@ -56,14 +62,13 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         return giftCertificate;
     }
 
-    @Transactional
     @Override
     public GiftCertificate save(GiftCertificate giftCertificate) {
         GiftCertificateValidator.isGiftCertificateValid(giftCertificate);
         String giftCertificateName = giftCertificate.getName();
         Optional<GiftCertificate> giftCertificateByName = giftCertificateRepository.findByName(giftCertificateName);
 
-        if (!giftCertificateByName.isEmpty()) {
+        if (giftCertificateByName.isPresent()) {
             log.error("Gift certificate name " + giftCertificate.getName() + " already exist");
             throw new ServiceExistException(CERTIFICATE_EXIST);
         }
@@ -71,6 +76,26 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         LocalDateTime createdDateTime = LocalDateTime.now();
         giftCertificate.setCreateDate(createdDateTime);
         giftCertificate.setLastUpdateDate(createdDateTime);
+
+        if (giftCertificate.getTags().isEmpty()) {
+            return giftCertificateRepository.save(giftCertificate);
+        }
+
+        giftCertificate.getTags().forEach(tag -> {
+            if (TagValidator.isTagValid(tag)) {
+                String tagName = tag.getName();
+                Optional<Tag> optionalTag = tagRepository.findByName(tagName);
+
+                if (optionalTag.isPresent()) {
+                    Tag existTag = optionalTag.get();
+                    existTag.getGiftCertificateSet().add(giftCertificate);
+                    return;
+                }
+
+                tag.getGiftCertificateSet().add(giftCertificate);
+                tagRepository.save(tag);
+            }
+        });
 
         log.info("Gift certificate with name " + giftCertificate.getName() + " saved");
         return giftCertificateRepository.save(giftCertificate);
@@ -87,7 +112,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
         Optional<GiftCertificate> giftCertificateByName = giftCertificateRepository.findByName(giftCertificate.getName());
 
-        if (!giftCertificateByName.isEmpty()) {
+        if (giftCertificateByName.isPresent()) {
             log.error("Gift certificate name " + giftCertificate.getName() + " already exist");
             throw new ServiceExistException(CERTIFICATE_EXIST);
         }

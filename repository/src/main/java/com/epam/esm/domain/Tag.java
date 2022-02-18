@@ -2,23 +2,27 @@ package com.epam.esm.domain;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 /**
- * Tag domain.
+ * Tag domain
  */
 @Getter
 @Setter
-@ToString
 @Entity
 @Table(name = "tag")
 public class Tag implements Serializable {
@@ -28,6 +32,12 @@ public class Tag implements Serializable {
 
     @Column
     private String name;
+
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "gift_certificate_to_tag",
+            joinColumns = {@JoinColumn(name = "tag_id")},
+            inverseJoinColumns = {@JoinColumn(name = "gift_certificate_id")})
+    private Set<GiftCertificate> giftCertificateSet = new HashSet<>();
 
     @Override
     public boolean equals(Object o) {

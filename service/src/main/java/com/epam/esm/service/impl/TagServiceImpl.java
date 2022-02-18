@@ -55,14 +55,13 @@ public class TagServiceImpl implements TagService {
         return tag;
     }
 
-    @Transactional
     @Override
     public Tag save(Tag tag) {
         TagValidator.isTagValid(tag);
         String tagName = tag.getName();
         Optional<Tag> tagByName = tagRepository.findByName(tagName);
 
-        if (!tagByName.isEmpty()) {
+        if (tagByName.isPresent()) {
             log.error("Tag name " + tag.getName() + " already exist");
             throw new ServiceExistException(TAG_EXIST);
         }

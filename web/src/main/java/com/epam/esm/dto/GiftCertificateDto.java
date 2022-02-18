@@ -11,6 +11,8 @@ import java.util.Set;
  */
 @Data
 public class GiftCertificateDto {
+    private Long id;
+
     private String name;
 
     private String description;

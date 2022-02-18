@@ -1,0 +1,129 @@
+package com.epam.esm.controller;
+
+import com.epam.esm.domain.User;
+import com.epam.esm.dto.UserDto;
+import com.epam.esm.service.UserService;
+import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import java.net.URI;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+@RestController
+@RequestMapping("/users")
+@RequiredArgsConstructor
+public class UserRestController {
+    public final UserService userService;
+    private final ModelMapper modelMapper;
+
+    /**
+     * Find list of users.
+     *
+     * @return - list of users or empty list.
+     */
+    @GetMapping
+    @ResponseStatus(HttpStatus.OK)
+    public List<UserDto> findAllUsers() {
+        List<User> listUser = userService.findAll();
+        return listUser
+                .stream()
+                .map(user -> modelMapper.map(user, UserDto.class))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Find user by id.
+     *
+     * @param id - user id.
+     * @return - user.
+     */
+    @GetMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public UserDto findUserById(@PathVariable Long id) {
+        Optional<User> user = userService.findById(id);
+        return modelMapper.map(user.get(), UserDto.class);
+    }
+
+    /**
+     * Find user by name.
+     *
+     * @param name - user name.
+     * @return - user.
+     */
+    @GetMapping("/search/name")
+    @ResponseStatus(HttpStatus.OK)
+    public UserDto findUserByName(@RequestParam(value = "name", required = false) String name) {
+        Optional<User> user = userService.findByName(name);
+        return modelMapper.map(user.get(), UserDto.class);
+    }
+
+    /**
+     * Find user by login.
+     *
+     * @param login - user login.
+     * @return - user.
+     */
+    @GetMapping("/search/login/{login}")
+    @ResponseStatus(HttpStatus.OK)
+    public UserDto findUserByLogin(@PathVariable String login) {
+        Optional<User> user = userService.findByLogin(login);
+        return modelMapper.map(user.get(), UserDto.class);
+    }
+
+    /**
+     * Create user.
+     *
+     * @param user - user.
+     * @return - user.
+     */
+    @PostMapping
+    public ResponseEntity<UserDto> saveUser(@RequestBody User user) {
+        User newUser = userService.save(user);
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(user.getId())
+                .toUri();
+
+        return ResponseEntity.created(location).body(modelMapper.map(newUser, UserDto.class));
+    }
+
+    /**
+     * Update user by id.
+     *
+     * @param id   - user id.
+     * @param user - user.
+     */
+    @PatchMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public UserDto updateUser(@PathVariable Long id, @RequestBody User user) {
+        User updatedUser = userService.updateById(id, user);
+        return modelMapper.map(updatedUser, UserDto.class);
+    }
+
+    /**
+     * Delete user by id.
+     *
+     * @param id - user id.
+     */
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteUser(@PathVariable Long id) {
+        userService.deleteById(id);
+    }
+}

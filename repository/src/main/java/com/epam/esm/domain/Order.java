@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**
- * Order domain.
+ * Order domain
  */
 @Getter
 @Setter
@@ -51,13 +51,11 @@ public class Order implements Serializable {
         Order order = (Order) o;
         return Objects.equals(id, order.id)
                 && Objects.equals(price, order.price)
-                && Objects.equals(purchaseDate, order.purchaseDate)
-                && Objects.equals(user, order.user)
-                && Objects.equals(giftCertificate, order.giftCertificate);
+                && Objects.equals(purchaseDate, order.purchaseDate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, price, purchaseDate, user, giftCertificate);
+        return Objects.hash(id, price, purchaseDate);
     }
 }

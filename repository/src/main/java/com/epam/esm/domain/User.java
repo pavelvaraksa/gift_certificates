@@ -2,7 +2,6 @@ package com.epam.esm.domain;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -14,13 +13,12 @@ import java.io.Serializable;
 import java.util.Objects;
 
 /**
- * User domain.
+ * User domain
  */
 @Getter
 @Setter
-@ToString
 @Entity
-@Table(name = "user")
+@Table(name = "user_table")
 public class User implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

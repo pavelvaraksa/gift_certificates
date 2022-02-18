@@ -45,7 +45,10 @@ public class TagRepositoryImpl implements TagRepository {
     @Override
     public Tag save(Tag tag) {
         try (Session session = sessionFactory.openSession()) {
-            session.save(tag);
+            Transaction transaction = session.getTransaction();
+            transaction.begin();
+            session.saveOrUpdate(tag);
+            transaction.commit();
             return tag;
         }
     }

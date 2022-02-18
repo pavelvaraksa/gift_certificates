@@ -2,7 +2,7 @@ package com.epam.esm.controller;
 
 import com.epam.esm.domain.GiftCertificate;
 import com.epam.esm.dto.GiftCertificateDto;
-import com.epam.esm.service.impl.GiftCertificateServiceImpl;
+import com.epam.esm.service.GiftCertificateService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/certificates")
 @RequiredArgsConstructor
 public class GiftCertificateRestController {
-    public final GiftCertificateServiceImpl giftCertificateService;
+    public final GiftCertificateService giftCertificateService;
     private final ModelMapper modelMapper;
 
     /**
@@ -69,9 +69,7 @@ public class GiftCertificateRestController {
     @GetMapping("/search")
     @ResponseStatus(HttpStatus.OK)
     public GiftCertificateDto findGiftCertificateByName(@RequestParam(value = "name", required = false) String name) {
-
         Optional<GiftCertificate> giftCertificate = giftCertificateService.findByName(name);
-
         return modelMapper.map(giftCertificate.get(), GiftCertificateDto.class);
     }
 
@@ -103,7 +101,6 @@ public class GiftCertificateRestController {
     @ResponseStatus(HttpStatus.OK)
     public GiftCertificateDto updateGiftCertificate(@PathVariable Long id,
                                                     @RequestBody GiftCertificate giftCertificate) {
-
         GiftCertificate updatedGiftCertificate = giftCertificateService.updateById(id, giftCertificate);
         return modelMapper.map(updatedGiftCertificate, GiftCertificateDto.class);
     }
