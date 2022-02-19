@@ -93,12 +93,12 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
                 }
 
                 tag.getGiftCertificateSet().add(giftCertificate);
-                tagRepository.save(tag);
+                giftCertificateRepository.save(giftCertificate);
             }
         });
 
         log.info("Gift certificate with name " + giftCertificate.getName() + " saved");
-        return giftCertificateRepository.save(giftCertificate);
+        return giftCertificate;
     }
 
     @Override

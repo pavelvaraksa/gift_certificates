@@ -3,7 +3,6 @@ package com.epam.esm.service.impl;
 import com.epam.esm.domain.User;
 import com.epam.esm.exception.ServiceExistException;
 import com.epam.esm.exception.ServiceNotFoundException;
-import com.epam.esm.exception.ServiceValidException;
 import com.epam.esm.repository.UserRepository;
 import com.epam.esm.service.UserService;
 import com.epam.esm.validator.UserValidator;
@@ -13,6 +12,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+
+import static com.epam.esm.exception.MessageException.USER_NOT_FOUND;
+import static com.epam.esm.exception.MessageException.USER_EXIST;
 
 /**
  * User service implementation.
@@ -34,7 +36,7 @@ public class UserServiceImpl implements UserService {
 
         if (user.isEmpty()) {
             log.error("User with id " + id + " was not found");
-            throw new ServiceNotFoundException("not found");
+            throw new ServiceNotFoundException(USER_NOT_FOUND);
         }
 
         return user;
@@ -46,7 +48,7 @@ public class UserServiceImpl implements UserService {
 
         if (user.isEmpty()) {
             log.error("User with name " + name + " was not found");
-            throw new ServiceNotFoundException("not found");
+            throw new ServiceNotFoundException(USER_NOT_FOUND);
         }
 
         return user;
@@ -58,7 +60,7 @@ public class UserServiceImpl implements UserService {
 
         if (user.isEmpty()) {
             log.error("User with login " + login + " was not found");
-            throw new ServiceNotFoundException("not found");
+            throw new ServiceNotFoundException(USER_NOT_FOUND);
         }
 
         return user;
@@ -66,16 +68,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User save(User user) {
+        UserValidator.isUserValid(user);
         String login = user.getLogin();
         Optional<User> userLogin = userRepository.findByLogin(login);
 
         if (userLogin.isPresent()) {
             log.error("User with login " + user.getLogin() + " already exist");
-            throw new ServiceExistException("exist");
-        }
-
-        if (!UserValidator.isUserValid(user)) {
-            throw new ServiceValidException("not valid");
+            throw new ServiceExistException(USER_EXIST);
         }
 
         log.info("User with login  " + user.getLogin() + " saved");
@@ -88,14 +87,14 @@ public class UserServiceImpl implements UserService {
 
         if (userById.isEmpty()) {
             log.error("User was not found");
-            throw new ServiceNotFoundException("not found");
+            throw new ServiceNotFoundException(USER_NOT_FOUND);
         }
 
         Optional<User> userByLogin = userRepository.findByLogin(user.getLogin());
 
         if (userByLogin.isPresent()) {
             log.error("User with login " + user.getLogin() + " already exist");
-            throw new ServiceExistException("exist");
+            throw new ServiceExistException(USER_EXIST);
         }
 
         if (user.getLogin() == null) {
@@ -110,6 +109,7 @@ public class UserServiceImpl implements UserService {
             user.setLastName(userById.get().getLastName());
         }
 
+        UserValidator.isUserValid(user);
         user.setId(userById.get().getId());
         userRepository.updateById(user);
 
@@ -123,7 +123,7 @@ public class UserServiceImpl implements UserService {
 
         if (user.isEmpty()) {
             log.error("User was not found");
-            throw new ServiceNotFoundException("not found");
+            throw new ServiceNotFoundException(USER_NOT_FOUND);
         }
 
         log.info("User with id " + id + " deleted");

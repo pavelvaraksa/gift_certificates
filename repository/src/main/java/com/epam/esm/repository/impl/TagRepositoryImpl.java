@@ -47,13 +47,7 @@ public class TagRepositoryImpl implements TagRepository {
         try (Session session = sessionFactory.openSession()) {
             Transaction transaction = session.getTransaction();
             transaction.begin();
-
-            if (tag != null) {
-                session.save(tag);
-                return tag;
-            } else {
-                session.merge(tag);
-            }
+            session.persist(tag);
             transaction.commit();
             return tag;
         }

@@ -1,6 +1,7 @@
 package com.epam.esm.repository.impl;
 
 import com.epam.esm.domain.GiftCertificate;
+import com.epam.esm.domain.Tag;
 import com.epam.esm.repository.GiftCertificateRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -19,6 +20,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class GiftCertificateRepositoryImpl implements GiftCertificateRepository {
     private final SessionFactory sessionFactory;
+    Tag tag = new Tag();
 
     @Override
     public List<GiftCertificate> findAll() {
@@ -39,7 +41,7 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
     public Optional<GiftCertificate> findByName(String name) {
         Criteria criteria = sessionFactory.openSession().createCriteria(GiftCertificate.class);
         criteria.add(Restrictions.like("name", name));
-        return Optional.ofNullable((GiftCertificate)criteria.uniqueResult());
+        return Optional.ofNullable((GiftCertificate) criteria.uniqueResult());
     }
 
     @Override
@@ -47,8 +49,7 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
         try (Session session = sessionFactory.openSession()) {
             Transaction transaction = session.getTransaction();
             transaction.begin();
-            session.saveOrUpdate(giftCertificate);
-            session.refresh(giftCertificate);
+            session.persist(giftCertificate);
             transaction.commit();
             return giftCertificate;
         }
