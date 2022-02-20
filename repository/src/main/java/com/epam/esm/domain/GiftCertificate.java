@@ -54,6 +54,12 @@ public class GiftCertificate implements Serializable {
     @ManyToMany(mappedBy = "giftCertificateSet", fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     Set<Tag> tags = new HashSet<>();
 
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(name = "order_table",
+            joinColumns = {@JoinColumn(name = "gift_certificate_id")},
+            inverseJoinColumns = {@JoinColumn(name = "user_id")})
+    private Set<User> userSet = new HashSet<>();
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

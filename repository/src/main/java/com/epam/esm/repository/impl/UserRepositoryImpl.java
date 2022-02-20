@@ -3,7 +3,6 @@ package com.epam.esm.repository.impl;
 import com.epam.esm.domain.User;
 import com.epam.esm.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -14,7 +13,6 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
-@Log4j2
 @Repository
 @RequiredArgsConstructor
 public class UserRepositoryImpl implements UserRepository {
@@ -23,7 +21,7 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public List<User> findAll() {
         try (Session session = sessionFactory.openSession()) {
-            String hqlQuery = "select u from User u";
+            String hqlQuery = "select user from User user";
             return session.createQuery(hqlQuery, User.class).list();
         }
     }

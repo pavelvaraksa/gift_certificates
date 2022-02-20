@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 import java.util.Set;
 
 /**
- * Gift certificate dto.
+ * Gift certificate dto
  */
 @Data
 public class GiftCertificateDto {

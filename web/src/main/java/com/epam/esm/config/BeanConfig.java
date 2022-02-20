@@ -4,9 +4,7 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ResourceBundleMessageSource;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import java.util.Locale;
 
@@ -14,7 +12,6 @@ import java.util.Locale;
  * Bean configuration.
  */
 public class BeanConfig {
-
     @Bean
     public ModelMapper modelMapper() {
         ModelMapper modelMapper = new ModelMapper();
@@ -25,10 +22,9 @@ public class BeanConfig {
     @Bean
     public MessageSource messageSource() {
         ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
-        messageSource.setBasename("locale");
-        messageSource.setDefaultLocale(Locale.ENGLISH);
+        messageSource.setBasename("locale_en");
+        messageSource.setDefaultLocale(Locale.ROOT);
         messageSource.setDefaultEncoding("UTF-8");
         return messageSource;
     }
 }
-

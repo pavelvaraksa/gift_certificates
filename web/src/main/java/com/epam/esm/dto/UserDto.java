@@ -2,8 +2,10 @@ package com.epam.esm.dto;
 
 import lombok.Data;
 
+import java.util.Set;
+
 /**
- * User dto.
+ * User dto
  */
 @Data
 public class UserDto {
@@ -14,4 +16,6 @@ public class UserDto {
     private String firstName;
 
     private String lastName;
+
+    private Set<GiftCertificateDto> giftCertificates;
 }

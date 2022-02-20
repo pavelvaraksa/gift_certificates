@@ -1,8 +1,8 @@
 package com.epam.esm.controller;
 
-import com.epam.esm.domain.Tag;
-import com.epam.esm.dto.TagDto;
-import com.epam.esm.service.TagService;
+import com.epam.esm.domain.Order;
+import com.epam.esm.dto.OrderDto;
+import com.epam.esm.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -24,80 +23,66 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/tags")
+@RequestMapping("/orders")
 @RequiredArgsConstructor
-public class TagRestController {
-    public final TagService tagService;
+public class OrderRestController {
+    private final OrderService orderService;
     private final ModelMapper modelMapper;
 
     /**
-     * Find list of tags
+     * Find list of orders
      *
-     * @return - list of tags or empty list
+     * @return - list of orders or empty list
      */
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<TagDto> findAllTags() {
-        List<Tag> listTag = tagService.findAll();
-        return listTag
+    public List<OrderDto> findAllOrders() {
+        List<Order> listOrder = orderService.findAll();
+        return listOrder
                 .stream()
-                .map(tag -> modelMapper.map(tag, TagDto.class))
+                .map(order -> modelMapper.map(order, OrderDto.class))
                 .collect(Collectors.toList());
     }
 
     /**
-     * Find tag by id
+     * Find order by id
      *
-     * @param id - tag id
-     * @return - tag
+     * @param id - order id
+     * @return - order
      */
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public TagDto findTagById(@PathVariable Long id) {
-        Optional<Tag> tag = tagService.findById(id);
-        return modelMapper.map(tag.get(), TagDto.class);
+    public OrderDto findOrderById(@PathVariable Long id) {
+        Optional<Order> order = orderService.findById(id);
+        return modelMapper.map(order.get(), OrderDto.class);
     }
 
     /**
-     * Find tag by name
+     * Create order
      *
-     * @param name - tag name
-     * @return - tag
-     */
-    @GetMapping("/search")
-    @ResponseStatus(HttpStatus.OK)
-    public TagDto findTagByName(@RequestParam(value = "name", required = false) String name) {
-        Optional<Tag> tag = tagService.findByName(name);
-        return modelMapper.map(tag.get(), TagDto.class);
-    }
-
-    /**
-     * Create tag
-     *
-     * @param tag - tag
-     * @return - tag
+     * @param order - order
+     * @return - order
      */
     @PostMapping
-    public ResponseEntity<TagDto> createTag(@RequestBody Tag tag) {
-        Tag newTag = tagService.save(tag);
+    public ResponseEntity<OrderDto> createOrder(@RequestBody Order order) {
+        Order newOrder = orderService.save(order);
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
-                .buildAndExpand(tag.getId())
+                .buildAndExpand(order.getId())
                 .toUri();
 
-        return ResponseEntity.created(location).body(modelMapper.map(newTag, TagDto.class));
+        return ResponseEntity.created(location).body(modelMapper.map(newOrder, OrderDto.class));
     }
 
     /**
-     * Delete tag by id
+     * Delete order by id
      *
-     * @param id - tag id
+     * @param id - order id
      */
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public void deleteTag(@PathVariable Long id) {
-        tagService.deleteById(id);
+        orderService.deleteById(id);
     }
 }
-

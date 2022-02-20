@@ -1,13 +1,11 @@
 package com.epam.esm.repository.impl;
 
-import com.epam.esm.domain.Tag;
-import com.epam.esm.repository.TagRepository;
+import com.epam.esm.domain.Order;
+import com.epam.esm.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
-import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -15,49 +13,42 @@ import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
-public class TagRepositoryImpl implements TagRepository {
+public class OrderRepositoryImpl implements OrderRepository {
     private final SessionFactory sessionFactory;
 
     @Override
-    public List<Tag> findAll() {
+    public List<Order> findAll() {
         try (Session session = sessionFactory.openSession()) {
-            String hqlQuery = "select tag from Tag tag";
-            return session.createQuery(hqlQuery, Tag.class).list();
+            String hqlQuery = "select order from Order order";
+            return session.createQuery(hqlQuery, Order.class).list();
         }
     }
 
     @Override
-    public Optional<Tag> findById(Long id) {
+    public Optional<Order> findById(Long id) {
         try (Session session = sessionFactory.openSession()) {
-            return Optional.ofNullable(session.find(Tag.class, id));
+            return Optional.ofNullable(session.find(Order.class, id));
         }
     }
 
     @Override
-    public Optional<Tag> findByName(String name) {
-        Criteria criteria = sessionFactory.openSession().createCriteria(Tag.class);
-        criteria.add(Restrictions.like("name", name));
-        return Optional.ofNullable((Tag) criteria.uniqueResult());
-    }
-
-    @Override
-    public Tag save(Tag tag) {
+    public Order save(Order order) {
         try (Session session = sessionFactory.openSession()) {
             Transaction transaction = session.getTransaction();
             transaction.begin();
-            session.persist(tag);
+            session.persist(order);
             transaction.commit();
-            return tag;
+            return order;
         }
     }
 
     @Override
     public void deleteById(Long id) {
         try (Session session = sessionFactory.openSession()) {
-            Tag tag = session.find(Tag.class, id);
+            Order order = session.find(Order.class, id);
             Transaction transaction = session.getTransaction();
             transaction.begin();
-            session.delete(tag);
+            session.delete(order);
             transaction.commit();
         }
     }

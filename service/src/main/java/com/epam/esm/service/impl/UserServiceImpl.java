@@ -1,10 +1,15 @@
 package com.epam.esm.service.impl;
 
+import com.epam.esm.domain.GiftCertificate;
+import com.epam.esm.domain.Tag;
 import com.epam.esm.domain.User;
 import com.epam.esm.exception.ServiceExistException;
 import com.epam.esm.exception.ServiceNotFoundException;
+import com.epam.esm.repository.GiftCertificateRepository;
 import com.epam.esm.repository.UserRepository;
 import com.epam.esm.service.UserService;
+import com.epam.esm.validator.GiftCertificateValidator;
+import com.epam.esm.validator.TagValidator;
 import com.epam.esm.validator.UserValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -24,6 +29,7 @@ import static com.epam.esm.exception.MessageException.USER_EXIST;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private final GiftCertificateRepository giftCertificateRepository;
 
     @Override
     public List<User> findAll() {
@@ -77,8 +83,28 @@ public class UserServiceImpl implements UserService {
             throw new ServiceExistException(USER_EXIST);
         }
 
+        if (user.getGiftCertificates().isEmpty()) {
+            return userRepository.save(user);
+        }
+
+        user.getGiftCertificates().forEach(giftCertificate -> {
+            if (GiftCertificateValidator.isGiftCertificateValid(giftCertificate)) {
+                String giftCertificateName = giftCertificate.getName();
+                Optional<GiftCertificate> optionalGiftCertificate = giftCertificateRepository.findByName(giftCertificateName);
+
+                if (optionalGiftCertificate.isPresent()) {
+                    GiftCertificate existGiftCertificate = optionalGiftCertificate.get();
+                    existGiftCertificate.getUserSet().add(user);
+                    return;
+                }
+
+                giftCertificate.getUserSet().add(user);
+                userRepository.save(user);
+            }
+        });
+
         log.info("User with login  " + user.getLogin() + " saved");
-        return userRepository.save(user);
+        return user;
     }
 
     @Override

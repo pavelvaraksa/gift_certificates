@@ -3,7 +3,7 @@ package com.epam.esm.dto;
 import lombok.Data;
 
 /**
- * Tag dto.
+ * Tag dto
  */
 @Data
 public class TagDto {

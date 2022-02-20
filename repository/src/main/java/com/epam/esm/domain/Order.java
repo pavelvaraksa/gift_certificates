@@ -24,7 +24,7 @@ import java.util.Objects;
 @Setter
 @ToString
 @Entity
-@Table(name = "order")
+@Table(name = "order_table")
 public class Order implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,14 +35,6 @@ public class Order implements Serializable {
 
     @Column(name = "purchase_date")
     private LocalDateTime purchaseDate;
-
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
-
-    @ManyToOne
-    @JoinColumn(name = "gift_certificate_id")
-    private GiftCertificate giftCertificate;
 
     @Override
     public boolean equals(Object o) {
