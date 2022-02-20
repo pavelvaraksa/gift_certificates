@@ -6,7 +6,6 @@ import com.epam.esm.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -17,9 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -32,9 +29,9 @@ public class UserRestController {
     private final ModelMapper modelMapper;
 
     /**
-     * Find list of users.
+     * Find list of users
      *
-     * @return - list of users or empty list.
+     * @return - list of users or empty list
      */
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
@@ -47,10 +44,10 @@ public class UserRestController {
     }
 
     /**
-     * Find user by id.
+     * Find user by id
      *
-     * @param id - user id.
-     * @return - user.
+     * @param id - user id
+     * @return - user
      */
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
@@ -60,10 +57,10 @@ public class UserRestController {
     }
 
     /**
-     * Find user by name.
+     * Find user by name
      *
-     * @param name - user name.
-     * @return - user.
+     * @param name - user name
+     * @return - user
      */
     @GetMapping("/search/name")
     @ResponseStatus(HttpStatus.OK)
@@ -73,10 +70,10 @@ public class UserRestController {
     }
 
     /**
-     * Find user by login.
+     * Find user by login
      *
-     * @param login - user login.
-     * @return - user.
+     * @param login - user login
+     * @return - user
      */
     @GetMapping("/search/login/{login}")
     @ResponseStatus(HttpStatus.OK)
@@ -86,28 +83,23 @@ public class UserRestController {
     }
 
     /**
-     * Create user.
+     * Create user
      *
-     * @param user - user.
-     * @return - user.
+     * @param user - user
+     * @return - user
      */
     @PostMapping
-    public ResponseEntity<UserDto> saveUser(@RequestBody User user) {
+    @ResponseStatus(HttpStatus.CREATED)
+    public UserDto saveUser(@RequestBody User user) {
         User newUser = userService.save(user);
-        URI location = ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(user.getId())
-                .toUri();
-
-        return ResponseEntity.created(location).body(modelMapper.map(newUser, UserDto.class));
+        return modelMapper.map(newUser, UserDto.class);
     }
 
     /**
-     * Update user by id.
+     * Update user by id
      *
-     * @param id   - user id.
-     * @param user - user.
+     * @param id   - user id
+     * @param user - user
      */
     @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
@@ -117,9 +109,9 @@ public class UserRestController {
     }
 
     /**
-     * Delete user by id.
+     * Delete user by id
      *
-     * @param id - user id.
+     * @param id - user id
      */
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)

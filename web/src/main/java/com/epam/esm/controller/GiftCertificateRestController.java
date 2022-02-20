@@ -6,7 +6,6 @@ import com.epam.esm.service.GiftCertificateService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -17,9 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -32,9 +29,9 @@ public class GiftCertificateRestController {
     private final ModelMapper modelMapper;
 
     /**
-     * Find list of gift certificates.
+     * Find list of gift certificates
      *
-     * @return - list of gift certificates or empty list.
+     * @return - list of gift certificates or empty list
      */
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
@@ -47,10 +44,10 @@ public class GiftCertificateRestController {
     }
 
     /**
-     * Find gift certificate by id.
+     * Find gift certificate by id
      *
-     * @param id - gift certificate id.
-     * @return - gift certificate.
+     * @param id - gift certificate id
+     * @return - gift certificate
      */
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
@@ -61,10 +58,10 @@ public class GiftCertificateRestController {
     }
 
     /**
-     * Find gift certificate by name.
+     * Find gift certificate by name
      *
-     * @param name - gift certificate name.
-     * @return - gift certificates or nothing.
+     * @param name - gift certificate name
+     * @return - gift certificates or nothing
      */
     @GetMapping("/search")
     @ResponseStatus(HttpStatus.OK)
@@ -74,28 +71,23 @@ public class GiftCertificateRestController {
     }
 
     /**
-     * Create gift certificate.
+     * Create gift certificate
      *
-     * @param giftCertificate - gift certificate.
-     * @return - gift certificate.
+     * @param giftCertificate - gift certificate
+     * @return - gift certificate
      */
     @PostMapping
-    public ResponseEntity<GiftCertificateDto> saveGiftCertificate(@RequestBody GiftCertificate giftCertificate) {
+    @ResponseStatus(HttpStatus.CREATED)
+    public GiftCertificateDto saveGiftCertificate(@RequestBody GiftCertificate giftCertificate) {
         GiftCertificate newGiftCertificate = giftCertificateService.save(giftCertificate);
-        URI location = ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(giftCertificate.getId())
-                .toUri();
-
-        return ResponseEntity.created(location).body(modelMapper.map(newGiftCertificate, GiftCertificateDto.class));
+        return modelMapper.map(newGiftCertificate, GiftCertificateDto.class);
     }
 
     /**
-     * Update gift certificate by id.
+     * Update gift certificate by id
      *
-     * @param id              - gift certificate id.
-     * @param giftCertificate - gift certificate.
+     * @param id              - gift certificate id
+     * @param giftCertificate - gift certificate
      */
     @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
@@ -106,9 +98,9 @@ public class GiftCertificateRestController {
     }
 
     /**
-     * Delete gift certificate by id.
+     * Delete gift certificate by id
      *
-     * @param id - gift certificate id.
+     * @param id - gift certificate id
      */
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)

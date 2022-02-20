@@ -28,10 +28,9 @@ public interface OrderService {
     /**
      * Create an order.
      *
-     * @param order - create an order.
      * @return - created order.
      */
-    Order save(Order order);
+    Order save(Long userId, Long giftCertificateId);
 
     /**
      * Delete an order.

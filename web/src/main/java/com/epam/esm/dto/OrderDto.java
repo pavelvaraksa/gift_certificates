@@ -1,5 +1,7 @@
 package com.epam.esm.dto;
 
+import com.epam.esm.domain.GiftCertificate;
+import com.epam.esm.domain.User;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -15,4 +17,8 @@ public class OrderDto {
     private BigDecimal price;
 
     private LocalDateTime purchaseDate;
+
+    private Long userId;
+
+    private Long giftCertificateId;
 }
