@@ -10,18 +10,18 @@ import java.util.Optional;
  */
 public interface GiftCertificateRepository extends CrdRepository<Long, GiftCertificate> {
     /**
-     * Find gift certificate by name.
+     * Find gift certificate by name
      *
-     * @param name - gift certificate name.
-     * @return - optional of found gift certificate.
+     * @param name - gift certificate name
+     * @return - optional of found gift certificate
      */
     Optional<GiftCertificate> findByName(String name);
 
     /**
-     * Update gift certificate.
+     * Update gift certificate
      *
-     * @param giftCertificate - gift certificate.
-     * @return - updated gift certificate.
+     * @param giftCertificate - gift certificate
+     * @return - updated gift certificate
      */
     GiftCertificate updateById(GiftCertificate giftCertificate);
 }

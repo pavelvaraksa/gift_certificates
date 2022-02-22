@@ -1,11 +1,13 @@
 package com.epam.esm.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -33,7 +35,8 @@ public class Tag implements Serializable {
     @Column
     private String name;
 
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JsonBackReference
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "gift_certificate_to_tag",
             joinColumns = {@JoinColumn(name = "tag_id")},
             inverseJoinColumns = {@JoinColumn(name = "gift_certificate_id")})

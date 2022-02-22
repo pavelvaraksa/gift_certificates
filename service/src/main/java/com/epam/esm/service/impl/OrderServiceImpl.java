@@ -48,17 +48,23 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Order save(Long userId, Long giftCertificateId) {
-        Optional<User> userById = userService.findById(userId);
-        Optional<GiftCertificate> giftCertificateById = giftCertificateService.findById(giftCertificateId);
-
+    public Order save(Long userId, List<Long> giftCertificateId) {
+        Optional<User> user = userService.findById(userId);
+        Optional<GiftCertificate> giftCertificate;
         Order order = new Order();
-        BigDecimal gcPrice = giftCertificateById.get().getPrice();
-        order.setPrice(gcPrice);
-        order.setPurchaseDate(LocalDateTime.now());
-        order.setUserId(userById.get().getId());
-        order.setGiftCertificateId(giftCertificateById.get().getId());
-        return orderRepository.save(order);
+
+        for (Long id : giftCertificateId) {
+            giftCertificate = giftCertificateService.findById(id);
+
+            BigDecimal giftCertificatePrice = giftCertificate.get().getPrice();
+            order.setPrice(giftCertificatePrice);
+            order.setPurchaseDate(LocalDateTime.now());
+            order.setGiftCertificate(giftCertificate.get());
+            order.setUser(user.get());
+            orderRepository.save(order);
+        }
+
+        return order;
     }
 
     @Override

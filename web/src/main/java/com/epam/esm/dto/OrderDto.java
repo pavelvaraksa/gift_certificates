@@ -18,7 +18,7 @@ public class OrderDto {
 
     private LocalDateTime purchaseDate;
 
-    private Long userId;
+    private User user;
 
-    private Long giftCertificateId;
+    private GiftCertificate giftCertificate;
 }

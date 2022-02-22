@@ -36,7 +36,7 @@ public class OrderRepositoryImpl implements OrderRepository {
         try (Session session = sessionFactory.openSession()) {
             Transaction transaction = session.getTransaction();
             transaction.begin();
-            session.persist(order);
+            session.save(order);
             transaction.commit();
             return order;
         }

@@ -64,7 +64,7 @@ public class OrderRestController {
     @PostMapping("/create")
     @ResponseStatus(HttpStatus.CREATED)
     public OrderDto createOrder(@RequestParam Long user,
-                                @RequestParam Long certificate) {
+                                @RequestParam List<Long> certificate) {
 
         Order newOrder = orderService.save(user, certificate);
         return modelMapper.map(newOrder, OrderDto.class);
@@ -77,7 +77,7 @@ public class OrderRestController {
      */
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public void deleteTag(@PathVariable Long id) {
+    public void deleteOrder(@PathVariable Long id) {
         orderService.deleteById(id);
     }
 }

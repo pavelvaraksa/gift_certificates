@@ -1,7 +1,6 @@
 package com.epam.esm.service.impl;
 
 import com.epam.esm.domain.GiftCertificate;
-import com.epam.esm.domain.Tag;
 import com.epam.esm.exception.ServiceExistException;
 import com.epam.esm.exception.ServiceNotFoundException;
 import com.epam.esm.repository.GiftCertificateRepository;
@@ -9,6 +8,7 @@ import com.epam.esm.repository.TagRepository;
 import com.epam.esm.service.GiftCertificateService;
 import com.epam.esm.validator.GiftCertificateValidator;
 import com.epam.esm.validator.TagValidator;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
@@ -24,14 +24,10 @@ import static com.epam.esm.exception.MessageException.CERTIFICATE_NOT_FOUND;
  */
 @Log4j2
 @Service
+@RequiredArgsConstructor
 public class GiftCertificateServiceImpl implements GiftCertificateService {
     private final GiftCertificateRepository giftCertificateRepository;
     private final TagRepository tagRepository;
-
-    public GiftCertificateServiceImpl(GiftCertificateRepository giftCertificateRepository, TagRepository tagRepository) {
-        this.giftCertificateRepository = giftCertificateRepository;
-        this.tagRepository = tagRepository;
-    }
 
     @Override
     public List<GiftCertificate> findAll() {
@@ -83,16 +79,11 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
         giftCertificate.getTags().forEach(tag -> {
             if (TagValidator.isTagValid(tag)) {
-                String tagName = tag.getName();
-                Optional<Tag> optionalTag = tagRepository.findByName(tagName);
+//                String tagName = tag.getName();
+//                Optional<Tag> optionalTag = tagRepository.findByName(tagName);
 
-                if (optionalTag.isPresent()) {
-                    Tag existTag = optionalTag.get();
-                    existTag.getGiftCertificateSet().add(giftCertificate);
-                    return;
-                }
 
-                tag.getGiftCertificateSet().add(giftCertificate);
+                //tag.getGiftCertificateSet().add(giftCertificate);
                 giftCertificateRepository.save(giftCertificate);
             }
         });
@@ -138,10 +129,8 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         giftCertificate.setCreateDate(giftCertificateById.get().getCreateDate());
         giftCertificate.setLastUpdateDate(LocalDateTime.now());
 
-        giftCertificateRepository.updateById(giftCertificate);
-
         log.info("Gift certificate with name " + giftCertificate.getName() + " updated");
-        return giftCertificate;
+        return giftCertificateRepository.updateById(giftCertificate);
     }
 
     @Override

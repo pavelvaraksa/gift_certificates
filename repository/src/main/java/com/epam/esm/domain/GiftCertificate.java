@@ -1,5 +1,7 @@
 package com.epam.esm.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -51,10 +53,13 @@ public class GiftCertificate implements Serializable {
     @Column(name = "last_update_date")
     private LocalDateTime lastUpdateDate;
 
+    @JsonManagedReference
+    @JsonIgnore
     @ManyToMany(mappedBy = "giftCertificateSet", fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     Set<Tag> tags = new HashSet<>();
 
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JsonIgnore
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "order_table",
             joinColumns = {@JoinColumn(name = "gift_certificate_id")},
             inverseJoinColumns = {@JoinColumn(name = "user_id")})
@@ -71,11 +76,12 @@ public class GiftCertificate implements Serializable {
                 && Objects.equals(price, that.price)
                 && Objects.equals(duration, that.duration)
                 && Objects.equals(createDate, that.createDate)
-                && Objects.equals(lastUpdateDate, that.lastUpdateDate);
+                && Objects.equals(lastUpdateDate, that.lastUpdateDate)
+                && Objects.equals(tags, that.tags) && Objects.equals(userSet, that.userSet);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, description, price, duration, createDate, lastUpdateDate);
+        return Objects.hash(id, name, description, price, duration, createDate, lastUpdateDate, tags, userSet);
     }
 }

@@ -56,7 +56,12 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
         try (Session session = sessionFactory.openSession()) {
             Transaction transaction = session.getTransaction();
             transaction.begin();
-            session.update(giftCertificate);
+            GiftCertificate updatedGiftCertificate = session.find(GiftCertificate.class, giftCertificate.getId());
+            updatedGiftCertificate.setName(giftCertificate.getName());
+            updatedGiftCertificate.setDescription(giftCertificate.getDescription());
+            updatedGiftCertificate.setPrice(giftCertificate.getPrice());
+            updatedGiftCertificate.setDuration(giftCertificate.getDuration());
+            session.merge(updatedGiftCertificate);
             transaction.commit();
             return giftCertificate;
         }

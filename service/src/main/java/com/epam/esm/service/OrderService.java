@@ -30,7 +30,7 @@ public interface OrderService {
      *
      * @return - created order.
      */
-    Order save(Long userId, Long giftCertificateId);
+    Order save(Long userId, List<Long> giftCertificateId);
 
     /**
      * Delete an order.

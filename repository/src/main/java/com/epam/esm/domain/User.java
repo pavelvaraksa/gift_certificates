@@ -1,5 +1,6 @@
 package com.epam.esm.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -38,6 +39,7 @@ public class User implements Serializable {
     @Column(name = "last_name")
     private String lastName;
 
+    @JsonIgnore
     @ManyToMany(mappedBy = "userSet", fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     Set<GiftCertificate> giftCertificates = new HashSet<>();
 
