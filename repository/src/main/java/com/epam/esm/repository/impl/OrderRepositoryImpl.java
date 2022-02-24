@@ -2,6 +2,7 @@ package com.epam.esm.repository.impl;
 
 import com.epam.esm.domain.Order;
 import com.epam.esm.repository.OrderRepository;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -28,6 +29,13 @@ public class OrderRepositoryImpl implements OrderRepository {
     public Optional<Order> findById(Long id) {
         try (Session session = sessionFactory.openSession()) {
             return Optional.ofNullable(session.find(Order.class, id));
+        }
+    }
+
+    @Override
+    public Order findByExistId(Long id) {
+        try (Session session = sessionFactory.openSession()) {
+            return session.find(Order.class, id);
         }
     }
 

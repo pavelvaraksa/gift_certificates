@@ -36,7 +36,7 @@ public class GiftCertificateValidator {
     public static boolean isGiftCertificateValid(GiftCertificate giftCertificate) {
         String name = giftCertificate.getName();
         String description = giftCertificate.getDescription();
-        BigDecimal price = giftCertificate.getPrice();
+        Double price = giftCertificate.getCurrentPrice();
         Integer duration = giftCertificate.getDuration();
 
         return isGiftCertificateNameValid(name)

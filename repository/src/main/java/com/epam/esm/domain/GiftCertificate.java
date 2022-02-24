@@ -1,8 +1,9 @@
 package com.epam.esm.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.CascadeType;
@@ -17,7 +18,6 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Objects;
@@ -41,8 +41,8 @@ public class GiftCertificate implements Serializable {
     @Column
     private String description;
 
-    @Column
-    private BigDecimal price;
+    @Column(name = "current_price")
+    private Double currentPrice;
 
     @Column
     private Integer duration;
@@ -53,17 +53,16 @@ public class GiftCertificate implements Serializable {
     @Column(name = "last_update_date")
     private LocalDateTime lastUpdateDate;
 
-    @JsonManagedReference
     @JsonIgnore
     @ManyToMany(mappedBy = "giftCertificateSet", fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    Set<Tag> tags = new HashSet<>();
+    Set<Tag> tag = new HashSet<>();
 
     @JsonIgnore
     @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JoinTable(name = "order_table",
+    @JoinTable(name = "order_details",
             joinColumns = {@JoinColumn(name = "gift_certificate_id")},
-            inverseJoinColumns = {@JoinColumn(name = "user_id")})
-    private Set<User> userSet = new HashSet<>();
+            inverseJoinColumns = {@JoinColumn(name = "order_id")})
+    private Set<Order> order = new HashSet<>();
 
     @Override
     public boolean equals(Object o) {
@@ -73,15 +72,14 @@ public class GiftCertificate implements Serializable {
         return Objects.equals(id, that.id)
                 && Objects.equals(name, that.name)
                 && Objects.equals(description, that.description)
-                && Objects.equals(price, that.price)
+                && Objects.equals(currentPrice, that.currentPrice)
                 && Objects.equals(duration, that.duration)
                 && Objects.equals(createDate, that.createDate)
-                && Objects.equals(lastUpdateDate, that.lastUpdateDate)
-                && Objects.equals(tags, that.tags) && Objects.equals(userSet, that.userSet);
+                && Objects.equals(lastUpdateDate, that.lastUpdateDate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, description, price, duration, createDate, lastUpdateDate, tags, userSet);
+        return Objects.hash(id, name, description, currentPrice, duration, createDate, lastUpdateDate);
     }
 }

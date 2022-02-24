@@ -69,21 +69,21 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             throw new ServiceExistException(CERTIFICATE_EXIST);
         }
 
+        giftCertificate.setCurrentPrice(giftCertificate.getCurrentPrice());
         LocalDateTime createdDateTime = LocalDateTime.now();
         giftCertificate.setCreateDate(createdDateTime);
         giftCertificate.setLastUpdateDate(createdDateTime);
 
-        if (giftCertificate.getTags().isEmpty()) {
+        if (giftCertificate.getTag().isEmpty()) {
             return giftCertificateRepository.save(giftCertificate);
         }
 
-        giftCertificate.getTags().forEach(tag -> {
+        giftCertificate.getTag().forEach(tag -> {
             if (TagValidator.isTagValid(tag)) {
 //                String tagName = tag.getName();
 //                Optional<Tag> optionalTag = tagRepository.findByName(tagName);
 
-
-                //tag.getGiftCertificateSet().add(giftCertificate);
+                tag.getGiftCertificateSet().add(giftCertificate);
                 giftCertificateRepository.save(giftCertificate);
             }
         });
@@ -116,8 +116,8 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             giftCertificate.setDescription(giftCertificateById.get().getDescription());
         }
 
-        if (giftCertificate.getPrice() == null) {
-            giftCertificate.setPrice(giftCertificateById.get().getPrice());
+        if (giftCertificate.getCurrentPrice() == null) {
+            giftCertificate.setCurrentPrice(giftCertificateById.get().getCurrentPrice());
         }
 
         if (giftCertificate.getDuration() == null) {

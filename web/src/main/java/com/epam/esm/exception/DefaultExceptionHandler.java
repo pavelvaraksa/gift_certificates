@@ -1,6 +1,7 @@
 package com.epam.esm.exception;
 
 import lombok.AllArgsConstructor;
+import org.postgresql.util.PSQLException;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -49,6 +50,11 @@ public class DefaultExceptionHandler {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorMessage> handleIncorrectSyntaxException(HttpMessageNotReadableException ex) {
         return new ResponseEntity<>(new ErrorMessage(400, INCORRECT_SYNTAX), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(PSQLException.class)
+    public ResponseEntity<ErrorMessage> handlePSQLException(PSQLException ex) {
+        return new ResponseEntity<>(new ErrorMessage(400, INCORRECT_SEARCH), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)

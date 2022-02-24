@@ -10,6 +10,7 @@ import org.hibernate.Transaction;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -59,8 +60,9 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
             GiftCertificate updatedGiftCertificate = session.find(GiftCertificate.class, giftCertificate.getId());
             updatedGiftCertificate.setName(giftCertificate.getName());
             updatedGiftCertificate.setDescription(giftCertificate.getDescription());
-            updatedGiftCertificate.setPrice(giftCertificate.getPrice());
+            updatedGiftCertificate.setCurrentPrice(giftCertificate.getCurrentPrice());
             updatedGiftCertificate.setDuration(giftCertificate.getDuration());
+            updatedGiftCertificate.setLastUpdateDate(LocalDateTime.now());
             session.merge(updatedGiftCertificate);
             transaction.commit();
             return giftCertificate;

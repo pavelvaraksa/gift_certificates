@@ -2,8 +2,10 @@ package com.epam.esm.service.impl;
 
 import com.epam.esm.domain.GiftCertificate;
 import com.epam.esm.domain.Order;
+import com.epam.esm.domain.OrderDetails;
 import com.epam.esm.domain.User;
 import com.epam.esm.exception.ServiceNotFoundException;
+import com.epam.esm.repository.OrderDetailsRepository;
 import com.epam.esm.repository.OrderRepository;
 import com.epam.esm.service.GiftCertificateService;
 import com.epam.esm.service.OrderService;
@@ -12,10 +14,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static com.epam.esm.exception.MessageException.ORDER_NOT_FOUND;
 
@@ -27,6 +30,7 @@ import static com.epam.esm.exception.MessageException.ORDER_NOT_FOUND;
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
+    private final OrderDetailsRepository orderDetailsRepository;
     private final UserService userService;
     private final GiftCertificateService giftCertificateService;
 
@@ -51,18 +55,33 @@ public class OrderServiceImpl implements OrderService {
     public Order save(Long userId, List<Long> giftCertificateId) {
         Optional<User> user = userService.findById(userId);
         Optional<GiftCertificate> giftCertificate;
+        OrderDetails orderDetails = new OrderDetails();
         Order order = new Order();
+        Double orderPrice = (double) 0;
 
         for (Long id : giftCertificateId) {
             giftCertificate = giftCertificateService.findById(id);
-
-            BigDecimal giftCertificatePrice = giftCertificate.get().getPrice();
-            order.setPrice(giftCertificatePrice);
+            Double giftCertificatePrice = giftCertificate.get().getCurrentPrice();
+            order.setTotalPrice(giftCertificatePrice);
+            orderPrice += giftCertificatePrice;
             order.setPurchaseDate(LocalDateTime.now());
-            order.setGiftCertificate(giftCertificate.get());
+            order.setCertificate(Collections.singleton(giftCertificate.get()));
             order.setUser(user.get());
-            orderRepository.save(order);
         }
+
+        order.setTotalPrice(orderPrice);
+        orderRepository.save(order);
+
+        for (Long id : giftCertificateId) {
+            giftCertificate = giftCertificateService.findById(id);
+            orderDetails.setActualPrice(giftCertificate.get().getCurrentPrice());
+            orderDetails.setOrder(order);
+            orderDetails.setCertificate(giftCertificate.get());
+            orderDetailsRepository.save(orderDetails);
+        }
+
+        Long orderId = order.getId();
+        order = orderRepository.findByExistId(orderId);
 
         return order;
     }

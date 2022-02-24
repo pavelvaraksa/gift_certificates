@@ -1,11 +1,15 @@
 package com.epam.esm.dto;
 
 import com.epam.esm.domain.GiftCertificate;
+import com.epam.esm.domain.OrderDetails;
 import com.epam.esm.domain.User;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Set;
 
 /**
  * Order dto
@@ -14,11 +18,11 @@ import java.time.LocalDateTime;
 public class OrderDto {
     private Long id;
 
-    private BigDecimal price;
+    private Double totalPrice;
 
     private LocalDateTime purchaseDate;
 
     private User user;
 
-    private GiftCertificate giftCertificate;
+    private Set<GiftCertificateDto> certificate;
 }
