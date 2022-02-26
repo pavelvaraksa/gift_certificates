@@ -2,11 +2,12 @@ package com.epam.esm.dto;
 
 import lombok.Data;
 
+/**
+ * Order details dto
+ */
 @Data
 public class OrderDetailsDto {
-    private OrderDto order;
+    private Double actualPrice;
 
     private GiftCertificateDto certificate;
-
-    private Double actualPrice;
 }

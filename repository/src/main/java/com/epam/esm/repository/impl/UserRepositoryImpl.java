@@ -13,6 +13,9 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * User repository implementation
+ */
 @Repository
 @RequiredArgsConstructor
 public class UserRepositoryImpl implements UserRepository {
@@ -31,13 +34,6 @@ public class UserRepositoryImpl implements UserRepository {
         try (Session session = sessionFactory.openSession()) {
             return Optional.ofNullable(session.find(User.class, id));
         }
-    }
-
-    @Override
-    public Optional<User> findByName(String name) {
-        Criteria criteria = sessionFactory.openSession().createCriteria(User.class);
-        criteria.add(Restrictions.like("firstName", name));
-        return Optional.ofNullable((User) criteria.uniqueResult());
     }
 
     @Override

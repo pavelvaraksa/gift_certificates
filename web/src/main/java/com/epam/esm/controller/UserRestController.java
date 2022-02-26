@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -53,19 +52,6 @@ public class UserRestController {
     @ResponseStatus(HttpStatus.OK)
     public UserDto findUserById(@PathVariable Long id) {
         Optional<User> user = userService.findById(id);
-        return modelMapper.map(user.get(), UserDto.class);
-    }
-
-    /**
-     * Find user by name
-     *
-     * @param name - user name
-     * @return - user
-     */
-    @GetMapping("/search/name")
-    @ResponseStatus(HttpStatus.OK)
-    public UserDto findUserByName(@RequestParam(value = "name", required = false) String name) {
-        Optional<User> user = userService.findByName(name);
         return modelMapper.map(user.get(), UserDto.class);
     }
 

@@ -20,7 +20,7 @@ import static com.epam.esm.exception.MessageException.CERTIFICATE_EXIST;
 import static com.epam.esm.exception.MessageException.CERTIFICATE_NOT_FOUND;
 
 /**
- * Gift certificate service implementation.
+ * Gift certificate service implementation
  */
 @Log4j2
 @Service

@@ -17,7 +17,7 @@ import static com.epam.esm.exception.MessageException.USER_EXIST;
 import static com.epam.esm.exception.MessageException.USER_NOT_FOUND;
 
 /**
- * User service implementation.
+ * User service implementation
  */
 @Log4j2
 @Service
@@ -36,18 +36,6 @@ public class UserServiceImpl implements UserService {
 
         if (user.isEmpty()) {
             log.error("User with id " + id + " was not found");
-            throw new ServiceNotFoundException(USER_NOT_FOUND);
-        }
-
-        return user;
-    }
-
-    @Override
-    public Optional<User> findByName(String name) {
-        Optional<User> user = userRepository.findByName(name);
-
-        if (user.isEmpty()) {
-            log.error("User with name " + name + " was not found");
             throw new ServiceNotFoundException(USER_NOT_FOUND);
         }
 
@@ -112,9 +100,10 @@ public class UserServiceImpl implements UserService {
         UserValidator.isUserValid(user);
         user.setId(userById.get().getId());
         userRepository.updateById(user);
+        Optional<User> updatedUserById = userRepository.findById(user.getId());
 
         log.info("User with login " + user.getLogin() + " updated");
-        return user;
+        return updatedUserById.get();
     }
 
     @Override

@@ -13,6 +13,9 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Tag repository implementation
+ */
 @Repository
 @RequiredArgsConstructor
 public class TagRepositoryImpl implements TagRepository {

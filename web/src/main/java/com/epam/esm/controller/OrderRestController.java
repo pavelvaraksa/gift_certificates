@@ -1,8 +1,6 @@
 package com.epam.esm.controller;
 
 import com.epam.esm.domain.Order;
-import com.epam.esm.domain.OrderDetails;
-import com.epam.esm.dto.OrderDetailsDto;
 import com.epam.esm.dto.OrderDto;
 import com.epam.esm.service.OrderService;
 import lombok.RequiredArgsConstructor;

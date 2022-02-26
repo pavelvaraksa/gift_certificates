@@ -2,20 +2,24 @@ package com.epam.esm.repository;
 
 import com.epam.esm.domain.OrderDetails;
 
+/**
+ * Order details repository interface layer
+ * Works with database
+ */
 public interface OrderDetailsRepository {
     /**
-     * Save object
+     * Save order details
      *
-     * @param orderDetails - create object
-     * @return - created object
+     * @param orderDetails - create order details
+     * @return - created order details
      */
     OrderDetails save(OrderDetails orderDetails);
 
     /**
-     * Find object by id.
+     * Find order details by id
      *
-     * @param key - object id.
-     * @return - optional of found object.
+     * @param id - order details id
+     * @return - optional of found order details
      */
-    OrderDetails findById(Long key);
+    OrderDetails findById(Long id);
 }

@@ -18,12 +18,11 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import static com.epam.esm.exception.MessageException.ORDER_NOT_FOUND;
 
 /**
- * Order service implementation.
+ * Order service implementation
  */
 @Log4j2
 @Service
@@ -44,7 +43,7 @@ public class OrderServiceImpl implements OrderService {
         Optional<Order> order = orderRepository.findById(id);
 
         if (order.isEmpty()) {
-            log.error("order with id " + id + " was not found");
+            log.error("Order with id " + id + " was not found");
             throw new ServiceNotFoundException(ORDER_NOT_FOUND);
         }
 
@@ -57,13 +56,14 @@ public class OrderServiceImpl implements OrderService {
         Optional<GiftCertificate> giftCertificate;
         OrderDetails orderDetails = new OrderDetails();
         Order order = new Order();
-        Double orderPrice = (double) 0;
+        Double orderPrice = 0D;
 
         for (Long id : giftCertificateId) {
             giftCertificate = giftCertificateService.findById(id);
             Double giftCertificatePrice = giftCertificate.get().getCurrentPrice();
             order.setTotalPrice(giftCertificatePrice);
             orderPrice += giftCertificatePrice;
+            order.setCount(giftCertificateId.size());
             order.setPurchaseDate(LocalDateTime.now());
             order.setCertificate(Collections.singleton(giftCertificate.get()));
             order.setUser(user.get());

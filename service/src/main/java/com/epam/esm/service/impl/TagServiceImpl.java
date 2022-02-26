@@ -17,7 +17,7 @@ import static com.epam.esm.exception.MessageException.TAG_EXIST;
 import static com.epam.esm.exception.MessageException.TAG_NOT_FOUND;
 
 /**
- * Tag service implementation.
+ * Tag service implementation
  */
 @Log4j2
 @Service

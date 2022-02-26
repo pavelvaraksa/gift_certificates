@@ -3,8 +3,8 @@ package com.epam.esm.repository;
 import java.util.Optional;
 
 /**
- * Gift certificate to tag repository interface layer.
- * Works with database.
+ * Gift certificate to tag repository interface layer
+ * Works with database
  */
 public interface GiftCertificateToTagRepository {
     /**

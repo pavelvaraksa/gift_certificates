@@ -5,8 +5,8 @@ import com.epam.esm.domain.GiftCertificate;
 import java.util.Optional;
 
 /**
- * Gift certificate repository interface layer.
- * Works with database.
+ * Gift certificate repository interface layer
+ * Works with database
  */
 public interface GiftCertificateRepository extends CrdRepository<Long, GiftCertificate> {
     /**

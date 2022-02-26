@@ -2,7 +2,6 @@ package com.epam.esm.repository.impl;
 
 import com.epam.esm.repository.GiftCertificateToTagRepository;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.SessionFactory;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;

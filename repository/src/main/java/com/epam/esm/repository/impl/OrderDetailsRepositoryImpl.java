@@ -1,6 +1,5 @@
 package com.epam.esm.repository.impl;
 
-import com.epam.esm.domain.GiftCertificate;
 import com.epam.esm.domain.OrderDetails;
 import com.epam.esm.repository.OrderDetailsRepository;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +8,9 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.springframework.stereotype.Repository;
 
+/**
+ * Order details repository implementation
+ */
 @Repository
 @RequiredArgsConstructor
 public class OrderDetailsRepositoryImpl implements OrderDetailsRepository {

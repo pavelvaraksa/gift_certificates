@@ -1,8 +1,6 @@
 package com.epam.esm.domain;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -24,6 +22,9 @@ import java.util.Objects;
 @Table(name = "order_details")
 @DynamicUpdate
 public class OrderDetails implements Serializable {
+    @Column(name = "actual_price", updatable = false)
+    private Double actualPrice;
+
     @Id
     @ManyToOne
     @JoinColumn(name = "order_id")
@@ -34,21 +35,18 @@ public class OrderDetails implements Serializable {
     @JoinColumn(name = "gift_certificate_id")
     private GiftCertificate certificate;
 
-    @Column(name = "actual_price", updatable = false)
-    private Double actualPrice;
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         OrderDetails that = (OrderDetails) o;
-        return Objects.equals(order, that.order)
-                && Objects.equals(certificate, that.certificate)
-                && Objects.equals(actualPrice, that.actualPrice);
+        return Objects.equals(actualPrice, that.actualPrice)
+                && Objects.equals(order, that.order)
+                && Objects.equals(certificate, that.certificate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(order, certificate, actualPrice);
+        return Objects.hash(actualPrice, order, certificate);
     }
 }
