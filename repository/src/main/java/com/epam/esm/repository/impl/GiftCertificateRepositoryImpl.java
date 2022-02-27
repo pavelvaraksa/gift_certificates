@@ -49,7 +49,7 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
         try (Session session = sessionFactory.openSession()) {
             Transaction transaction = session.getTransaction();
             transaction.begin();
-            session.persist(giftCertificate);
+            session.save(giftCertificate);
             transaction.commit();
             return giftCertificate;
         }

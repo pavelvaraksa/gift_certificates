@@ -1,5 +1,7 @@
 package com.epam.esm.repository;
 
+import com.epam.esm.domain.GiftCertificateToTag;
+
 import java.util.Optional;
 
 /**
@@ -7,21 +9,29 @@ import java.util.Optional;
  * Works with database
  */
 public interface GiftCertificateToTagRepository {
+
     /**
-     * Create link between gift certificate and tag
+     * Save link between gift certificate and tag
      *
-     * @param giftCertificateId - gift certificate id
-     * @param tagId - tag id
-     * @return - operation result (link created or not)
+     * @param giftCertificateToTag - link
+     * @return - created link
      */
-    boolean createLink(Long giftCertificateId, Long tagId);
+    GiftCertificateToTag save(GiftCertificateToTag giftCertificateToTag);
 
     /**
      * Find link between gift certificate and tag
      *
-     * @param giftCertificateId - gift certificate id
-     * @param tagId - tag id
+     * @param certificateToTag - link
      * @return - optional of found link
      */
-    Optional<GiftCertificateToTagRepository> findLink(Long giftCertificateId, Long tagId);
+    Optional<GiftCertificateToTag> find(GiftCertificateToTag certificateToTag);
+
+    /**
+     * Confirmation link between gift certificate and tag
+     *
+     * @param certificateId - gift certificate id
+     * @param tagId         - tag id
+     * @return - true or false
+     */
+    boolean isExistLink(Long certificateId, Long tagId);
 }

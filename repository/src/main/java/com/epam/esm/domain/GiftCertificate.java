@@ -51,7 +51,6 @@ public class GiftCertificate implements Serializable {
     @Column(name = "last_update_date")
     private LocalDateTime lastUpdateDate;
 
-    @JsonIgnore
     @ManyToMany(mappedBy = "giftCertificateSet", fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     Set<Tag> tag = new HashSet<>();
 
@@ -73,11 +72,12 @@ public class GiftCertificate implements Serializable {
                 && Objects.equals(currentPrice, that.currentPrice)
                 && Objects.equals(duration, that.duration)
                 && Objects.equals(createDate, that.createDate)
-                && Objects.equals(lastUpdateDate, that.lastUpdateDate);
+                && Objects.equals(lastUpdateDate, that.lastUpdateDate)
+                && Objects.equals(tag, that.tag);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, description, currentPrice, duration, createDate, lastUpdateDate);
+        return Objects.hash(id, name, description, currentPrice, duration, createDate, lastUpdateDate, tag);
     }
 }

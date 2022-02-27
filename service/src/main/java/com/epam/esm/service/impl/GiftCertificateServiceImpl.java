@@ -1,9 +1,12 @@
 package com.epam.esm.service.impl;
 
 import com.epam.esm.domain.GiftCertificate;
+import com.epam.esm.domain.GiftCertificateToTag;
+import com.epam.esm.domain.Tag;
 import com.epam.esm.exception.ServiceExistException;
 import com.epam.esm.exception.ServiceNotFoundException;
 import com.epam.esm.repository.GiftCertificateRepository;
+import com.epam.esm.repository.GiftCertificateToTagRepository;
 import com.epam.esm.repository.TagRepository;
 import com.epam.esm.service.GiftCertificateService;
 import com.epam.esm.validator.GiftCertificateValidator;
@@ -27,6 +30,7 @@ import static com.epam.esm.exception.MessageException.CERTIFICATE_NOT_FOUND;
 @RequiredArgsConstructor
 public class GiftCertificateServiceImpl implements GiftCertificateService {
     private final GiftCertificateRepository giftCertificateRepository;
+    private final GiftCertificateToTagRepository certificateTagLink;
     private final TagRepository tagRepository;
 
     @Override
@@ -73,22 +77,33 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         LocalDateTime createdDateTime = LocalDateTime.now();
         giftCertificate.setCreateDate(createdDateTime);
         giftCertificate.setLastUpdateDate(createdDateTime);
+        GiftCertificate newGiftCertificate = giftCertificateRepository.save(giftCertificate);
 
         if (giftCertificate.getTag().isEmpty()) {
-            return giftCertificateRepository.save(giftCertificate);
+            return newGiftCertificate;
         }
 
         giftCertificate.getTag().forEach(tag -> {
             if (TagValidator.isTagValid(tag)) {
-//                String tagName = tag.getName();
-//                Optional<Tag> optionalTag = tagRepository.findByName(tagName);
+                String tagName = tag.getName();
+                Optional<Tag> optionalTag = tagRepository.findByName(tagName);
 
-                tag.getGiftCertificateSet().add(giftCertificate);
-                giftCertificateRepository.save(giftCertificate);
+                if (optionalTag.isPresent()) {
+                    Tag existTag = optionalTag.get();
+                    boolean isExistLink = certificateTagLink.isExistLink(newGiftCertificate.getId(), existTag.getId());
+
+                    if (!isExistLink) {
+                        GiftCertificateToTag certificateToTag = new GiftCertificateToTag(newGiftCertificate.getId(), existTag.getId());
+                        certificateTagLink.save(certificateToTag);
+                    }
+                } else {
+                    tagRepository.save(tag);
+                    GiftCertificateToTag certificateToTag = new GiftCertificateToTag(newGiftCertificate.getId(), tag.getId());
+                    certificateTagLink.save(certificateToTag);
+                }
             }
         });
 
-        log.info("Gift certificate with name " + giftCertificate.getName() + " saved");
         return giftCertificate;
     }
 
@@ -146,3 +161,4 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         giftCertificateRepository.deleteById(id);
     }
 }
+
