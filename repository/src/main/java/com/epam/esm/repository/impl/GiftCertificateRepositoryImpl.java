@@ -21,12 +21,14 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class GiftCertificateRepositoryImpl implements GiftCertificateRepository {
     private final SessionFactory sessionFactory;
+    private final String FIND_ALL_QUERY = "select gc from GiftCertificate gc";
+    private final String FIND_ALL_QUERY_BY_TAG_NAME = "select gc from GiftCertificate gc " +
+            "join GiftCertificateToTag gctt on gc.id = gctt.giftCertificate where gctt.tag = ";
 
     @Override
     public List<GiftCertificate> findAll() {
         try (Session session = sessionFactory.openSession()) {
-            String hqlQuery = "select gc from GiftCertificate gc";
-            return session.createQuery(hqlQuery, GiftCertificate.class).list();
+            return session.createQuery(FIND_ALL_QUERY, GiftCertificate.class).list();
         }
     }
 
@@ -42,6 +44,13 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
         Criteria criteria = sessionFactory.openSession().createCriteria(GiftCertificate.class);
         criteria.add(Restrictions.like("name", name));
         return Optional.ofNullable((GiftCertificate) criteria.uniqueResult());
+    }
+
+    @Override
+    public List<GiftCertificate> findByTagId(Long id) {
+        try (Session session = sessionFactory.openSession()) {
+            return session.createQuery(FIND_ALL_QUERY_BY_TAG_NAME + id, GiftCertificate.class).list();
+        }
     }
 
     @Override

@@ -34,6 +34,14 @@ public interface GiftCertificateService {
     Optional<GiftCertificate> findByName(String name);
 
     /**
+     * Find all gift certificates by tag name
+     *
+     * @param name- tag name
+     * @return - list of gift certificates
+     */
+    List<GiftCertificate> findByTagName(List<String> name);
+
+    /**
      * Create a gift certificate
      *
      * @param giftCertificate - create a gift certificate

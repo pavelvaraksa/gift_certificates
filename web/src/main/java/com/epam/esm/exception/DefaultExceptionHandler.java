@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+import java.sql.SQLTransientConnectionException;
 import java.util.Locale;
 
 @ControllerAdvice
@@ -21,6 +22,7 @@ public class DefaultExceptionHandler {
     private final String INCORRECT_SEARCH = "Incorrect input in search field";
     private final String INCORRECT_SYNTAX = "Incorrect input in body field";
     private final String NOT_ALLOWED = "Method not allowed this function";
+    private final String CONNECTION_IS_NOT_AVAILABLE = "Connection is not available";
 
     @ExceptionHandler(ServiceValidException.class)
     public ResponseEntity<FrameException> handleValidException(ServiceValidException ex, Locale locale) {
@@ -59,8 +61,12 @@ public class DefaultExceptionHandler {
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ResponseEntity<ErrorMessage> handleNotSupportException(HttpRequestMethodNotSupportedException ex) {
-
         return new ResponseEntity<>(new ErrorMessage(405, NOT_ALLOWED), HttpStatus.METHOD_NOT_ALLOWED);
+    }
+
+    @ExceptionHandler(SQLTransientConnectionException.class)
+    public ResponseEntity<ErrorMessage> handleNotSupportException(SQLTransientConnectionException ex) {
+        return new ResponseEntity<>(new ErrorMessage(500, CONNECTION_IS_NOT_AVAILABLE), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     private ResponseEntity<FrameException> createResponseEntity(RuntimeException runtimeException, Locale locale, ErrorCode errorCode, HttpStatus httpStatus) {

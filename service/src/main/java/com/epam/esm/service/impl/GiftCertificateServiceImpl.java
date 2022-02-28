@@ -16,11 +16,13 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import static com.epam.esm.exception.MessageException.CERTIFICATE_EXIST;
 import static com.epam.esm.exception.MessageException.CERTIFICATE_NOT_FOUND;
+import static com.epam.esm.exception.MessageException.TAG_NOT_FOUND;
 
 /**
  * Gift certificate service implementation
@@ -60,6 +62,36 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         }
 
         return giftCertificate;
+    }
+
+    @Override
+    public List<GiftCertificate> findByTagName(List<String> tagName) {
+        Optional<Tag> optionalTag;
+        List<GiftCertificate> foundCertificates;
+        List<GiftCertificate> giftCertificates = new ArrayList<>();
+
+        for (String name : tagName) {
+            optionalTag = tagRepository.findByName(name);
+
+            if (!optionalTag.isPresent()) {
+                log.error("Tag with name " + tagName + " was not found");
+                throw new ServiceNotFoundException(TAG_NOT_FOUND);
+            }
+        }
+
+        for (String name : tagName) {
+            optionalTag = tagRepository.findByName(name);
+            Long tagId = optionalTag.get().getId();
+            foundCertificates = giftCertificateRepository.findByTagId(tagId);
+            giftCertificates.addAll(foundCertificates);
+        }
+
+        if (!giftCertificates.isEmpty()) {
+            return giftCertificates;
+        } else {
+            log.error("Gift certificate by tag name " + tagName + " was not found");
+            throw new ServiceNotFoundException(CERTIFICATE_NOT_FOUND);
+        }
     }
 
     @Override

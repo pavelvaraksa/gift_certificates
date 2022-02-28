@@ -24,7 +24,7 @@ public interface GiftCertificateToTagRepository {
      * @param certificateToTag - link
      * @return - optional of found link
      */
-    Optional<GiftCertificateToTag> find(GiftCertificateToTag certificateToTag);
+    Optional<GiftCertificateToTag> findByLink(GiftCertificateToTag certificateToTag);
 
     /**
      * Confirmation link between gift certificate and tag

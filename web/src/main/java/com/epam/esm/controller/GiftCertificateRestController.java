@@ -61,13 +61,29 @@ public class GiftCertificateRestController {
      * Find gift certificate by name
      *
      * @param name - gift certificate name
-     * @return - gift certificates or nothing
+     * @return - gift certificate
      */
-    @GetMapping("/search")
+    @GetMapping("/search/byname")
     @ResponseStatus(HttpStatus.OK)
-    public GiftCertificateDto findGiftCertificateByName(@RequestParam(value = "name", required = false) String name) {
+    public GiftCertificateDto findGiftCertificateByName(@RequestParam String name) {
         Optional<GiftCertificate> giftCertificate = giftCertificateService.findByName(name);
         return modelMapper.map(giftCertificate.get(), GiftCertificateDto.class);
+    }
+
+    /**
+     * Find gift certificate by tag name
+     *
+     * @param tagname - tag name
+     * @return - list of gift certificates
+     */
+    @GetMapping("/search/bytag")
+    @ResponseStatus(HttpStatus.OK)
+    public List<GiftCertificateDto> findGiftCertificateByTagName(@RequestParam List<String> tagname) {
+        List<GiftCertificate> listGiftCertificate = giftCertificateService.findByTagName(tagname);
+        return listGiftCertificate
+                .stream()
+                .map(giftCertificate -> modelMapper.map(giftCertificate, GiftCertificateDto.class))
+                .collect(Collectors.toList());
     }
 
     /**

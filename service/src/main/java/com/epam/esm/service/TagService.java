@@ -4,6 +4,7 @@ import com.epam.esm.domain.Tag;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Tag service layer

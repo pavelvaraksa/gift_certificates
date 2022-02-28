@@ -30,16 +30,16 @@ public class GiftCertificateToTagRepositoryImpl implements GiftCertificateToTagR
     }
 
     @Override
-    public Optional<GiftCertificateToTag> find(GiftCertificateToTag relation) {
+    public Optional<GiftCertificateToTag> findByLink(GiftCertificateToTag giftCertificateToTag) {
         try (Session session = sessionFactory.openSession()) {
-            return Optional.ofNullable(session.find(GiftCertificateToTag.class, relation));
+            return Optional.ofNullable(session.find(GiftCertificateToTag.class, giftCertificateToTag));
         }
     }
 
     @Override
     public boolean isExistLink(Long certificateId, Long tagId) {
-        GiftCertificateToTag relation = createLink(certificateId, tagId);
-        return find(relation).isPresent();
+        GiftCertificateToTag giftCertificateToTag = createLink(certificateId, tagId);
+        return findByLink(giftCertificateToTag).isPresent();
     }
 
     private GiftCertificateToTag createLink(Long certificateId, Long tagId) {

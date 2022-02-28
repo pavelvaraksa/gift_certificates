@@ -20,6 +20,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class TagRepositoryImpl implements TagRepository {
     private final SessionFactory sessionFactory;
+    private final GiftCertificateToTagRepositoryImpl relationDao;
 
     @Override
     public List<Tag> findAll() {

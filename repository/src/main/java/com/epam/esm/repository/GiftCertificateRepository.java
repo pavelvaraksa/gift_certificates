@@ -2,6 +2,7 @@ package com.epam.esm.repository;
 
 import com.epam.esm.domain.GiftCertificate;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -16,6 +17,14 @@ public interface GiftCertificateRepository extends CrdRepository<Long, GiftCerti
      * @return - optional of found gift certificate
      */
     Optional<GiftCertificate> findByName(String name);
+
+    /**
+     * Find list of gift certificates by tag id
+     *
+     * @param id - tag id
+     * @return - list of gift certificates
+     */
+    List<GiftCertificate> findByTagId(Long id);
 
     /**
      * Update gift certificate
