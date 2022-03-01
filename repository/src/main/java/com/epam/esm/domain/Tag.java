@@ -2,9 +2,13 @@ package com.epam.esm.domain;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -20,6 +24,8 @@ import java.util.Set;
 /**
  * Tag domain
  */
+@SQLDelete(sql = "update tag set deleted = true where id = ?")
+@Where(clause = "deleted != true")
 @Getter
 @Setter
 @Entity
@@ -32,7 +38,10 @@ public class Tag implements Serializable {
     @Column
     private String name;
 
-    @ManyToMany
+    @Column(name = "deleted")
+    private boolean isActive;
+
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "gift_certificate_to_tag",
             joinColumns = {@JoinColumn(name = "tag_id")},
             inverseJoinColumns = {@JoinColumn(name = "gift_certificate_id")})

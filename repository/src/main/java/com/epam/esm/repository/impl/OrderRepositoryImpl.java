@@ -18,12 +18,12 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class OrderRepositoryImpl implements OrderRepository {
     private final SessionFactory sessionFactory;
+    private final String FIND_ALL_QUERY = "select order from Order order";
 
     @Override
     public List<Order> findAll() {
         try (Session session = sessionFactory.openSession()) {
-            String hqlQuery = "select order from Order order";
-            return session.createQuery(hqlQuery, Order.class).list();
+            return session.createQuery(FIND_ALL_QUERY, Order.class).list();
         }
     }
 

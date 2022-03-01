@@ -3,6 +3,8 @@ package com.epam.esm.domain;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -24,6 +26,8 @@ import java.util.Set;
 /**
  * Gift certificate domain
  */
+@SQLDelete(sql = "update gift_certificate set deleted = true where id = ?")
+@Where(clause = "deleted != true")
 @Getter
 @Setter
 @Entity
@@ -51,11 +55,14 @@ public class GiftCertificate implements Serializable {
     @Column(name = "last_update_date")
     private LocalDateTime lastUpdateDate;
 
+    @Column(name = "deleted")
+    private boolean isActive;
+
     @ManyToMany(mappedBy = "giftCertificateSet", fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     Set<Tag> tag = new HashSet<>();
 
     @JsonIgnore
-    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToMany
     @JoinTable(name = "order_details",
             joinColumns = {@JoinColumn(name = "gift_certificate_id")},
             inverseJoinColumns = {@JoinColumn(name = "order_id")})

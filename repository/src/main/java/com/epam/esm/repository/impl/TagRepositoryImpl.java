@@ -20,13 +20,12 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class TagRepositoryImpl implements TagRepository {
     private final SessionFactory sessionFactory;
-    private final GiftCertificateToTagRepositoryImpl relationDao;
+    private final String FIND_ALL_QUERY = "select tag from Tag tag";
 
     @Override
     public List<Tag> findAll() {
         try (Session session = sessionFactory.openSession()) {
-            String hqlQuery = "select tag from Tag tag";
-            return session.createQuery(hqlQuery, Tag.class).list();
+            return session.createQuery(FIND_ALL_QUERY, Tag.class).list();
         }
     }
 

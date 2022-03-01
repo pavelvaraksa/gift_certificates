@@ -46,7 +46,7 @@ public class Order implements Serializable {
     @Column(name = "purchase_date")
     private LocalDateTime purchaseDate;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "user_id")
     private User user;
 
@@ -55,7 +55,7 @@ public class Order implements Serializable {
     private Set<GiftCertificate> certificate;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "order", fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @OneToMany(mappedBy = "order", fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     private Set<OrderDetails> orderDetails = new HashSet<>();
 
     @Override

@@ -20,12 +20,12 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserRepositoryImpl implements UserRepository {
     private final SessionFactory sessionFactory;
+    private final String FIND_ALL_QUERY = "select user from User user";
 
     @Override
     public List<User> findAll() {
         try (Session session = sessionFactory.openSession()) {
-            String hqlQuery = "select user from User user";
-            return session.createQuery(hqlQuery, User.class).list();
+            return session.createQuery(FIND_ALL_QUERY, User.class).list();
         }
     }
 
