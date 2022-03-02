@@ -1,4 +1,4 @@
-package com.epam.esm.config.controller;
+package com.epam.esm.controller;
 
 import com.epam.esm.domain.User;
 import com.epam.esm.dto.UserDto;
@@ -35,7 +35,7 @@ public class UserRestController {
      *
      * @return - list of users or empty list
      */
-    @GetMapping
+    @GetMapping("/list")
     @ResponseStatus(HttpStatus.OK)
     public List<UserDto> findAllUsers(Pageable pageable, @RequestParam(value = "isDeleted",
             required = false, defaultValue = "false") boolean isDeleted) {

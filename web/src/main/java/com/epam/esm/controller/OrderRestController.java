@@ -1,4 +1,4 @@
-package com.epam.esm.config.controller;
+package com.epam.esm.controller;
 
 import com.epam.esm.domain.Order;
 import com.epam.esm.dto.OrderDto;

@@ -16,6 +16,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
 import org.springframework.data.domain.Pageable;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -55,6 +56,10 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             throw new ServiceNotFoundException(CERTIFICATE_NOT_FOUND);
         }
 
+        if (giftCertificate.get().isActive()) {
+            throw new ServiceNotFoundException(CERTIFICATE_NOT_FOUND);
+        }
+
         return giftCertificate;
     }
 
@@ -67,13 +72,17 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             throw new ServiceNotFoundException(CERTIFICATE_NOT_FOUND);
         }
 
+        if (giftCertificate.get().isActive()) {
+            throw new ServiceNotFoundException(CERTIFICATE_NOT_FOUND);
+        }
+
         return giftCertificate;
     }
 
     @Override
     public List<GiftCertificate> findByTagName(List<String> tagName) {
         Optional<Tag> optionalTag;
-        List<GiftCertificate> foundCertificates;
+        List<GiftCertificate> foundCertificates = new ArrayList<>();
         List<GiftCertificate> giftCertificates = new ArrayList<>();
 
         for (String name : tagName) {
@@ -90,6 +99,15 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             Long tagId = optionalTag.get().getId();
             foundCertificates = giftCertificateRepository.findByTagId(tagId);
             giftCertificates.addAll(foundCertificates);
+        }
+
+        for (GiftCertificate name : foundCertificates) {
+            Optional<GiftCertificate> giftCertificate = giftCertificateRepository.findByName(name.getName());
+
+            if (giftCertificate.get().isActive()) {
+                log.error("Gift certificate was not found");
+                throw new ServiceNotFoundException(CERTIFICATE_NOT_FOUND);
+            }
         }
 
         if (!giftCertificates.isEmpty()) {
@@ -154,6 +172,10 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             throw new ServiceNotFoundException(CERTIFICATE_NOT_FOUND);
         }
 
+        if (giftCertificateById.get().isActive()) {
+            throw new ServiceNotFoundException(CERTIFICATE_NOT_FOUND);
+        }
+
         Optional<GiftCertificate> giftCertificateByName = giftCertificateRepository.findByName(giftCertificate.getName());
 
         if (giftCertificateByName.isPresent()) {
@@ -192,6 +214,10 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
         if (giftCertificate.isEmpty()) {
             log.error("Gift certificate was not found");
+            throw new ServiceNotFoundException(CERTIFICATE_NOT_FOUND);
+        }
+
+        if (giftCertificate.get().isActive()) {
             throw new ServiceNotFoundException(CERTIFICATE_NOT_FOUND);
         }
 

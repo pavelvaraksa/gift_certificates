@@ -1,4 +1,4 @@
-package com.epam.esm.config.controller;
+package com.epam.esm.controller;
 
 import com.epam.esm.domain.Tag;
 import com.epam.esm.dto.TagDto;
@@ -37,7 +37,7 @@ public class TagRestController {
      *
      * @return - list of tags or empty list
      */
-    @GetMapping
+    @GetMapping("/list")
     @ResponseStatus(HttpStatus.OK)
     public List<TagDto> findAllTags(Pageable pageable, @RequestParam(value = "isDeleted",
             required = false, defaultValue = "false") boolean isDeleted) {
