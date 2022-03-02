@@ -3,9 +3,11 @@ package com.epam.esm.repository.impl;
 import com.epam.esm.domain.Order;
 import com.epam.esm.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.Filter;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -21,9 +23,14 @@ public class OrderRepositoryImpl implements OrderRepository {
     private final String FIND_ALL_QUERY = "select order from Order order";
 
     @Override
-    public List<Order> findAll() {
+    public List<Order> findAll(Pageable pageable, boolean isDeleted) {
         try (Session session = sessionFactory.openSession()) {
-            return session.createQuery(FIND_ALL_QUERY, Order.class).list();
+            session.unwrap(Session.class);
+            Filter filter = session.enableFilter("orderFilter");
+            filter.setParameter("isDeleted", isDeleted);
+            List<Order> orders = session.createQuery(FIND_ALL_QUERY, Order.class).list();
+            session.disableFilter("orderFilter");
+            return orders;
         }
     }
 

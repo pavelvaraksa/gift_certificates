@@ -3,8 +3,10 @@ package com.epam.esm.domain;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.Filter;
+import org.hibernate.annotations.FilterDef;
+import org.hibernate.annotations.ParamDef;
 import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -27,7 +29,8 @@ import java.util.Set;
  * Gift certificate domain
  */
 @SQLDelete(sql = "update gift_certificate set deleted = true where id = ?")
-@Where(clause = "deleted != true")
+@FilterDef(name = "certificateFilter", parameters = @ParamDef(name = "isDeleted", type = "boolean"))
+@Filter(name = "certificateFilter", condition = "deleted = :isDeleted")
 @Getter
 @Setter
 @Entity

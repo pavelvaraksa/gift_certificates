@@ -1,4 +1,4 @@
-package com.epam.esm.controller;
+package com.epam.esm.config.controller;
 
 import com.epam.esm.domain.User;
 import com.epam.esm.dto.UserDto;
@@ -13,8 +13,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -34,8 +37,10 @@ public class UserRestController {
      */
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<UserDto> findAllUsers() {
-        List<User> listUser = userService.findAll();
+    public List<UserDto> findAllUsers(Pageable pageable, @RequestParam(value = "isDeleted",
+            required = false, defaultValue = "false") boolean isDeleted) {
+
+        List<User> listUser = userService.findAll(pageable, isDeleted);
         return listUser
                 .stream()
                 .map(user -> modelMapper.map(user, UserDto.class))

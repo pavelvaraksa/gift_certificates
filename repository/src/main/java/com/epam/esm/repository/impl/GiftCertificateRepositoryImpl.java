@@ -4,11 +4,14 @@ import com.epam.esm.domain.GiftCertificate;
 import com.epam.esm.repository.GiftCertificateRepository;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.Criteria;
+import org.hibernate.Filter;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
+
+import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -26,9 +29,14 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
             "join GiftCertificateToTag gctt on gc.id = gctt.giftCertificate where gctt.tag = ";
 
     @Override
-    public List<GiftCertificate> findAll() {
+    public List<GiftCertificate> findAll(Pageable pageable, boolean isDeleted) {
         try (Session session = sessionFactory.openSession()) {
-            return session.createQuery(FIND_ALL_QUERY, GiftCertificate.class).list();
+            session.unwrap(Session.class);
+            Filter filter = session.enableFilter("certificateFilter");
+            filter.setParameter("isDeleted", isDeleted);
+            List<GiftCertificate> giftCertificates = session.createQuery(FIND_ALL_QUERY, GiftCertificate.class).list();
+            session.disableFilter("certificateFilter");
+            return giftCertificates;
         }
     }
 

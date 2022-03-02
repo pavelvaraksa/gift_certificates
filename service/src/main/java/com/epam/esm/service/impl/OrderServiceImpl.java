@@ -14,10 +14,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
+import org.springframework.data.domain.Pageable;
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.epam.esm.exception.MessageException.ORDER_NOT_FOUND;
 
@@ -34,8 +37,11 @@ public class OrderServiceImpl implements OrderService {
     private final GiftCertificateService giftCertificateService;
 
     @Override
-    public List<Order> findAll() {
-        return orderRepository.findAll();
+    public List<Order> findAll(Pageable pageable, boolean isDeleted) {
+        return orderRepository.findAll(pageable, isDeleted)
+                .stream()
+                .sorted(Comparator.comparing(Order::getId))
+                .collect(Collectors.toList());
     }
 
     @Override

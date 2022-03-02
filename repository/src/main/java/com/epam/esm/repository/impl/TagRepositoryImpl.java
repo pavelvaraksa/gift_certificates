@@ -4,10 +4,12 @@ import com.epam.esm.domain.Tag;
 import com.epam.esm.repository.TagRepository;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.Criteria;
+import org.hibernate.Filter;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Restrictions;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -23,9 +25,14 @@ public class TagRepositoryImpl implements TagRepository {
     private final String FIND_ALL_QUERY = "select tag from Tag tag";
 
     @Override
-    public List<Tag> findAll() {
+    public List<Tag> findAll(Pageable pageable, boolean isDeleted) {
         try (Session session = sessionFactory.openSession()) {
-            return session.createQuery(FIND_ALL_QUERY, Tag.class).list();
+            session.unwrap(Session.class);
+            Filter filter = session.enableFilter("tagFilter");
+            filter.setParameter("isDeleted", isDeleted);
+            List<Tag> tags = session.createQuery(FIND_ALL_QUERY, Tag.class).list();
+            session.disableFilter("tagFilter");
+            return tags;
         }
     }
 

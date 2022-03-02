@@ -1,4 +1,4 @@
-package com.epam.esm.controller;
+package com.epam.esm.config.controller;
 
 import com.epam.esm.domain.Order;
 import com.epam.esm.dto.OrderDto;
@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -31,10 +33,12 @@ public class OrderRestController {
      *
      * @return - list of orders or empty list
      */
-    @GetMapping
+    @GetMapping("/list")
     @ResponseStatus(HttpStatus.OK)
-    public List<OrderDto> findAllOrders() {
-        List<Order> listOrder = orderService.findAll();
+    public List<OrderDto> findAllOrders(Pageable pageable, @RequestParam(value = "isDeleted",
+            required = false, defaultValue = "false") boolean isDeleted) {
+
+        List<Order> listOrder = orderService.findAll(pageable, isDeleted);
         return listOrder
                 .stream()
                 .map(order -> modelMapper.map(order, OrderDto.class))

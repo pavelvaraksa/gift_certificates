@@ -3,18 +3,18 @@ package com.epam.esm.service.impl;
 import com.epam.esm.domain.Tag;
 import com.epam.esm.exception.ServiceExistException;
 import com.epam.esm.exception.ServiceNotFoundException;
-import com.epam.esm.repository.GiftCertificateRepository;
-import com.epam.esm.repository.GiftCertificateToTagRepository;
 import com.epam.esm.repository.TagRepository;
-import com.epam.esm.repository.UserRepository;
 import com.epam.esm.service.TagService;
 import com.epam.esm.validator.TagValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.epam.esm.exception.MessageException.TAG_EXIST;
 import static com.epam.esm.exception.MessageException.TAG_NOT_FOUND;
@@ -27,13 +27,13 @@ import static com.epam.esm.exception.MessageException.TAG_NOT_FOUND;
 @RequiredArgsConstructor
 public class TagServiceImpl implements TagService {
     private final TagRepository tagRepository;
-    private final GiftCertificateRepository giftCertificateRepository;
-    private final UserRepository userRepository;
-    private final GiftCertificateToTagRepository giftCertificateToTagRepository;
 
     @Override
-    public List<Tag> findAll() {
-        return tagRepository.findAll();
+    public List<Tag> findAll(Pageable pageable, boolean isDeleted) {
+        return tagRepository.findAll(pageable, isDeleted)
+                .stream()
+                .sorted(Comparator.comparing(Tag::getId))
+                .collect(Collectors.toList());
     }
 
     @Override

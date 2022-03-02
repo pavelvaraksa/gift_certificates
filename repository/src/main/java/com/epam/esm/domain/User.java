@@ -3,6 +3,10 @@ package com.epam.esm.domain;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.Filter;
+import org.hibernate.annotations.FilterDef;
+import org.hibernate.annotations.ParamDef;
+import org.hibernate.annotations.SQLDelete;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -21,6 +25,9 @@ import java.util.Set;
 /**
  * User domain
  */
+@SQLDelete(sql = "update user_table set deleted = true where id = ?")
+@FilterDef(name = "userFilter", parameters = @ParamDef(name = "isDeleted", type = "boolean"))
+@Filter(name = "userFilter", condition = "deleted = :isDeleted")
 @Getter
 @Setter
 @Entity
@@ -38,6 +45,9 @@ public class User implements Serializable {
 
     @Column(name = "last_name")
     private String lastName;
+
+    @Column(name = "deleted")
+    private boolean isActive;
 
     @JsonIgnore
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.REMOVE})

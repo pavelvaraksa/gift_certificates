@@ -15,10 +15,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
+import org.springframework.data.domain.Pageable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.epam.esm.exception.MessageException.CERTIFICATE_EXIST;
 import static com.epam.esm.exception.MessageException.CERTIFICATE_NOT_FOUND;
@@ -36,8 +39,11 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     private final TagRepository tagRepository;
 
     @Override
-    public List<GiftCertificate> findAll() {
-        return giftCertificateRepository.findAll();
+    public List<GiftCertificate> findAll(Pageable pageable, boolean isDeleted) {
+        return giftCertificateRepository.findAll(pageable, isDeleted)
+                .stream()
+                .sorted(Comparator.comparing(GiftCertificate::getId))
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -193,4 +199,3 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         giftCertificateRepository.deleteById(id);
     }
 }
-

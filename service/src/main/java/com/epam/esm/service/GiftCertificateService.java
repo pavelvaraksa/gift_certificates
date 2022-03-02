@@ -2,6 +2,7 @@ package com.epam.esm.service;
 
 import com.epam.esm.domain.GiftCertificate;
 
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,7 +16,7 @@ public interface GiftCertificateService {
      *
      * @return - list of gift certificates or empty list
      */
-    List<GiftCertificate> findAll();
+    List<GiftCertificate> findAll(Pageable pageable, boolean isDeleted);
 
     /**
      * Find a gift certificate by id

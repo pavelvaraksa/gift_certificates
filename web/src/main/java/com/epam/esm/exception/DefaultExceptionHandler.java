@@ -21,7 +21,6 @@ public class DefaultExceptionHandler {
     private final String INCORRECT_SEARCH = "Incorrect input in search field";
     private final String INCORRECT_SYNTAX = "Incorrect input in body field";
     private final String NOT_ALLOWED = "Method not allowed this function";
-    private final String IS_NOT_ACTIVE = "This name is not available";
 
     @ExceptionHandler(ServiceValidException.class)
     public ResponseEntity<FrameException> handleValidException(ServiceValidException ex, Locale locale) {
@@ -55,7 +54,7 @@ public class DefaultExceptionHandler {
 
     @ExceptionHandler(PSQLException.class)
     public ResponseEntity<ErrorMessage> handlePSQLException(PSQLException ex) {
-        return new ResponseEntity<>(new ErrorMessage(400, IS_NOT_ACTIVE), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(new ErrorMessage(400, INCORRECT_SEARCH), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)

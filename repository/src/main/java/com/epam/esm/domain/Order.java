@@ -1,10 +1,13 @@
 package com.epam.esm.domain;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.Filter;
+import org.hibernate.annotations.FilterDef;
+import org.hibernate.annotations.ParamDef;
+import org.hibernate.annotations.SQLDelete;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -27,6 +30,9 @@ import java.util.Set;
 /**
  * Order domain
  */
+@SQLDelete(sql = "update order_table set deleted = true where id = ?")
+@FilterDef(name = "orderFilter", parameters = @ParamDef(name = "isDeleted", type = "boolean"))
+@Filter(name = "orderFilter", condition = "deleted = :isDeleted")
 @Getter
 @Setter
 @Entity
@@ -45,6 +51,9 @@ public class Order implements Serializable {
 
     @Column(name = "purchase_date")
     private LocalDateTime purchaseDate;
+
+    @Column(name = "deleted")
+    private boolean isActive;
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "user_id")

@@ -1,4 +1,4 @@
-package com.epam.esm.controller;
+package com.epam.esm.config.controller;
 
 import com.epam.esm.domain.Tag;
 import com.epam.esm.dto.TagDto;
@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import org.springframework.data.domain.Pageable;
 
 import java.net.URI;
 import java.util.List;
@@ -37,8 +39,10 @@ public class TagRestController {
      */
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<TagDto> findAllTags() {
-        List<Tag> listTag = tagService.findAll();
+    public List<TagDto> findAllTags(Pageable pageable, @RequestParam(value = "isDeleted",
+            required = false, defaultValue = "false") boolean isDeleted) {
+
+        List<Tag> listTag = tagService.findAll(pageable, isDeleted);
         return listTag
                 .stream()
                 .map(tag -> modelMapper.map(tag, TagDto.class))

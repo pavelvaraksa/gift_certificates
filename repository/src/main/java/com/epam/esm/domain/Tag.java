@@ -2,8 +2,10 @@ package com.epam.esm.domain;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.Filter;
+import org.hibernate.annotations.FilterDef;
+import org.hibernate.annotations.ParamDef;
 import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -25,7 +27,8 @@ import java.util.Set;
  * Tag domain
  */
 @SQLDelete(sql = "update tag set deleted = true where id = ?")
-@Where(clause = "deleted != true")
+@FilterDef(name = "tagFilter", parameters = @ParamDef(name = "isDeleted", type = "boolean"))
+@Filter(name = "tagFilter", condition = "deleted = :isDeleted")
 @Getter
 @Setter
 @Entity

@@ -4,10 +4,12 @@ import com.epam.esm.domain.User;
 import com.epam.esm.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.Criteria;
+import org.hibernate.Filter;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Restrictions;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -23,9 +25,14 @@ public class UserRepositoryImpl implements UserRepository {
     private final String FIND_ALL_QUERY = "select user from User user";
 
     @Override
-    public List<User> findAll() {
+    public List<User> findAll(Pageable pageable, boolean isDeleted) {
         try (Session session = sessionFactory.openSession()) {
-            return session.createQuery(FIND_ALL_QUERY, User.class).list();
+            session.unwrap(Session.class);
+            Filter filter = session.enableFilter("userFilter");
+            filter.setParameter("isDeleted", isDeleted);
+            List<User> users = session.createQuery(FIND_ALL_QUERY, User.class).list();
+            session.disableFilter("userFilter");
+            return users;
         }
     }
 

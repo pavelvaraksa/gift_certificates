@@ -10,8 +10,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
+import org.springframework.data.domain.Pageable;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.epam.esm.exception.MessageException.USER_EXIST;
 import static com.epam.esm.exception.MessageException.USER_NOT_FOUND;
@@ -26,8 +29,11 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     @Override
-    public List<User> findAll() {
-        return userRepository.findAll();
+    public List<User> findAll(Pageable pageable, boolean isDeleted) {
+        return userRepository.findAll(pageable, isDeleted)
+                .stream()
+                .sorted(Comparator.comparing(User::getId))
+                .collect(Collectors.toList());
     }
 
     @Override
