@@ -209,6 +209,22 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
+    public GiftCertificate activateById(Long id, boolean isCommand) {
+        Optional<GiftCertificate> giftCertificate = giftCertificateRepository.findById(id);
+
+        if (giftCertificate.isEmpty()) {
+            log.error("Gift certificate was not found");
+            throw new ServiceNotFoundException(CERTIFICATE_NOT_FOUND);
+        }
+
+        if (giftCertificate.get().isActive()) {
+            return giftCertificateRepository.activateById(id);
+        } else {
+            throw new ServiceNotFoundException(CERTIFICATE_NOT_FOUND);
+        }
+    }
+
+    @Override
     public void deleteById(Long id) {
         Optional<GiftCertificate> giftCertificate = giftCertificateRepository.findById(id);
 

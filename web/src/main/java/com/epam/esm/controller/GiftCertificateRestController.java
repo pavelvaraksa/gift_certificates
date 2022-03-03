@@ -75,13 +75,13 @@ public class GiftCertificateRestController {
     /**
      * Find gift certificate by tag name
      *
-     * @param tagname - tag name
+     * @param tagName - tag name
      * @return - list of gift certificates
      */
     @GetMapping("/search/byTag")
     @ResponseStatus(HttpStatus.OK)
-    public List<GiftCertificateDto> findGiftCertificateByTagName(@RequestParam List<String> tagname) {
-        List<GiftCertificate> listGiftCertificate = giftCertificateService.findByTagName(tagname);
+    public List<GiftCertificateDto> findGiftCertificateByTagName(@RequestParam List<String> tagName) {
+        List<GiftCertificate> listGiftCertificate = giftCertificateService.findByTagName(tagName);
         return listGiftCertificate
                 .stream()
                 .map(giftCertificate -> modelMapper.map(giftCertificate, GiftCertificateDto.class))
@@ -113,6 +113,20 @@ public class GiftCertificateRestController {
                                                     @RequestBody GiftCertificate giftCertificate) {
         GiftCertificate updatedGiftCertificate = giftCertificateService.updateById(id, giftCertificate);
         return modelMapper.map(updatedGiftCertificate, GiftCertificateDto.class);
+    }
+
+    /**
+     * Activate gift certificate by id
+     *
+     * @param id        - gift certificate id
+     * @param isCommand - command for activate
+     */
+    @PatchMapping("/active/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public GiftCertificateDto activateGiftCertificate(@PathVariable Long id,
+                                                      @RequestParam(value = "isCommand", defaultValue = "false") boolean isCommand) {
+        GiftCertificate activatedGiftCertificate = giftCertificateService.activateById(id, isCommand);
+        return modelMapper.map(activatedGiftCertificate, GiftCertificateDto.class);
     }
 
     /**

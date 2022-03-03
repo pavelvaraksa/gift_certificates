@@ -3,6 +3,7 @@ package com.epam.esm.service;
 import com.epam.esm.domain.GiftCertificate;
 
 import org.springframework.data.domain.Pageable;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -58,6 +59,15 @@ public interface GiftCertificateService {
      * @return - operation result (gift certificate updated full or partly)
      */
     GiftCertificate updateById(Long id, GiftCertificate giftCertificate);
+
+    /**
+     * Activate a gift certificate
+     *
+     * @param id        - gift certificate id
+     * @param isCommand - command for activate
+     * @return - activated gift certificate
+     */
+    GiftCertificate activateById(Long id, boolean isCommand);
 
     /**
      * Delete a gift certificate

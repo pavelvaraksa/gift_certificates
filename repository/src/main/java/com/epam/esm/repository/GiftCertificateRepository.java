@@ -33,4 +33,12 @@ public interface GiftCertificateRepository extends CrdRepository<Long, GiftCerti
      * @return - updated gift certificate
      */
     GiftCertificate updateById(GiftCertificate giftCertificate);
+
+    /**
+     * Activate gift certificate by id
+     *
+     * @param id - gift certificate id
+     * @return - activated gift certificate
+     */
+    GiftCertificate activateById(Long id);
 }

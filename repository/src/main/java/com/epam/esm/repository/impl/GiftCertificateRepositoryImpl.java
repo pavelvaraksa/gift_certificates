@@ -90,6 +90,19 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
     }
 
     @Override
+    public GiftCertificate activateById(Long id) {
+        try (Session session = sessionFactory.openSession()) {
+            Transaction transaction = session.getTransaction();
+            transaction.begin();
+            GiftCertificate activatedGiftCertificate = session.find(GiftCertificate.class, id);
+            activatedGiftCertificate.setActive(!activatedGiftCertificate.isActive());
+            session.merge(activatedGiftCertificate);
+            transaction.commit();
+            return activatedGiftCertificate;
+        }
+    }
+
+    @Override
     public void deleteById(Long id) {
         try (Session session = sessionFactory.openSession()) {
             GiftCertificate giftCertificate = session.find(GiftCertificate.class, id);
