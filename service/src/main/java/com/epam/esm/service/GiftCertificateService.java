@@ -20,6 +20,14 @@ public interface GiftCertificateService {
     List<GiftCertificate> findAll(Pageable pageable, boolean isDeleted);
 
     /**
+     * Find all gift certificates id by order id
+     *
+     * @param id - order id
+     * @return - list of gift certificates id or empty list
+     */
+    List<Long> findAllIdByOrderId(Long id);
+
+    /**
      * Find a gift certificate by id
      *
      * @param id - gift certificate id

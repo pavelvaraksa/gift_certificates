@@ -23,6 +23,8 @@ import java.util.Optional;
 public class TagRepositoryImpl implements TagRepository {
     private final SessionFactory sessionFactory;
     private final String FIND_ALL_QUERY = "select tag from Tag tag";
+    private final String FIND_ALL_QUERY_BY_CERTIFICATE_ID = "select tag.id from Tag tag " +
+            "join GiftCertificateToTag gctt on tag.id = gctt.tag where gctt.giftCertificate = ";
 
     @Override
     public List<Tag> findAll(Pageable pageable, boolean isDeleted) {
@@ -48,6 +50,13 @@ public class TagRepositoryImpl implements TagRepository {
         Criteria criteria = sessionFactory.openSession().createCriteria(Tag.class);
         criteria.add(Restrictions.like("name", name));
         return Optional.ofNullable((Tag) criteria.uniqueResult());
+    }
+
+    @Override
+    public List<Long> findByCertificate(Long id) {
+        try (Session session = sessionFactory.openSession()) {
+            return session.createQuery(FIND_ALL_QUERY_BY_CERTIFICATE_ID + id).list();
+        }
     }
 
     @Override

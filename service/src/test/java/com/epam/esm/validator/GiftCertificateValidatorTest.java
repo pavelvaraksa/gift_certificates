@@ -6,8 +6,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.math.BigDecimal;
-
 public class GiftCertificateValidatorTest {
     private GiftCertificate giftCertificate;
 
@@ -16,7 +14,7 @@ public class GiftCertificateValidatorTest {
         giftCertificate = new GiftCertificate();
         giftCertificate.setName("Certificate_1");
         giftCertificate.setDescription("Description_1");
-        giftCertificate.setPrice(BigDecimal.valueOf(3.75));
+        giftCertificate.setCurrentPrice(3.75D);
         giftCertificate.setDuration(4);
     }
 
@@ -83,14 +81,14 @@ public class GiftCertificateValidatorTest {
 
     @Test
     public void testIncorrectPrice() {
-        giftCertificate.setPrice(BigDecimal.valueOf(-5.6));
+        giftCertificate.setCurrentPrice(-5.6D);
         Assertions.assertThrows(ServiceValidException.class,
                 () -> GiftCertificateValidator.isGiftCertificateValid(giftCertificate));
     }
 
     @Test
     public void testIncorrectPriceNull() {
-        giftCertificate.setPrice(null);
+        giftCertificate.setCurrentPrice(null);
         Assertions.assertThrows(ServiceValidException.class,
                 () -> GiftCertificateValidator.isGiftCertificateValid(giftCertificate));
     }

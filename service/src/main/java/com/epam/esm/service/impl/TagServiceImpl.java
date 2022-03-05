@@ -1,19 +1,26 @@
 package com.epam.esm.service.impl;
 
 import com.epam.esm.domain.Tag;
+import com.epam.esm.domain.User;
 import com.epam.esm.exception.ServiceExistException;
 import com.epam.esm.exception.ServiceNotFoundException;
 import com.epam.esm.repository.TagRepository;
+import com.epam.esm.service.GiftCertificateService;
+import com.epam.esm.service.OrderService;
 import com.epam.esm.service.TagService;
+import com.epam.esm.service.UserService;
 import com.epam.esm.validator.TagValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.BinaryOperator;
 import java.util.stream.Collectors;
 
 import static com.epam.esm.exception.MessageException.TAG_EXIST;
@@ -27,6 +34,9 @@ import static com.epam.esm.exception.MessageException.TAG_NOT_FOUND;
 @RequiredArgsConstructor
 public class TagServiceImpl implements TagService {
     private final TagRepository tagRepository;
+    private final UserService userService;
+    private final OrderService orderService;
+    private final GiftCertificateService giftCertificateService;
 
     @Override
     public List<Tag> findAll(Pageable pageable, boolean isDeleted) {
@@ -86,6 +96,33 @@ public class TagServiceImpl implements TagService {
 
         log.info("Tag with id " + id + " deleted");
         tagRepository.deleteById(id);
+    }
+
+    @Override
+    public Optional<Tag> findMostWidelyUsedForUser(Long id) {
+        Optional<User> user = userService.findById(id);
+        List<Long> certificates = new ArrayList<>();
+        List<Long> allCertificates;
+        List<Long> tags = new ArrayList<>();
+        List<Long> allTags;
+
+        Long orderId = orderService.findIdWithHighestCost(user.get().getId());
+        allCertificates = giftCertificateService.findAllIdByOrderId(orderId);
+        certificates.addAll(allCertificates);
+
+        for (Long certificateId : certificates) {
+            allTags = tagRepository.findByCertificate(certificateId);
+            tags.addAll(allTags);
+        }
+
+        if (tags.size() == 0) {
+            log.error("Tag was not found");
+            throw new ServiceNotFoundException(TAG_NOT_FOUND);
+        }
+
+        Long widelyUsedTagId = tags.stream()
+                .reduce(BinaryOperator.maxBy(Comparator.comparingInt(tag -> Collections.frequency(tags, tag)))).orElseThrow();
+        return tagRepository.findById(widelyUsedTagId);
     }
 }
 

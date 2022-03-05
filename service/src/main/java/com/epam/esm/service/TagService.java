@@ -3,6 +3,7 @@ package com.epam.esm.service;
 import com.epam.esm.domain.Tag;
 
 import org.springframework.data.domain.Pageable;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -48,4 +49,12 @@ public interface TagService {
      * @param id - tag id
      */
     void deleteById(Long id);
+
+    /**
+     * Find most widely used tag for user
+     *
+     * @param id - user id
+     * @return - tag
+     */
+    Optional<Tag> findMostWidelyUsedForUser(Long id);
 }

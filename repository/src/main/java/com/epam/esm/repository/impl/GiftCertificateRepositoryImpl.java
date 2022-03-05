@@ -25,8 +25,10 @@ import java.util.Optional;
 public class GiftCertificateRepositoryImpl implements GiftCertificateRepository {
     private final SessionFactory sessionFactory;
     private final String FIND_ALL_QUERY = "select gc from GiftCertificate gc";
-    private final String FIND_ALL_QUERY_BY_TAG_NAME = "select gc from GiftCertificate gc " +
+    private final String FIND_ALL_QUERY_BY_TAG_ID = "select gc from GiftCertificate gc " +
             "join GiftCertificateToTag gctt on gc.id = gctt.giftCertificate where gctt.tag = ";
+    private final String FIND_ALL_QUERY_BY_ORDER_ID = "select gc.id from GiftCertificate gc " +
+            "join OrderDetails od on gc.id = od.certificate where od.order = ";
 
     @Override
     public List<GiftCertificate> findAll(Pageable pageable, boolean isDeleted) {
@@ -37,6 +39,13 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
             List<GiftCertificate> giftCertificates = session.createQuery(FIND_ALL_QUERY, GiftCertificate.class).list();
             session.disableFilter("certificateFilter");
             return giftCertificates;
+        }
+    }
+
+    @Override
+    public List<Long> findAllByOrderId(Long id) {
+        try (Session session = sessionFactory.openSession()) {
+            return session.createQuery(FIND_ALL_QUERY_BY_ORDER_ID + id).list();
         }
     }
 
@@ -57,7 +66,7 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
     @Override
     public List<GiftCertificate> findByTagId(Long id) {
         try (Session session = sessionFactory.openSession()) {
-            return session.createQuery(FIND_ALL_QUERY_BY_TAG_NAME + id, GiftCertificate.class).list();
+            return session.createQuery(FIND_ALL_QUERY_BY_TAG_ID + id, GiftCertificate.class).list();
         }
     }
 

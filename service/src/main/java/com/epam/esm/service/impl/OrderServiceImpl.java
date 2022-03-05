@@ -12,10 +12,11 @@ import com.epam.esm.service.OrderService;
 import com.epam.esm.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import org.springframework.data.domain.Pageable;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -23,6 +24,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.epam.esm.exception.MessageException.ORDER_NOT_FOUND;
+import static com.epam.esm.exception.MessageException.TAG_NOT_FOUND;
 
 /**
  * Order service implementation
@@ -42,6 +44,30 @@ public class OrderServiceImpl implements OrderService {
                 .stream()
                 .sorted(Comparator.comparing(Order::getId))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Long findIdWithHighestCost(Long id) {
+        List<Long> listOrdersId = orderRepository.findAllIdByUserId(id);
+        List<Order> listOrders = new ArrayList<>();
+        List<Order> listAllOrders = new ArrayList<>();
+
+        if (listOrdersId.isEmpty()) {
+            log.error("Tag with id " + id + " was not found");
+            throw new ServiceNotFoundException(TAG_NOT_FOUND);
+        }
+
+        for (Long orderId : listOrdersId) {
+            listOrders = orderRepository.findAllOrdersByUserId(orderId);
+            listAllOrders.addAll(listOrders);
+        }
+
+        Optional<Order> optionalOrder = Optional.of(listAllOrders
+                .stream()
+                .max(Comparator.comparing(Order::getTotalPrice))
+                .get());
+
+        return optionalOrder.get().getId();
     }
 
     @Override

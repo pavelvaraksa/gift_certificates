@@ -22,7 +22,7 @@ public class BeanConfig {
     @Bean
     public MessageSource messageSource() {
         ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
-        messageSource.setBasename("locale_en");
+        messageSource.setBasename("locale");
         messageSource.setDefaultLocale(Locale.ROOT);
         messageSource.setDefaultEncoding("UTF-8");
         return messageSource;

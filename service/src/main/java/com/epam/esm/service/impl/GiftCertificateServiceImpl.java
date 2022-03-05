@@ -47,6 +47,24 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
                 .collect(Collectors.toList());
     }
 
+    public List<Long> findAllIdByOrderId(Long id) {
+        List<Long> certificates = giftCertificateRepository.findAllByOrderId(id);
+        List<Long> tags = new ArrayList<>();
+        List<Long> allTags;
+
+        for (Long certificateId : certificates) {
+            allTags = tagRepository.findByCertificate(certificateId);
+
+            Optional<GiftCertificate> giftCertificate = giftCertificateRepository.findById(certificateId);
+
+            if (!giftCertificate.get().getTag().isEmpty()) {
+                tags.addAll(allTags);
+            }
+        }
+
+        return certificates;
+    }
+
     @Override
     public Optional<GiftCertificate> findById(Long id) {
         Optional<GiftCertificate> giftCertificate = giftCertificateRepository.findById(id);

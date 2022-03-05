@@ -1,6 +1,8 @@
 package com.epam.esm.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.Filter;
@@ -46,6 +48,7 @@ public class User implements Serializable {
     @Column(name = "last_name")
     private String lastName;
 
+    @JsonIgnore
     @Column(name = "deleted")
     private boolean isActive;
 
@@ -61,11 +64,12 @@ public class User implements Serializable {
         return Objects.equals(id, user.id)
                 && Objects.equals(login, user.login)
                 && Objects.equals(firstName, user.firstName)
-                && Objects.equals(lastName, user.lastName);
+                && Objects.equals(lastName, user.lastName)
+                && Objects.equals(order, user.order);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, login, firstName, lastName);
+        return Objects.hash(id, login, firstName, lastName, order);
     }
 }

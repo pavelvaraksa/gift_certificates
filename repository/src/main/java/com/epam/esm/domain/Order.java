@@ -1,6 +1,8 @@
 package com.epam.esm.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.DynamicUpdate;
@@ -55,6 +57,7 @@ public class Order implements Serializable {
     @Column(name = "deleted")
     private boolean isActive;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "user_id")
     private User user;
@@ -75,12 +78,11 @@ public class Order implements Serializable {
         return Objects.equals(id, order.id)
                 && Objects.equals(totalPrice, order.totalPrice)
                 && Objects.equals(count, order.count)
-                && Objects.equals(purchaseDate, order.purchaseDate)
-                && Objects.equals(user, order.user);
+                && Objects.equals(purchaseDate, order.purchaseDate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, totalPrice, count, purchaseDate, user);
+        return Objects.hash(id, totalPrice, count, purchaseDate);
     }
 }
