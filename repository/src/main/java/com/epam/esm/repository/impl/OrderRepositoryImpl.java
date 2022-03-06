@@ -7,9 +7,12 @@ import org.hibernate.Filter;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import javax.persistence.Query;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,14 +29,20 @@ public class OrderRepositoryImpl implements OrderRepository {
             "join User user on order.user = user.id where user.id = ";
 
     @Override
-    public List<Order> findAll(Pageable pageable, boolean isDeleted) {
+    public Page<Order> findAll(Pageable pageable, boolean isDeleted) {
         try (Session session = sessionFactory.openSession()) {
             session.unwrap(Session.class);
+            int pageNumber = pageable.getPageNumber();
+            int pageSize = pageable.getPageSize();
             Filter filter = session.enableFilter("orderFilter");
             filter.setParameter("isDeleted", isDeleted);
-            List<Order> orders = session.createQuery(FIND_ALL_QUERY, Order.class).list();
+            Query queryOrders = session.createQuery(FIND_ALL_QUERY, Order.class);
+            queryOrders.setFirstResult(pageNumber * pageSize);
+            queryOrders.setMaxResults(pageSize);
+            List<Order> list = queryOrders.getResultList();
+            Page<Order> page = new PageImpl<>(list);
             session.disableFilter("orderFilter");
-            return orders;
+            return page;
         }
     }
 

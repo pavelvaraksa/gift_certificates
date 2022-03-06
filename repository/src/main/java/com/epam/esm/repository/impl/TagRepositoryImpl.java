@@ -9,9 +9,12 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Restrictions;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import javax.persistence.Query;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,14 +30,20 @@ public class TagRepositoryImpl implements TagRepository {
             "join GiftCertificateToTag gctt on tag.id = gctt.tag where gctt.giftCertificate = ";
 
     @Override
-    public List<Tag> findAll(Pageable pageable, boolean isDeleted) {
+    public Page<Tag> findAll(Pageable pageable, boolean isDeleted) {
         try (Session session = sessionFactory.openSession()) {
             session.unwrap(Session.class);
+            int pageNumber = pageable.getPageNumber();
+            int pageSize = pageable.getPageSize();
             Filter filter = session.enableFilter("tagFilter");
             filter.setParameter("isDeleted", isDeleted);
-            List<Tag> tags = session.createQuery(FIND_ALL_QUERY, Tag.class).list();
+            Query queryTags = session.createQuery(FIND_ALL_QUERY, Tag.class);
+            queryTags.setFirstResult(pageNumber * pageSize);
+            queryTags.setMaxResults(pageSize);
+            List<Tag> list = queryTags.getResultList();
+            Page<Tag> page = new PageImpl<>(list);
             session.disableFilter("tagFilter");
-            return tags;
+            return page;
         }
     }
 

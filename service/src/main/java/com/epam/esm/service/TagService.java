@@ -2,9 +2,9 @@ package com.epam.esm.service;
 
 import com.epam.esm.domain.Tag;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -15,9 +15,9 @@ public interface TagService {
     /**
      * Find all tags
      *
-     * @return - list of tags or empty list
+     * @return - page of tags or empty page
      */
-    List<Tag> findAll(Pageable pageable, boolean isDeleted);
+    Page<Tag> findAll(Pageable pageable, boolean isDeleted);
 
     /**
      * Find a tag by id.

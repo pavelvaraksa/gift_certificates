@@ -9,10 +9,12 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Restrictions;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
-import org.springframework.data.domain.Pageable;
-
+import javax.persistence.Query;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -31,14 +33,20 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
             "join OrderDetails od on gc.id = od.certificate where od.order = ";
 
     @Override
-    public List<GiftCertificate> findAll(Pageable pageable, boolean isDeleted) {
+    public Page<GiftCertificate> findAll(Pageable pageable, boolean isDeleted) {
         try (Session session = sessionFactory.openSession()) {
             session.unwrap(Session.class);
+            int pageNumber = pageable.getPageNumber();
+            int pageSize = pageable.getPageSize();
             Filter filter = session.enableFilter("certificateFilter");
             filter.setParameter("isDeleted", isDeleted);
-            List<GiftCertificate> giftCertificates = session.createQuery(FIND_ALL_QUERY, GiftCertificate.class).list();
+            Query queryCertificates = session.createQuery(FIND_ALL_QUERY, GiftCertificate.class);
+            queryCertificates.setFirstResult(pageNumber * pageSize);
+            queryCertificates.setMaxResults(pageSize);
+            List<GiftCertificate> list = queryCertificates.getResultList();
+            Page<GiftCertificate> page = new PageImpl<>(list);
             session.disableFilter("certificateFilter");
-            return giftCertificates;
+            return page;
         }
     }
 

@@ -5,6 +5,9 @@ import com.epam.esm.dto.OrderDto;
 import com.epam.esm.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,8 +17,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-
-import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -31,18 +32,18 @@ public class OrderRestController {
     /**
      * Find list of orders
      *
-     * @return - list of orders or empty list
+     * @return - page of orders or empty page
      */
     @GetMapping("/list")
     @ResponseStatus(HttpStatus.OK)
-    public List<OrderDto> findAllOrders(Pageable pageable, @RequestParam(value = "isDeleted",
+    public Page<OrderDto> findAllOrders(Pageable pageable, @RequestParam(value = "isDeleted",
             required = false, defaultValue = "false") boolean isDeleted) {
 
-        List<Order> listOrder = orderService.findAll(pageable, isDeleted);
-        return listOrder
+        Page<Order> listOrder = orderService.findAll(pageable, isDeleted);
+        return new PageImpl<>(listOrder
                 .stream()
                 .map(order -> modelMapper.map(order, OrderDto.class))
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()));
     }
 
     /**

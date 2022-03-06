@@ -9,9 +9,12 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Restrictions;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import javax.persistence.Query;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,14 +28,20 @@ public class UserRepositoryImpl implements UserRepository {
     private final String FIND_ALL_QUERY = "select user from User user";
 
     @Override
-    public List<User> findAll(Pageable pageable, boolean isDeleted) {
+    public Page<User> findAll(Pageable pageable, boolean isDeleted) {
         try (Session session = sessionFactory.openSession()) {
             session.unwrap(Session.class);
+            int pageNumber = pageable.getPageNumber();
+            int pageSize = pageable.getPageSize();
             Filter filter = session.enableFilter("userFilter");
             filter.setParameter("isDeleted", isDeleted);
-            List<User> users = session.createQuery(FIND_ALL_QUERY, User.class).list();
+            Query queryUsers = session.createQuery(FIND_ALL_QUERY, User.class);
+            queryUsers.setFirstResult(pageNumber * pageSize);
+            queryUsers.setMaxResults(pageSize);
+            List<User> list = queryUsers.getResultList();
+            Page<User> page = new PageImpl<>(list);
             session.disableFilter("userFilter");
-            return users;
+            return page;
         }
     }
 

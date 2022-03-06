@@ -5,6 +5,9 @@ import com.epam.esm.dto.UserDto;
 import com.epam.esm.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,9 +20,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import org.springframework.data.domain.Pageable;
-
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -33,18 +33,18 @@ public class UserRestController {
     /**
      * Find list of users
      *
-     * @return - list of users or empty list
+     * @return - page of users or empty page
      */
     @GetMapping("/list")
     @ResponseStatus(HttpStatus.OK)
-    public List<UserDto> findAllUsers(Pageable pageable, @RequestParam(value = "isDeleted",
+    public Page<UserDto> findAllUsers(Pageable pageable, @RequestParam(value = "isDeleted",
             required = false, defaultValue = "false") boolean isDeleted) {
 
-        List<User> listUser = userService.findAll(pageable, isDeleted);
-        return listUser
+        Page<User> listUser = userService.findAll(pageable, isDeleted);
+        return new PageImpl<>(listUser
                 .stream()
                 .map(user -> modelMapper.map(user, UserDto.class))
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()));
     }
 
     /**

@@ -13,16 +13,14 @@ import com.epam.esm.validator.GiftCertificateValidator;
 import com.epam.esm.validator.TagValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.stereotype.Service;
-
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static com.epam.esm.exception.MessageException.CERTIFICATE_EXIST;
 import static com.epam.esm.exception.MessageException.CERTIFICATE_NOT_FOUND;
@@ -40,11 +38,8 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     private final TagRepository tagRepository;
 
     @Override
-    public List<GiftCertificate> findAll(Pageable pageable, boolean isDeleted) {
-        return giftCertificateRepository.findAll(pageable, isDeleted)
-                .stream()
-                .sorted(Comparator.comparing(GiftCertificate::getId))
-                .collect(Collectors.toList());
+    public Page<GiftCertificate> findAll(Pageable pageable, boolean isDeleted) {
+        return giftCertificateRepository.findAll(pageable, isDeleted);
     }
 
     public List<Long> findAllIdByOrderId(Long id) {

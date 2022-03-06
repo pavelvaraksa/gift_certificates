@@ -6,8 +6,8 @@ import com.epam.esm.service.GiftCertificateService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,18 +34,18 @@ public class GiftCertificateRestController {
     /**
      * Find list of gift certificates
      *
-     * @return - list of gift certificates or empty list
+     * @return - page of gift certificates or empty page
      */
     @GetMapping("/list")
     @ResponseStatus(HttpStatus.OK)
-    public List<GiftCertificateDto> findAllGiftCertificates(@PageableDefault(value=3, page=0) Pageable pageable,
-                                                            @RequestParam(value = "isDeleted",
+    public Page<GiftCertificateDto> findAllGiftCertificates(Pageable pageable, @RequestParam(value = "isDeleted",
             required = false, defaultValue = "false") boolean isDeleted) {
-        List<GiftCertificate> listGiftCertificate = giftCertificateService.findAll(pageable, isDeleted);
-        return listGiftCertificate
+
+        Page<GiftCertificate> listGiftCertificate = giftCertificateService.findAll(pageable, isDeleted);
+        return new PageImpl<>(listGiftCertificate
                 .stream()
                 .map(giftCertificate -> modelMapper.map(giftCertificate, GiftCertificateDto.class))
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()));
     }
 
     /**
