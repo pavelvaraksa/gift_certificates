@@ -5,6 +5,7 @@ import com.epam.esm.domain.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -18,6 +19,13 @@ public interface UserService {
      * @return - page of users or empty page
      */
     Page<User> findAll(Pageable pageable, boolean isDeleted);
+
+    /**
+     * Find all users id
+     *
+     * @return - list of users id
+     */
+    List<Long> findAllForWidelyUsedTag();
 
     /**
      * Find a user by id

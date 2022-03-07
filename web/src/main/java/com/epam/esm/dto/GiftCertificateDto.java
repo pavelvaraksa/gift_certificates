@@ -1,6 +1,10 @@
 package com.epam.esm.dto;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.hateoas.RepresentationModel;
 
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -8,8 +12,10 @@ import java.util.Set;
 /**
  * Gift certificate dto
  */
-@Data
-public class GiftCertificateDto {
+@Getter
+@Setter
+@EqualsAndHashCode(callSuper = true)
+public class GiftCertificateDto extends RepresentationModel<GiftCertificateDto> {
     private Long id;
 
     private String name;

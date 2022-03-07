@@ -26,6 +26,7 @@ import java.util.Optional;
 public class UserRepositoryImpl implements UserRepository {
     private final SessionFactory sessionFactory;
     private final String FIND_ALL_QUERY = "select user from User user";
+    private final String FIND_ALL_QUERY_ID = "select user.id from User user";
 
     @Override
     public Page<User> findAll(Pageable pageable, boolean isDeleted) {
@@ -42,6 +43,13 @@ public class UserRepositoryImpl implements UserRepository {
             Page<User> page = new PageImpl<>(list);
             session.disableFilter("userFilter");
             return page;
+        }
+    }
+
+    @Override
+    public List<Long> findAllForWidelyUsedTag() {
+        try (Session session = sessionFactory.openSession()) {
+            return session.createQuery(FIND_ALL_QUERY_ID).list();
         }
     }
 

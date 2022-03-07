@@ -12,8 +12,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
+import static com.epam.esm.exception.MessageException.TAG_NOT_FOUND;
 import static com.epam.esm.exception.MessageException.USER_EXIST;
 import static com.epam.esm.exception.MessageException.USER_NOT_FOUND;
 
@@ -29,6 +31,18 @@ public class UserServiceImpl implements UserService {
     @Override
     public Page<User> findAll(Pageable pageable, boolean isDeleted) {
         return userRepository.findAll(pageable, isDeleted);
+    }
+
+    @Override
+    public List<Long> findAllForWidelyUsedTag() {
+        List<Long> listId = userRepository.findAllForWidelyUsedTag();
+
+        if (listId.isEmpty()) {
+            log.error("Tag was not found");
+            throw new ServiceNotFoundException(TAG_NOT_FOUND);
+        }
+
+        return listId;
     }
 
     @Override

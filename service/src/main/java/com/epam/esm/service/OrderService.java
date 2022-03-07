@@ -23,9 +23,9 @@ public interface OrderService {
      * Find order id with the highest cost by user id
      *
      * @param id - user id
-     * @return - list of orders id or empty list
+     * @return - order id
      */
-    Long findIdWithHighestCost(Long id);
+    Long findIdWithHighestCost(List<Long> id);
 
     /**
      * Find an order by id

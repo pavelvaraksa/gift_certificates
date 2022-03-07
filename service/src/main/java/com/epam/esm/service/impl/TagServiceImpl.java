@@ -1,7 +1,6 @@
 package com.epam.esm.service.impl;
 
 import com.epam.esm.domain.Tag;
-import com.epam.esm.domain.User;
 import com.epam.esm.exception.ServiceExistException;
 import com.epam.esm.exception.ServiceNotFoundException;
 import com.epam.esm.repository.TagRepository;
@@ -96,14 +95,14 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public Optional<Tag> findMostWidelyUsedForUser(Long id) {
-        Optional<User> user = userService.findById(id);
+    public Optional<Tag> findMostWidelyUsed() {
         List<Long> certificates = new ArrayList<>();
         List<Long> allCertificates;
         List<Long> tags = new ArrayList<>();
         List<Long> allTags;
 
-        Long orderId = orderService.findIdWithHighestCost(user.get().getId());
+        List<Long> listUserId = userService.findAllForWidelyUsedTag();
+        Long orderId = orderService.findIdWithHighestCost(listUserId);
         allCertificates = giftCertificateService.findAllIdByOrderId(orderId);
         certificates.addAll(allCertificates);
 

@@ -44,22 +44,21 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Long findIdWithHighestCost(Long id) {
-        List<Long> listOrdersId = orderRepository.findAllIdByUserId(id);
-        List<Order> listOrders = new ArrayList<>();
+    public Long findIdWithHighestCost(List<Long> id) {
         List<Order> listAllOrders = new ArrayList<>();
+        List<Order> listOrders;
 
-        if (listOrdersId.isEmpty()) {
-            log.error("Tag with id " + id + " was not found");
-            throw new ServiceNotFoundException(TAG_NOT_FOUND);
-        }
-
-        for (Long orderId : listOrdersId) {
-            listOrders = orderRepository.findAllOrdersByUserId(orderId);
+        for (Long userId : id) {
+            listOrders = orderRepository.findAllOrdersByUserId(userId);
             listAllOrders.addAll(listOrders);
         }
 
-        Optional<Order> optionalOrder = Optional.of(listAllOrders
+        if (listAllOrders.isEmpty()) {
+            log.error("Tag was not found");
+            throw new ServiceNotFoundException(TAG_NOT_FOUND);
+        }
+
+        Optional<Order> optionalOrder = Optional.ofNullable(listAllOrders
                 .stream()
                 .max(Comparator.comparing(Order::getTotalPrice))
                 .get());

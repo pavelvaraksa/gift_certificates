@@ -2,6 +2,7 @@ package com.epam.esm.repository;
 
 import com.epam.esm.domain.User;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -9,6 +10,13 @@ import java.util.Optional;
  * Works with database
  */
 public interface UserRepository extends CrdRepository<Long, User> {
+    /**
+     * Find all users id
+     *
+     * @return - list of users id
+     */
+    List<Long> findAllForWidelyUsedTag();
+
     /**
      * Find user by login
      *

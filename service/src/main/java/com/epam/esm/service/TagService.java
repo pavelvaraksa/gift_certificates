@@ -51,10 +51,9 @@ public interface TagService {
     void deleteById(Long id);
 
     /**
-     * Find most widely used tag for user
+     * Find most widely used tag
      *
-     * @param id - user id
      * @return - tag
      */
-    Optional<Tag> findMostWidelyUsedForUser(Long id);
+    Optional<Tag> findMostWidelyUsed();
 }

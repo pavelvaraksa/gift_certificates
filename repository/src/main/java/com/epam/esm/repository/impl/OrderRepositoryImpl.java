@@ -24,8 +24,7 @@ import java.util.Optional;
 public class OrderRepositoryImpl implements OrderRepository {
     private final SessionFactory sessionFactory;
     private final String FIND_ALL_QUERY = "select order from Order order";
-    private final String FIND_ALL_QUERY_BY_USER_ID = "select order from Order order where order.id = ";
-    private final String FIND_ALL_ID_QUERY_BY_USER_ID = "select order.id from Order order " +
+    private final String FIND_ALL_ID_QUERY_BY_USER_ID = "select order from Order order " +
             "join User user on order.user = user.id where user.id = ";
 
     @Override
@@ -47,7 +46,7 @@ public class OrderRepositoryImpl implements OrderRepository {
     }
 
     @Override
-    public List<Long> findAllIdByUserId(Long id) {
+    public List<Order> findAllOrdersByUserId(Long id) {
         try (Session session = sessionFactory.openSession()) {
             return session.createQuery(FIND_ALL_ID_QUERY_BY_USER_ID + id).list();
         }
@@ -64,13 +63,6 @@ public class OrderRepositoryImpl implements OrderRepository {
     public Order findByExistId(Long id) {
         try (Session session = sessionFactory.openSession()) {
             return session.find(Order.class, id);
-        }
-    }
-
-    @Override
-    public List<Order> findAllOrdersByUserId(Long id) {
-        try (Session session = sessionFactory.openSession()) {
-            return session.createQuery(FIND_ALL_QUERY_BY_USER_ID + id, Order.class).list();
         }
     }
 

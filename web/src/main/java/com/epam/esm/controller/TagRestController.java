@@ -8,6 +8,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -24,6 +25,8 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.net.URI;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 @RestController
 @RequestMapping("/tags")
@@ -57,9 +60,11 @@ public class TagRestController {
      */
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public TagDto findTagById(@PathVariable Long id) {
+    public EntityModel<TagDto> findTagById(@PathVariable Long id) {
         Optional<Tag> tag = tagService.findById(id);
-        return modelMapper.map(tag.get(), TagDto.class);
+        return EntityModel.of(modelMapper.map(tag.get(), TagDto.class),
+                linkTo(TagRestController.class).slash(tag.get().getId()).withSelfRel(),
+                linkTo(TagRestController.class).withRel("tags"));
     }
 
     /**
@@ -102,6 +107,18 @@ public class TagRestController {
     @ResponseStatus(HttpStatus.OK)
     public void deleteTag(@PathVariable Long id) {
         tagService.deleteById(id);
+    }
+
+    /**
+     * Find most widely used tag
+     *
+     * @return - tag
+     */
+    @GetMapping("/widelyUsed")
+    @ResponseStatus(HttpStatus.OK)
+    public TagDto findMostWidelyUsed() {
+        Optional<Tag> tag = tagService.findMostWidelyUsed();
+        return modelMapper.map(tag.get(), TagDto.class);
     }
 }
 

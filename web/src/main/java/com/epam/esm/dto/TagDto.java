@@ -1,11 +1,16 @@
 package com.epam.esm.dto;
 
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.hateoas.RepresentationModel;
 
 /**
  * Tag dto
  */
-@Data
-public class TagDto {
+@Getter
+@Setter
+@EqualsAndHashCode(callSuper = true)
+public class TagDto extends RepresentationModel<TagDto> {
     private String name;
 }

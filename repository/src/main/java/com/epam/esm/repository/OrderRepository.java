@@ -10,18 +10,10 @@ import java.util.List;
  */
 public interface OrderRepository extends CrdRepository<Long, Order> {
     /**
-     * Find all orders id by user id
-     *
-     * @param id - user id
-     * @return - list of orders id or empty list
-     */
-    List<Long> findAllIdByUserId(Long id);
-
-    /**
      * Find all orders by user id
      *
      * @param id - user id
-     * @return - list of orders or empty list
+     * @return - list of orders
      */
     List<Order> findAllOrdersByUserId(Long id);
 
