@@ -1,0 +1,23 @@
+plugins {
+    id 'java-library'
+}
+
+group 'com.epam.esm'
+version '1.0'
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    api project(':repository')
+
+    implementation 'org.mockito:mockito-junit-jupiter:4.0.0'
+    compileOnly 'org.projectlombok:lombok:1.18.20'
+    annotationProcessor 'org.projectlombok:lombok:1.18.20'
+}
+
+test {
+    useJUnitPlatform()
+}

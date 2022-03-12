@@ -1,2 +1,5 @@
-.idea
-.iml
+# Project exclude paths
+/gradle/
+/.idea/
+/gradlew.bat/
+/gradlew/
