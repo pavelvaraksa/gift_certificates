@@ -1,13 +1,12 @@
 package com.epam.esm.dto;
 
-import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.hateoas.RepresentationModel;
 
 import java.time.LocalDateTime;
-import java.util.Set;
+import java.util.List;
 
 /**
  * Gift certificate dto
@@ -30,5 +29,5 @@ public class GiftCertificateDto extends RepresentationModel<GiftCertificateDto> 
 
     private LocalDateTime lastUpdateDate;
 
-    private Set<TagDto> tag;
+    private List<TagDto> tag;
 }

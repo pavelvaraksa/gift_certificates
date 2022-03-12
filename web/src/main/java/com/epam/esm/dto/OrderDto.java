@@ -4,7 +4,7 @@ import com.epam.esm.domain.User;
 import lombok.Data;
 
 import java.time.LocalDateTime;
-import java.util.Set;
+import java.util.List;
 
 /**
  * Order dto
@@ -21,5 +21,5 @@ public class OrderDto {
 
     private User user;
 
-    private Set<OrderDetailsDto> orderDetails;
+    private List<OrderDetailsDto> orderDetails;
 }

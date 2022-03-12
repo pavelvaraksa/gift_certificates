@@ -1,7 +1,9 @@
 package com.epam.esm.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.FilterDef;
@@ -33,6 +35,8 @@ import java.util.Objects;
 @Filter(name = "certificateFilter", condition = "deleted = :isDeleted")
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "gift_certificate")
 public class GiftCertificate implements Serializable {
@@ -61,7 +65,7 @@ public class GiftCertificate implements Serializable {
     @Column(name = "deleted")
     private boolean isActive;
 
-    @ManyToMany(mappedBy = "giftCertificateSet", fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToMany(mappedBy = "certificateList", fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     List<Tag> tag = new ArrayList<>();
 
     @JsonIgnore

@@ -1,7 +1,8 @@
 package com.epam.esm.dto;
 
 import lombok.Data;
-import java.util.Set;
+
+import java.util.List;
 
 /**
  * User dto
@@ -16,5 +17,5 @@ public class UserDto {
 
     private String lastName;
 
-    private Set<OrderDto> order;
+    private List<OrderDto> order;
 }

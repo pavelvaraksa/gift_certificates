@@ -1,6 +1,9 @@
 package com.epam.esm.domain;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.FilterDef;
@@ -31,6 +34,8 @@ import java.util.Objects;
 @Filter(name = "tagFilter", condition = "deleted = :isDeleted")
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "tag")
 public class Tag implements Serializable {
@@ -48,7 +53,7 @@ public class Tag implements Serializable {
     @JoinTable(name = "gift_certificate_to_tag",
             joinColumns = {@JoinColumn(name = "tag_id")},
             inverseJoinColumns = {@JoinColumn(name = "gift_certificate_id")})
-    private List<GiftCertificate> giftCertificateSet = new ArrayList<>();
+    private List<GiftCertificate> certificateList = new ArrayList<>();
 
     @Override
     public boolean equals(Object o) {
