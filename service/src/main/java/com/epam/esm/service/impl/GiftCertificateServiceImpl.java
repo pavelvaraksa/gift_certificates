@@ -13,7 +13,6 @@ import com.epam.esm.validator.GiftCertificateValidator;
 import com.epam.esm.validator.TagValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -38,7 +37,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     private final TagRepository tagRepository;
 
     @Override
-    public Page<GiftCertificate> findAll(Pageable pageable, boolean isDeleted) {
+    public List<GiftCertificate> findAll(Pageable pageable, boolean isDeleted) {
         return giftCertificateRepository.findAll(pageable, isDeleted);
     }
 

@@ -12,7 +12,6 @@ import com.epam.esm.service.OrderService;
 import com.epam.esm.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -39,7 +38,7 @@ public class OrderServiceImpl implements OrderService {
     private final GiftCertificateService giftCertificateService;
 
     @Override
-    public Page<Order> findAll(Pageable pageable, boolean isDeleted) {
+    public List<Order> findAll(Pageable pageable, boolean isDeleted) {
         return orderRepository.findAll(pageable, isDeleted);
     }
 
@@ -93,7 +92,7 @@ public class OrderServiceImpl implements OrderService {
             orderPrice += giftCertificatePrice;
             order.setCount(giftCertificateId.size());
             order.setPurchaseDate(LocalDateTime.now());
-            order.setCertificate(Collections.singleton(giftCertificate.get()));
+            order.setCertificate(Collections.singletonList(giftCertificate.get()));
             order.setUser(user.get());
         }
 

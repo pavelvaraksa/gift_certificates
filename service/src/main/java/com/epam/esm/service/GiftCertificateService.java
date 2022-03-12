@@ -18,7 +18,7 @@ public interface GiftCertificateService {
      *
      * @return - page of gift certificates or empty page
      */
-    Page<GiftCertificate> findAll(Pageable pageable, boolean isDeleted);
+    List<GiftCertificate> findAll(Pageable pageable, boolean isDeleted);
 
     /**
      * Find all gift certificates id by order id

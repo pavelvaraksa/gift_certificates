@@ -20,20 +20,18 @@ public class GiftCertificateToTagRepositoryImpl implements GiftCertificateToTagR
 
     @Override
     public GiftCertificateToTag save(GiftCertificateToTag giftCertificateToTag) {
-        try (Session session = sessionFactory.openSession()) {
-            Transaction transaction = session.getTransaction();
-            transaction.begin();
-            session.save(giftCertificateToTag);
-            transaction.commit();
-            return giftCertificateToTag;
-        }
+        Session session = sessionFactory.openSession();
+        Transaction transaction = session.getTransaction();
+        transaction.begin();
+        session.save(giftCertificateToTag);
+        transaction.commit();
+        return giftCertificateToTag;
     }
 
     @Override
     public Optional<GiftCertificateToTag> findByLink(GiftCertificateToTag giftCertificateToTag) {
-        try (Session session = sessionFactory.openSession()) {
-            return Optional.ofNullable(session.find(GiftCertificateToTag.class, giftCertificateToTag));
-        }
+        Session session = sessionFactory.openSession();
+        return Optional.ofNullable(session.find(GiftCertificateToTag.class, giftCertificateToTag));
     }
 
     @Override

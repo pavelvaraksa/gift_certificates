@@ -17,7 +17,7 @@ public interface OrderService {
      *
      * @return - page of orders or empty page
      */
-    Page<Order> findAll(Pageable pageable, boolean isDeleted);
+    List<Order> findAll(Pageable pageable, boolean isDeleted);
 
     /**
      * Find order id with the highest cost by user id

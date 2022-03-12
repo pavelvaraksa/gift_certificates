@@ -18,7 +18,7 @@ public interface UserService {
      *
      * @return - page of users or empty page
      */
-    Page<User> findAll(Pageable pageable, boolean isDeleted);
+    List<User> findAll(Pageable pageable, boolean isDeleted);
 
     /**
      * Find all users id

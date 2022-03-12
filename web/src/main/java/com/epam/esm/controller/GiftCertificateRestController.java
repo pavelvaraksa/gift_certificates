@@ -38,14 +38,14 @@ public class GiftCertificateRestController {
      */
     @GetMapping("/list")
     @ResponseStatus(HttpStatus.OK)
-    public Page<GiftCertificateDto> findAllGiftCertificates(Pageable pageable, @RequestParam(value = "isDeleted",
+    public List<GiftCertificateDto> findAllGiftCertificates(Pageable pageable, @RequestParam(value = "isDeleted",
             required = false, defaultValue = "false") boolean isDeleted) {
 
-        Page<GiftCertificate> listGiftCertificate = giftCertificateService.findAll(pageable, isDeleted);
-        return new PageImpl<>(listGiftCertificate
+        List<GiftCertificate> listGiftCertificate = giftCertificateService.findAll(pageable, isDeleted);
+        return listGiftCertificate
                 .stream()
                 .map(giftCertificate -> modelMapper.map(giftCertificate, GiftCertificateDto.class))
-                .collect(Collectors.toList()));
+                .collect(Collectors.toList());
     }
 
     /**

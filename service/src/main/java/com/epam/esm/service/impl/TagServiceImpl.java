@@ -12,7 +12,9 @@ import com.epam.esm.validator.TagValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -38,8 +40,13 @@ public class TagServiceImpl implements TagService {
     private final GiftCertificateService giftCertificateService;
 
     @Override
-    public Page<Tag> findAll(Pageable pageable, boolean isDeleted) {
+    public List<Tag> findAll(Pageable pageable, boolean isDeleted) {
         return tagRepository.findAll(pageable, isDeleted);
+    }
+
+    @Override
+    public Page<Tag> findAllTags(Pageable pageable) {
+        return tagRepository.findAllTags(pageable);
     }
 
     @Override

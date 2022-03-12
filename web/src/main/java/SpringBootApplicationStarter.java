@@ -4,7 +4,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Import;
 
-
 @Import({BeanConfig.class, PersistentContextConfig.class})
 @SpringBootApplication(scanBasePackages = "com.epam.esm")
 public class SpringBootApplicationStarter {

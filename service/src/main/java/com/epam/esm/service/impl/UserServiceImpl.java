@@ -29,7 +29,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     @Override
-    public Page<User> findAll(Pageable pageable, boolean isDeleted) {
+    public List<User> findAll(Pageable pageable, boolean isDeleted) {
         return userRepository.findAll(pageable, isDeleted);
     }
 

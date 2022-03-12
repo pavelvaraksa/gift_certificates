@@ -19,9 +19,9 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import java.io.Serializable;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 /**
  * Tag domain
@@ -48,7 +48,7 @@ public class Tag implements Serializable {
     @JoinTable(name = "gift_certificate_to_tag",
             joinColumns = {@JoinColumn(name = "tag_id")},
             inverseJoinColumns = {@JoinColumn(name = "gift_certificate_id")})
-    private Set<GiftCertificate> giftCertificateSet = new HashSet<>();
+    private List<GiftCertificate> giftCertificateSet = new ArrayList<>();
 
     @Override
     public boolean equals(Object o) {

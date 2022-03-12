@@ -36,14 +36,14 @@ public class OrderRestController {
      */
     @GetMapping("/list")
     @ResponseStatus(HttpStatus.OK)
-    public Page<OrderDto> findAllOrders(Pageable pageable, @RequestParam(value = "isDeleted",
+    public List<OrderDto> findAllOrders(Pageable pageable, @RequestParam(value = "isDeleted",
             required = false, defaultValue = "false") boolean isDeleted) {
 
-        Page<Order> listOrder = orderService.findAll(pageable, isDeleted);
-        return new PageImpl<>(listOrder
+        List<Order> listOrder = orderService.findAll(pageable, isDeleted);
+        return listOrder
                 .stream()
                 .map(order -> modelMapper.map(order, OrderDto.class))
-                .collect(Collectors.toList()));
+                .collect(Collectors.toList());
     }
 
     /**

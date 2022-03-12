@@ -23,9 +23,9 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 /**
  * Order domain
@@ -62,11 +62,11 @@ public class Order implements Serializable {
 
     @JsonIgnore
     @ManyToMany(mappedBy = "order", fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    private Set<GiftCertificate> certificate;
+    private List<GiftCertificate> certificate;
 
     @JsonIgnore
     @OneToMany(mappedBy = "order", fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    private Set<OrderDetails> orderDetails = new HashSet<>();
+    private List<OrderDetails> orderDetails = new ArrayList<>();
 
     @Override
     public boolean equals(Object o) {

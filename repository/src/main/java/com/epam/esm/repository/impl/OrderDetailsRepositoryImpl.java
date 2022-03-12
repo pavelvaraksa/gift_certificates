@@ -18,19 +18,17 @@ public class OrderDetailsRepositoryImpl implements OrderDetailsRepository {
 
     @Override
     public OrderDetails save(OrderDetails orderDetails) {
-        try (Session session = sessionFactory.openSession()) {
-            Transaction transaction = session.getTransaction();
-            transaction.begin();
-            session.save(orderDetails);
-            transaction.commit();
-            return orderDetails;
-        }
+        Session session = sessionFactory.openSession();
+        Transaction transaction = session.getTransaction();
+        transaction.begin();
+        session.save(orderDetails);
+        transaction.commit();
+        return orderDetails;
     }
 
     @Override
     public OrderDetails findById(Long id) {
-        try (Session session = sessionFactory.openSession()) {
-            return session.find(OrderDetails.class, id);
-        }
+        Session session = sessionFactory.openSession();
+        return session.find(OrderDetails.class, id);
     }
 }

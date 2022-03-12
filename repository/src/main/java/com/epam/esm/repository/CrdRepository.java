@@ -3,6 +3,7 @@ package com.epam.esm.repository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface CrdRepository<K, V> {
@@ -11,7 +12,7 @@ public interface CrdRepository<K, V> {
      *
      * @return - list of objects or empty list
      */
-    Page<V> findAll(Pageable pageable, boolean isDeleted);
+    List<V> findAll(Pageable pageable, boolean isDeleted);
 
     /**
      * Find object by id
