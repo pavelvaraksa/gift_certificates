@@ -2,6 +2,7 @@ package com.epam.esm.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Filter;
@@ -35,6 +36,7 @@ import java.util.Objects;
 @Filter(name = "orderFilter", condition = "deleted = :isDeleted")
 @Getter
 @Setter
+@NoArgsConstructor
 @Entity
 @Table(name = "order_table")
 @DynamicUpdate
@@ -67,6 +69,14 @@ public class Order implements Serializable {
     @JsonIgnore
     @OneToMany(mappedBy = "order", fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<OrderDetails> orderDetails = new ArrayList<>();
+
+    public Order(Long id, Double totalPrice, Integer count, LocalDateTime purchaseDate, boolean isActive) {
+        this.id = id;
+        this.totalPrice = totalPrice;
+        this.count = count;
+        this.purchaseDate = purchaseDate;
+        this.isActive = isActive;
+    }
 
     @Override
     public boolean equals(Object o) {
