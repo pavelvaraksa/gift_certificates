@@ -1,7 +1,7 @@
 package com.epam.esm.service;
 
 import com.epam.esm.domain.Tag;
-import com.epam.esm.repository.impl.TagRepositoryImpl;
+import com.epam.esm.repository.TagRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class TagServiceImplTest {
     @Mock
-    private TagRepositoryImpl tagRepository;
+    private TagRepository tagRepository;
 
     @BeforeEach
     void beforeAll() {

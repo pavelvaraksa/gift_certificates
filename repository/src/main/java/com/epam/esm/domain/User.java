@@ -1,7 +1,9 @@
 package com.epam.esm.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.FilterDef;
@@ -30,6 +32,8 @@ import java.util.Objects;
 @Filter(name = "userFilter", condition = "deleted = :isDeleted")
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "user_table")
 public class User implements Serializable {
