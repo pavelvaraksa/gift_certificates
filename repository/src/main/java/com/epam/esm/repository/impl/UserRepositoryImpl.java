@@ -76,7 +76,7 @@ public class UserRepositoryImpl implements UserRepository {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.getTransaction();
         transaction.begin();
-        session.update(user);
+        session.merge(user);
         transaction.commit();
         return user;
     }

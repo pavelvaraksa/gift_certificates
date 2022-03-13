@@ -23,9 +23,9 @@ import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * Gift certificate domain
@@ -66,14 +66,14 @@ public class GiftCertificate implements Serializable {
     private boolean isActive;
 
     @ManyToMany(mappedBy = "certificateList", fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    List<Tag> tag = new ArrayList<>();
+    Set<Tag> tag = new HashSet<>();
 
     @JsonIgnore
     @ManyToMany
     @JoinTable(name = "order_details",
             joinColumns = {@JoinColumn(name = "gift_certificate_id")},
             inverseJoinColumns = {@JoinColumn(name = "order_id")})
-    private List<Order> order = new ArrayList<>();
+    private Set<Order> order = new HashSet<>();
 
     @Override
     public boolean equals(Object o) {

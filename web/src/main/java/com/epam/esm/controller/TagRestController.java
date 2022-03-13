@@ -6,11 +6,8 @@ import com.epam.esm.repository.TagRepository;
 import com.epam.esm.service.TagService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.data.web.SortDefault;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
@@ -46,33 +43,16 @@ public class TagRestController {
      */
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public CollectionModel<TagDto> findAllTags(@PageableDefault(size = 5)
-                                               @SortDefault(sort = "id", direction = Sort.Direction.DESC)
-                                                       Pageable pageable, @RequestParam(value = "isDeleted",
-            required = false, defaultValue = "false") boolean isDeleted) {
+    public CollectionModel<TagDto> findAllTags(@PageableDefault(size = 5) Pageable pageable,
+                                               @RequestParam(value = "isDeleted",
+                                                       required = false, defaultValue = "false") boolean isDeleted) {
         List<Tag> tags = tagService.findAll(pageable, isDeleted);
         List<TagDto> items = new ArrayList<>();
 
         for (Tag tag : tags) {
             TagDto tagDto = modelMapper.map(tag, TagDto.class);
-            tagDto.add(linkTo(methodOn(TagRestController.class).findTagById(tag.getId())).withSelfRel());
-            items.add(tagDto);
-        }
-
-        return CollectionModel.of(items, linkTo(TagRestController.class).withRel("tags"));
-    }
-
-    @GetMapping("/list")
-    @ResponseStatus(HttpStatus.OK)
-    public CollectionModel<TagDto> findAll(@PageableDefault(size = 5)
-                                           @SortDefault(sort = "id", direction = Sort.Direction.DESC)
-                                                   Pageable pageable) {
-        Page<Tag> tags = tagService.findAllTags(pageable);
-        List<TagDto> items = new ArrayList<>();
-
-        for (Tag tag : tags) {
-            TagDto tagDto = modelMapper.map(tag, TagDto.class);
-            tagDto.add(linkTo(methodOn(TagRestController.class).findTagById(tag.getId())).withSelfRel());
+            tagDto.add(linkTo(methodOn(TagRestController.class).findTagById(tag.getId())).withSelfRel(),
+                    linkTo(TagRestController.class).slash("search?name=" + tag.getName()).withSelfRel());
             items.add(tagDto);
         }
 
@@ -89,10 +69,10 @@ public class TagRestController {
     @ResponseStatus(HttpStatus.OK)
     public EntityModel<TagDto> findTagById(@PathVariable Long id) {
         Optional<Tag> tag = tagService.findById(id);
-        return EntityModel.of(modelMapper.map(tag.get(), TagDto.class),
-                linkTo(TagRestController.class).withRel("tags"),
-                linkTo(TagRestController.class).slash(tag.get().getId()).withSelfRel(),
-                linkTo(TagRestController.class).slash("search?name=" + tag.get().getName()).withSelfRel());
+        return EntityModel.of((modelMapper.map(tag.get(), TagDto.class)),
+                linkTo(TagRestController.class).slash(id).withSelfRel(),
+                linkTo(TagRestController.class).slash("search?name=" + tag.get().getName()).withSelfRel(),
+                linkTo(TagRestController.class).withRel("tags"));
     }
 
     /**
@@ -106,9 +86,9 @@ public class TagRestController {
     public EntityModel<TagDto> findTagByName(@RequestParam(value = "name", required = false) String name) {
         Optional<Tag> tag = tagService.findByName(name);
         return EntityModel.of(modelMapper.map(tag.get(), TagDto.class),
-                linkTo(TagRestController.class).withRel("tags"),
                 linkTo(TagRestController.class).slash(tag.get().getId()).withSelfRel(),
-                linkTo(TagRestController.class).slash("search?name=" + name).withSelfRel());
+                linkTo(TagRestController.class).slash("search?name=" + name).withSelfRel(),
+                linkTo(TagRestController.class).withRel("tags"));
     }
 
     /**
@@ -122,9 +102,9 @@ public class TagRestController {
     public EntityModel<TagDto> createTag(@RequestBody Tag tag) {
         Tag newTag = tagService.save(tag);
         return EntityModel.of(modelMapper.map(newTag, TagDto.class),
-                linkTo(TagRestController.class).withRel("tags"),
                 linkTo(TagRestController.class).slash(newTag.getId()).withSelfRel(),
-                linkTo(TagRestController.class).slash("search?name=" + tag.getName()).withSelfRel());
+                linkTo(TagRestController.class).slash("search?name=" + newTag.getName()).withSelfRel(),
+                linkTo(TagRestController.class).withRel("tags"));
     }
 
     /**
@@ -148,9 +128,9 @@ public class TagRestController {
     public EntityModel<TagDto> findMostWidelyUsed() {
         Optional<Tag> tag = tagService.findMostWidelyUsed();
         return EntityModel.of(modelMapper.map(tag.get(), TagDto.class),
-                linkTo(TagRestController.class).withRel("tags"),
                 linkTo(TagRestController.class).slash(tag.get().getId()).withSelfRel(),
-                linkTo(TagRestController.class).slash("search?name=" + tag.get().getName()).withSelfRel());
+                linkTo(TagRestController.class).slash("search?name=" + tag.get().getName()).withSelfRel(),
+                linkTo(TagRestController.class).withRel("tags"));
     }
 }
 

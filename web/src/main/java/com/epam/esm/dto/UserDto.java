@@ -1,14 +1,19 @@
 package com.epam.esm.dto;
 
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.hateoas.RepresentationModel;
 
-import java.util.List;
+import java.util.Set;
 
 /**
  * User dto
  */
-@Data
-public class UserDto {
+@Getter
+@Setter
+@EqualsAndHashCode(callSuper = true)
+public class UserDto extends RepresentationModel<UserDto> {
     private Long id;
 
     private String login;
@@ -17,5 +22,5 @@ public class UserDto {
 
     private String lastName;
 
-    private List<OrderDto> order;
+    private Set<OrderDto> order;
 }

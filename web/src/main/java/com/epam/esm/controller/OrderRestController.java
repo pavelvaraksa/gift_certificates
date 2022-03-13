@@ -5,9 +5,9 @@ import com.epam.esm.dto.OrderDto;
 import com.epam.esm.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,9 +18,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @RequestMapping("/orders")
@@ -34,16 +37,20 @@ public class OrderRestController {
      *
      * @return - page of orders or empty page
      */
-    @GetMapping("/list")
+    @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<OrderDto> findAllOrders(Pageable pageable, @RequestParam(value = "isDeleted",
+    public CollectionModel<OrderDto> findAllOrders(Pageable pageable, @RequestParam(value = "isDeleted",
             required = false, defaultValue = "false") boolean isDeleted) {
-
         List<Order> listOrder = orderService.findAll(pageable, isDeleted);
-        return listOrder
-                .stream()
-                .map(order -> modelMapper.map(order, OrderDto.class))
-                .collect(Collectors.toList());
+        List<OrderDto> items = new ArrayList<>();
+
+        for (Order order : listOrder) {
+            OrderDto orderDto = modelMapper.map(order, OrderDto.class);
+            orderDto.add(linkTo(methodOn(OrderRestController.class).findOrderById(order.getId())).withSelfRel());
+            items.add(orderDto);
+        }
+
+        return CollectionModel.of(items, linkTo(OrderRestController.class).withRel("orders"));
     }
 
     /**
@@ -54,9 +61,11 @@ public class OrderRestController {
      */
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public OrderDto findOrderById(@PathVariable Long id) {
+    public EntityModel<OrderDto> findOrderById(@PathVariable Long id) {
         Optional<Order> order = orderService.findById(id);
-        return modelMapper.map(order.get(), OrderDto.class);
+        return EntityModel.of(modelMapper.map(order.get(), OrderDto.class),
+                linkTo(OrderRestController.class).slash(id).withSelfRel(),
+                linkTo(OrderRestController.class).withRel("orders"));
     }
 
     /**
@@ -68,11 +77,12 @@ public class OrderRestController {
      */
     @PostMapping("/create")
     @ResponseStatus(HttpStatus.CREATED)
-    public OrderDto createOrder(@RequestParam Long user,
-                                @RequestParam List<Long> certificate) {
-
+    public EntityModel<OrderDto> createOrder(@RequestParam Long user,
+                                             @RequestParam List<Long> certificate) {
         Order newOrder = orderService.save(user, certificate);
-        return modelMapper.map(newOrder, OrderDto.class);
+        return EntityModel.of(modelMapper.map(newOrder, OrderDto.class),
+                linkTo(OrderRestController.class).slash(newOrder.getId()).withSelfRel(),
+                linkTo(OrderRestController.class).withRel("orders"));
     }
 
     /**

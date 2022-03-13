@@ -5,9 +5,9 @@ import com.epam.esm.dto.UserDto;
 import com.epam.esm.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,9 +20,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @RequestMapping("/users")
@@ -36,16 +39,21 @@ public class UserRestController {
      *
      * @return - page of users or empty page
      */
-    @GetMapping("/list")
+    @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<UserDto> findAllUsers(Pageable pageable, @RequestParam(value = "isDeleted",
+    public CollectionModel<UserDto> findAllUsers(Pageable pageable, @RequestParam(value = "isDeleted",
             required = false, defaultValue = "false") boolean isDeleted) {
-
         List<User> listUser = userService.findAll(pageable, isDeleted);
-        return listUser
-                .stream()
-                .map(user -> modelMapper.map(user, UserDto.class))
-                .collect(Collectors.toList());
+        List<UserDto> items = new ArrayList<>();
+
+        for (User user : listUser) {
+            UserDto userDto = modelMapper.map(user, UserDto.class);
+            userDto.add(linkTo(methodOn(UserRestController.class).findUserById(user.getId())).withSelfRel(),
+                    linkTo(UserRestController.class).slash("search?login=" + user.getLogin()).withSelfRel());
+            items.add(userDto);
+        }
+
+        return CollectionModel.of(items, linkTo(UserRestController.class).withRel("users"));
     }
 
     /**
@@ -56,9 +64,12 @@ public class UserRestController {
      */
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public UserDto findUserById(@PathVariable Long id) {
+    public EntityModel<UserDto> findUserById(@PathVariable Long id) {
         Optional<User> user = userService.findById(id);
-        return modelMapper.map(user.get(), UserDto.class);
+        return EntityModel.of(modelMapper.map(user.get(), UserDto.class),
+                linkTo(UserRestController.class).slash(id).withSelfRel(),
+                linkTo(UserRestController.class).slash("search?login=" + user.get().getLogin()).withSelfRel(),
+                linkTo(UserRestController.class).withRel("users"));
     }
 
     /**
@@ -67,11 +78,14 @@ public class UserRestController {
      * @param login - user login
      * @return - user
      */
-    @GetMapping("/search/login/{login}")
+    @GetMapping("/search")
     @ResponseStatus(HttpStatus.OK)
-    public UserDto findUserByLogin(@PathVariable String login) {
+    public EntityModel<UserDto> findUserByLogin(@RequestParam(value = "login", required = false) String login) {
         Optional<User> user = userService.findByLogin(login);
-        return modelMapper.map(user.get(), UserDto.class);
+        return EntityModel.of(modelMapper.map(user.get(), UserDto.class),
+                linkTo(UserRestController.class).slash(user.get().getId()).withSelfRel(),
+                linkTo(UserRestController.class).slash("search?login=" + user.get().getLogin()).withSelfRel(),
+                linkTo(UserRestController.class).withRel("users"));
     }
 
     /**
@@ -82,9 +96,12 @@ public class UserRestController {
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public UserDto saveUser(@RequestBody User user) {
+    public EntityModel<UserDto> saveUser(@RequestBody User user) {
         User newUser = userService.save(user);
-        return modelMapper.map(newUser, UserDto.class);
+        return EntityModel.of(modelMapper.map(newUser, UserDto.class),
+                linkTo(UserRestController.class).slash(newUser.getId()).withSelfRel(),
+                linkTo(UserRestController.class).slash("search?login=" + newUser.getLogin()).withSelfRel(),
+                linkTo(UserRestController.class).withRel("users"));
     }
 
     /**
@@ -95,9 +112,12 @@ public class UserRestController {
      */
     @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public UserDto updateUser(@PathVariable Long id, @RequestBody User user) {
+    public EntityModel<UserDto> updateUser(@PathVariable Long id, @RequestBody User user) {
         User updatedUser = userService.updateById(id, user);
-        return modelMapper.map(updatedUser, UserDto.class);
+        return EntityModel.of(modelMapper.map(updatedUser, UserDto.class),
+                linkTo(UserRestController.class).slash(updatedUser.getId()).withSelfRel(),
+                linkTo(UserRestController.class).slash("search?login=" + updatedUser.getLogin()).withSelfRel(),
+                linkTo(UserRestController.class).withRel("users"));
     }
 
     /**

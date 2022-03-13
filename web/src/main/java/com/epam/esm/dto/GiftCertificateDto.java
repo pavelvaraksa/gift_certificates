@@ -7,6 +7,7 @@ import org.springframework.hateoas.RepresentationModel;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Gift certificate dto
@@ -29,5 +30,5 @@ public class GiftCertificateDto extends RepresentationModel<GiftCertificateDto> 
 
     private LocalDateTime lastUpdateDate;
 
-    private List<TagDto> tag;
+    private Set<TagDto> tag;
 }

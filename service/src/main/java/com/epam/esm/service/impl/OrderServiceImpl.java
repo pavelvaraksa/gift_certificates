@@ -92,7 +92,7 @@ public class OrderServiceImpl implements OrderService {
             orderPrice += giftCertificatePrice;
             order.setCount(giftCertificateId.size());
             order.setPurchaseDate(LocalDateTime.now());
-            order.setCertificate(Collections.singletonList(giftCertificate.get()));
+            order.setCertificate(Collections.singleton(giftCertificate.get()));
             order.setUser(user.get());
         }
 

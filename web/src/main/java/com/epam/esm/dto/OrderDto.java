@@ -1,16 +1,21 @@
 package com.epam.esm.dto;
 
 import com.epam.esm.domain.User;
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.hateoas.RepresentationModel;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Set;
 
 /**
  * Order dto
  */
-@Data
-public class OrderDto {
+@Getter
+@Setter
+@EqualsAndHashCode(callSuper = true)
+public class OrderDto extends RepresentationModel<OrderDto> {
     private Long id;
 
     private Double totalPrice;
@@ -19,7 +24,7 @@ public class OrderDto {
 
     private LocalDateTime purchaseDate;
 
-    private User user;
+    //private User user;
 
-    private List<OrderDetailsDto> orderDetails;
+    private Set<OrderDetailsDto> orderDetails;
 }

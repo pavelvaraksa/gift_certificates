@@ -24,9 +24,9 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * Order domain
@@ -64,11 +64,11 @@ public class Order implements Serializable {
 
     @JsonIgnore
     @ManyToMany(mappedBy = "order", fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    private List<GiftCertificate> certificate;
+    private Set<GiftCertificate> certificate;
 
     @JsonIgnore
     @OneToMany(mappedBy = "order", fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    private List<OrderDetails> orderDetails = new ArrayList<>();
+    private Set<OrderDetails> orderDetails = new HashSet<>();
 
     public Order(Long id, Double totalPrice, Integer count, LocalDateTime purchaseDate, boolean isActive) {
         this.id = id;
