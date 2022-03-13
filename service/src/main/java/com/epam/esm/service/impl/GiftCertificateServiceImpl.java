@@ -9,6 +9,8 @@ import com.epam.esm.repository.GiftCertificateRepository;
 import com.epam.esm.repository.GiftCertificateToTagRepository;
 import com.epam.esm.repository.TagRepository;
 import com.epam.esm.service.GiftCertificateService;
+import com.epam.esm.util.ColumnCertificateName;
+import com.epam.esm.util.SortType;
 import com.epam.esm.validator.GiftCertificateValidator;
 import com.epam.esm.validator.TagValidator;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +22,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static com.epam.esm.exception.MessageException.CERTIFICATE_EXIST;
 import static com.epam.esm.exception.MessageException.CERTIFICATE_NOT_FOUND;
@@ -35,6 +38,11 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     private final GiftCertificateRepository giftCertificateRepository;
     private final GiftCertificateToTagRepository certificateTagLink;
     private final TagRepository tagRepository;
+
+    @Override
+    public List<GiftCertificate> findAll(Pageable pageable, Set<ColumnCertificateName> column, SortType sort, boolean isDeleted) {
+        return giftCertificateRepository.findAll(pageable, column, sort, isDeleted);
+    }
 
     public List<Long> findAllIdByOrderId(Long id) {
         List<Long> certificates = giftCertificateRepository.findAllByOrderId(id);

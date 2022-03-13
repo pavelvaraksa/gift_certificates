@@ -1,17 +1,30 @@
 package com.epam.esm.service;
 
 import com.epam.esm.domain.GiftCertificate;
-
+import com.epam.esm.util.ColumnCertificateName;
+import com.epam.esm.util.SortType;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Gift certificate service layer
  * Works with gift certificate repository layer
  */
 public interface GiftCertificateService {
+    /**
+     * Find gift certificates with pagination, sorting and info about deleted gift certificates
+     *
+     * @param pageable  - pagination config
+     * @param column    - certificate column
+     * @param sort      - sort type
+     * @param isDeleted - info about deleted certificates
+     * @return - list of gift certificates or empty list
+     */
+    List<GiftCertificate> findAll(Pageable pageable, Set<ColumnCertificateName> column, SortType sort, boolean isDeleted);
+
     /**
      * Find all gift certificates id by order id
      *

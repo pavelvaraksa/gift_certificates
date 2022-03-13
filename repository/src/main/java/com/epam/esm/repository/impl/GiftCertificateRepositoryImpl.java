@@ -1,7 +1,11 @@
 package com.epam.esm.repository.impl;
 
 import com.epam.esm.domain.GiftCertificate;
+import com.epam.esm.domain.Tag;
 import com.epam.esm.repository.GiftCertificateRepository;
+import com.epam.esm.util.ColumnCertificateName;
+import com.epam.esm.util.SortType;
+import com.epam.esm.util.SqlCertificateQuery;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.Criteria;
 import org.hibernate.Filter;
@@ -16,6 +20,7 @@ import javax.persistence.Query;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Gift certificate repository implementation
@@ -24,11 +29,27 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class GiftCertificateRepositoryImpl implements GiftCertificateRepository {
     private final SessionFactory sessionFactory;
-    private final String FIND_ALL_QUERY = "select gc from GiftCertificate gc";
     private final String FIND_ALL_QUERY_BY_TAG_ID = "select gc from GiftCertificate gc " +
             "join GiftCertificateToTag gctt on gc.id = gctt.giftCertificate where gctt.tag = ";
     private final String FIND_ALL_QUERY_BY_ORDER_ID = "select gc.id from GiftCertificate gc " +
             "join OrderDetails od on gc.id = od.certificate where od.order = ";
+
+    @Override
+    public List<GiftCertificate> findAll(Pageable pageable, Set<ColumnCertificateName> column, SortType sort, boolean isDeleted) {
+        Session session = sessionFactory.openSession();
+        session.unwrap(Session.class);
+        int pageNumber = pageable.getPageNumber();
+        int pageSize = pageable.getPageSize();
+        Filter filter = session.enableFilter("tagFilter");
+        filter.setParameter("isDeleted", isDeleted);
+        String sqlQuery = SqlCertificateQuery.findAllSorted(column, sort);
+        Query queryCertificates = session.createQuery(sqlQuery, GiftCertificate.class);
+        queryCertificates.setFirstResult(pageNumber * pageSize);
+        queryCertificates.setMaxResults(pageSize);
+        List<GiftCertificate> list = queryCertificates.getResultList();
+        session.disableFilter("tagFilter");
+        return list;
+    }
 
     @Override
     public List<Long> findAllByOrderId(Long id) {

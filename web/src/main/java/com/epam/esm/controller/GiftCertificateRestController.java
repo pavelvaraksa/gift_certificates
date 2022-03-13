@@ -4,6 +4,8 @@ import com.epam.esm.domain.GiftCertificate;
 import com.epam.esm.dto.GiftCertificateDto;
 import com.epam.esm.service.GiftCertificateService;
 import com.epam.esm.service.TagService;
+import com.epam.esm.util.ColumnCertificateName;
+import com.epam.esm.util.SortType;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Pageable;
@@ -25,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -37,28 +40,34 @@ public class GiftCertificateRestController {
     public final TagService tagService;
     private final ModelMapper modelMapper;
 
-//    /**
-//     * Find list of gift certificates
-//     *
-//     * @return - page of gift certificates or empty page
-//     */
-//    @GetMapping
-//    @ResponseStatus(HttpStatus.OK)
-//    public CollectionModel<GiftCertificateDto> findAllGiftCertificates(@PageableDefault(size = 5) Pageable pageable,
-//                                                                       @RequestParam(value = "isDeleted",
-//                                                                               required = false, defaultValue = "false") boolean isDeleted) {
-//        List<GiftCertificate> certificates = giftCertificateService.findAll(pageable, isDeleted);
-//        List<GiftCertificateDto> items = new ArrayList<>();
-//
-//        for (GiftCertificate certificate : certificates) {
-//            GiftCertificateDto certificateDto = modelMapper.map(certificate, GiftCertificateDto.class);
-//            certificateDto.add(linkTo(methodOn(GiftCertificateRestController.class).findGiftCertificateById(certificate.getId())).withSelfRel(),
-//                    linkTo(GiftCertificateRestController.class).slash("search/name?name=" + certificate.getName()).withSelfRel());
-//            items.add(certificateDto);
-//        }
-//
-//        return CollectionModel.of(items, linkTo(GiftCertificateRestController.class).withRel("certificates"));
-//    }
+    /**
+     * Find certificates with pagination, sorting and info about deleted certificates
+     *
+     * @param pageable  - pagination config
+     * @param column    - certificate column
+     * @param sort      - sort type
+     * @param isDeleted - info about deleted certificates
+     * @return - list of certificates or empty list
+     */
+    @GetMapping
+    @ResponseStatus(HttpStatus.OK)
+    public CollectionModel<GiftCertificateDto> findAllCertificates(@PageableDefault(size = 2) Pageable pageable,
+                                               @RequestParam(value = "column", defaultValue = "ID") Set<ColumnCertificateName> column,
+                                               @RequestParam(value = "sort", defaultValue = "ASC") SortType sort,
+                                               @RequestParam(value = "isDeleted", defaultValue = "false") boolean isDeleted) {
+
+        List<GiftCertificate> certificates = giftCertificateService.findAll(pageable, column, sort, isDeleted);
+        List<GiftCertificateDto> items = new ArrayList<>();
+
+        for (GiftCertificate certificate : certificates) {
+            GiftCertificateDto certificateDto = modelMapper.map(certificate, GiftCertificateDto.class);
+            certificateDto.add(linkTo(methodOn(GiftCertificateRestController.class).findGiftCertificateById(certificate.getId())).withSelfRel(),
+                    linkTo(GiftCertificateRestController.class).slash("search/name?name=" + certificate.getName()).withSelfRel());
+            items.add(certificateDto);
+        }
+
+        return CollectionModel.of(items, linkTo(GiftCertificateRestController.class).withRel("certificates"));
+    }
 
     /**
      * Find gift certificate by id
@@ -73,7 +82,7 @@ public class GiftCertificateRestController {
         return EntityModel.of(modelMapper.map(giftCertificate.get(), GiftCertificateDto.class),
                 linkTo(GiftCertificateRestController.class).slash(id).withSelfRel(),
                 linkTo(GiftCertificateRestController.class).slash("search/name?name=" + giftCertificate.get().getName()).withSelfRel(),
-                linkTo(GiftCertificateRestController.class).withRel("tags"));
+                linkTo(GiftCertificateRestController.class).withRel("certificates"));
     }
 
     /**
@@ -89,7 +98,7 @@ public class GiftCertificateRestController {
         return EntityModel.of(modelMapper.map(giftCertificate.get(), GiftCertificateDto.class),
                 linkTo(GiftCertificateRestController.class).slash(giftCertificate.get().getId()).withSelfRel(),
                 linkTo(GiftCertificateRestController.class).slash("search/name?name=" + giftCertificate.get().getName()).withSelfRel(),
-                linkTo(GiftCertificateRestController.class).withRel("tags"));
+                linkTo(GiftCertificateRestController.class).withRel("certificates"));
     }
 
     /**
@@ -127,7 +136,7 @@ public class GiftCertificateRestController {
         return EntityModel.of(modelMapper.map(newGiftCertificate, GiftCertificateDto.class),
                 linkTo(GiftCertificateRestController.class).slash(newGiftCertificate.getId()).withSelfRel(),
                 linkTo(GiftCertificateRestController.class).slash("search/name?name=" + newGiftCertificate.getName()).withSelfRel(),
-                linkTo(GiftCertificateRestController.class).withRel("tags"));
+                linkTo(GiftCertificateRestController.class).withRel("certificates"));
     }
 
     /**
@@ -144,7 +153,7 @@ public class GiftCertificateRestController {
         return EntityModel.of(modelMapper.map(updatedGiftCertificate, GiftCertificateDto.class),
                 linkTo(GiftCertificateRestController.class).slash(giftCertificate.getId()).withSelfRel(),
                 linkTo(GiftCertificateRestController.class).slash("search/name?name=" + giftCertificate.getName()).withSelfRel(),
-                linkTo(GiftCertificateRestController.class).withRel("tags"));
+                linkTo(GiftCertificateRestController.class).withRel("certificates"));
     }
 
     /**
@@ -161,7 +170,7 @@ public class GiftCertificateRestController {
         return EntityModel.of(modelMapper.map(activatedGiftCertificate, GiftCertificateDto.class),
                 linkTo(GiftCertificateRestController.class).slash(activatedGiftCertificate.getId()).withSelfRel(),
                 linkTo(GiftCertificateRestController.class).slash("search/name?name=" + activatedGiftCertificate.getName()).withSelfRel(),
-                linkTo(GiftCertificateRestController.class).withRel("tags"));
+                linkTo(GiftCertificateRestController.class).withRel("certificates"));
     }
 
     /**

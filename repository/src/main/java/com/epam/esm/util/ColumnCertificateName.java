@@ -4,7 +4,7 @@ public enum ColumnCertificateName {
     ID,
     NAME,
     DESCRIPTION,
-    PRICE,
+    CURRENT_PRICE,
     DURATION,
     CREATE_DATE,
     LAST_UPDATE_DATE
