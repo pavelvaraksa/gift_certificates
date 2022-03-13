@@ -10,6 +10,8 @@ import com.epam.esm.repository.OrderRepository;
 import com.epam.esm.service.GiftCertificateService;
 import com.epam.esm.service.OrderService;
 import com.epam.esm.service.UserService;
+import com.epam.esm.util.ColumnOrderName;
+import com.epam.esm.util.SortType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Pageable;
@@ -21,6 +23,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static com.epam.esm.exception.MessageException.ORDER_NOT_FOUND;
 import static com.epam.esm.exception.MessageException.TAG_NOT_FOUND;
@@ -36,6 +39,11 @@ public class OrderServiceImpl implements OrderService {
     private final OrderDetailsRepository orderDetailsRepository;
     private final UserService userService;
     private final GiftCertificateService giftCertificateService;
+
+    @Override
+    public List<Order> findAll(Pageable pageable, Set<ColumnOrderName> column, SortType sort, boolean isDeleted) {
+        return orderRepository.findAll(pageable, column, sort, isDeleted);
+    }
 
     @Override
     public Long findIdWithHighestCost(List<Long> id) {

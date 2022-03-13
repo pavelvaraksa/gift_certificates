@@ -44,10 +44,10 @@ public class User implements Serializable {
     @Column
     private String login;
 
-    @Column(name = "first_name")
+    @Column(name = "firstname")
     private String firstName;
 
-    @Column(name = "last_name")
+    @Column(name = "lastname")
     private String lastName;
 
     @JsonIgnore

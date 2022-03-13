@@ -2,6 +2,9 @@ package com.epam.esm.repository.impl;
 
 import com.epam.esm.domain.User;
 import com.epam.esm.repository.UserRepository;
+import com.epam.esm.util.ColumnUserName;
+import com.epam.esm.util.SortType;
+import com.epam.esm.util.SqlUserQuery;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.Criteria;
 import org.hibernate.Filter;
@@ -15,6 +18,7 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.Query;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * User repository implementation
@@ -23,8 +27,24 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserRepositoryImpl implements UserRepository {
     private final SessionFactory sessionFactory;
-    private final String FIND_ALL_QUERY = "select user from User user";
     private final String FIND_ALL_QUERY_ID = "select user.id from User user";
+
+    @Override
+    public List<User> findAll(Pageable pageable, Set<ColumnUserName> column, SortType sort, boolean isDeleted) {
+        Session session = sessionFactory.openSession();
+        session.unwrap(Session.class);
+        int pageNumber = pageable.getPageNumber();
+        int pageSize = pageable.getPageSize();
+        Filter filter = session.enableFilter("tagFilter");
+        filter.setParameter("isDeleted", isDeleted);
+        String sqlQuery = SqlUserQuery.findAllSorted(column, sort);
+        Query queryUsers = session.createQuery(sqlQuery, User.class);
+        queryUsers.setFirstResult(pageNumber * pageSize);
+        queryUsers.setMaxResults(pageSize);
+        List<User> list = queryUsers.getResultList();
+        session.disableFilter("tagFilter");
+        return list;
+    }
 
     @Override
     public List<Long> findAllForWidelyUsedTag() {

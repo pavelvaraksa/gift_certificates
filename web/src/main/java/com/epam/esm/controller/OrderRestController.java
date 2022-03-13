@@ -3,9 +3,12 @@ package com.epam.esm.controller;
 import com.epam.esm.domain.Order;
 import com.epam.esm.dto.OrderDto;
 import com.epam.esm.service.OrderService;
+import com.epam.esm.util.ColumnOrderName;
+import com.epam.esm.util.SortType;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
@@ -21,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -32,26 +36,33 @@ public class OrderRestController {
     private final OrderService orderService;
     private final ModelMapper modelMapper;
 
-//    /**
-//     * Find list of orders
-//     *
-//     * @return - page of orders or empty page
-//     */
-//    @GetMapping
-//    @ResponseStatus(HttpStatus.OK)
-//    public CollectionModel<OrderDto> findAllOrders(Pageable pageable, @RequestParam(value = "isDeleted",
-//            required = false, defaultValue = "false") boolean isDeleted) {
-//        List<Order> listOrder = orderService.findAll(pageable, isDeleted);
-//        List<OrderDto> items = new ArrayList<>();
-//
-//        for (Order order : listOrder) {
-//            OrderDto orderDto = modelMapper.map(order, OrderDto.class);
-//            orderDto.add(linkTo(methodOn(OrderRestController.class).findOrderById(order.getId())).withSelfRel());
-//            items.add(orderDto);
-//        }
-//
-//        return CollectionModel.of(items, linkTo(OrderRestController.class).withRel("orders"));
-//    }
+    /**
+     * Find orders with pagination, sorting and info about deleted orders
+     *
+     * @param pageable  - pagination config
+     * @param column    - order column
+     * @param sort      - sort type
+     * @param isDeleted - info about deleted orders
+     * @return - list of orders or empty list
+     */
+    @GetMapping
+    @ResponseStatus(HttpStatus.OK)
+    public CollectionModel<OrderDto> findAllOrders(@PageableDefault(size = 2) Pageable pageable,
+                                               @RequestParam(value = "column", defaultValue = "ID") Set<ColumnOrderName> column,
+                                               @RequestParam(value = "sort", defaultValue = "ASC") SortType sort,
+                                               @RequestParam(value = "isDeleted", defaultValue = "false") boolean isDeleted) {
+
+        List<Order> listOrder = orderService.findAll(pageable, column, sort, isDeleted);
+        List<OrderDto> items = new ArrayList<>();
+
+        for (Order order : listOrder) {
+            OrderDto orderDto = modelMapper.map(order, OrderDto.class);
+            orderDto.add(linkTo(methodOn(OrderRestController.class).findOrderById(order.getId())).withSelfRel());
+            items.add(orderDto);
+        }
+
+        return CollectionModel.of(items, linkTo(OrderRestController.class).withRel("orders"));
+    }
 
     /**
      * Find order by id

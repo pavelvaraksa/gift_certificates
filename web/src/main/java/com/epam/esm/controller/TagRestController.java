@@ -117,17 +117,6 @@ public class TagRestController {
     }
 
     /**
-     * Delete tag by id
-     *
-     * @param id - tag id
-     */
-    @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.OK)
-    public void deleteTag(@PathVariable Long id) {
-        tagService.deleteById(id);
-    }
-
-    /**
      * Find most widely used tag
      *
      * @return - tag
@@ -140,6 +129,17 @@ public class TagRestController {
                 linkTo(TagRestController.class).slash(tag.get().getId()).withSelfRel(),
                 linkTo(TagRestController.class).slash("search?name=" + tag.get().getName()).withSelfRel(),
                 linkTo(TagRestController.class).withRel("tags"));
+    }
+
+    /**
+     * Delete tag by id
+     *
+     * @param id - tag id
+     */
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteTag(@PathVariable Long id) {
+        tagService.deleteById(id);
     }
 }
 

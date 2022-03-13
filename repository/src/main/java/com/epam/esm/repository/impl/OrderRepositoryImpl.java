@@ -2,6 +2,9 @@ package com.epam.esm.repository.impl;
 
 import com.epam.esm.domain.Order;
 import com.epam.esm.repository.OrderRepository;
+import com.epam.esm.util.ColumnOrderName;
+import com.epam.esm.util.SortType;
+import com.epam.esm.util.SqlOrderQuery;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.Filter;
 import org.hibernate.Session;
@@ -13,6 +16,7 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.Query;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Order repository implementation
@@ -21,9 +25,25 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class OrderRepositoryImpl implements OrderRepository {
     private final SessionFactory sessionFactory;
-    private final String FIND_ALL_QUERY = "select order from Order order";
     private final String FIND_ALL_ID_QUERY_BY_USER_ID = "select order from Order order " +
             "join User user on order.user = user.id where user.id = ";
+
+    @Override
+    public List<Order> findAll(Pageable pageable, Set<ColumnOrderName> column, SortType sort, boolean isDeleted) {
+        Session session = sessionFactory.openSession();
+        session.unwrap(Session.class);
+        int pageNumber = pageable.getPageNumber();
+        int pageSize = pageable.getPageSize();
+        Filter filter = session.enableFilter("tagFilter");
+        filter.setParameter("isDeleted", isDeleted);
+        String sqlQuery = SqlOrderQuery.findAllSorted(column, sort);
+        Query queryOrders = session.createQuery(sqlQuery, Order.class);
+        queryOrders.setFirstResult(pageNumber * pageSize);
+        queryOrders.setMaxResults(pageSize);
+        List<Order> list = queryOrders.getResultList();
+        session.disableFilter("tagFilter");
+        return list;
+    }
 
     @Override
     public List<Order> findAllOrdersByUserId(Long id) {

@@ -1,18 +1,30 @@
 package com.epam.esm.service;
 
 import com.epam.esm.domain.User;
-
-import org.springframework.data.domain.Page;
+import com.epam.esm.util.ColumnUserName;
+import com.epam.esm.util.SortType;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * User service layer
  * Works with user repository layer
  */
 public interface UserService {
+    /**
+     * Find users with pagination, sorting and info about deleted users
+     *
+     * @param pageable  - pagination config
+     * @param column    - user column
+     * @param sort      - sort type
+     * @param isDeleted - info about deleted users
+     * @return - list of users or empty list
+     */
+    List<User> findAll(Pageable pageable, Set<ColumnUserName> column, SortType sort, boolean isDeleted);
+
     /**
      * Find all users id
      *

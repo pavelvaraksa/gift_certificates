@@ -1,7 +1,6 @@
 package com.epam.esm.repository.impl;
 
 import com.epam.esm.domain.GiftCertificate;
-import com.epam.esm.domain.Tag;
 import com.epam.esm.repository.GiftCertificateRepository;
 import com.epam.esm.util.ColumnCertificateName;
 import com.epam.esm.util.SortType;

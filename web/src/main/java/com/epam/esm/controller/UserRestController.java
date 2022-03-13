@@ -3,9 +3,12 @@ package com.epam.esm.controller;
 import com.epam.esm.domain.User;
 import com.epam.esm.dto.UserDto;
 import com.epam.esm.service.UserService;
+import com.epam.esm.util.ColumnUserName;
+import com.epam.esm.util.SortType;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
@@ -23,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -34,27 +38,34 @@ public class UserRestController {
     public final UserService userService;
     private final ModelMapper modelMapper;
 
-//    /**
-//     * Find list of users
-//     *
-//     * @return - page of users or empty page
-//     */
-//    @GetMapping
-//    @ResponseStatus(HttpStatus.OK)
-//    public CollectionModel<UserDto> findAllUsers(Pageable pageable, @RequestParam(value = "isDeleted",
-//            required = false, defaultValue = "false") boolean isDeleted) {
-//        List<User> listUser = userService.findAll(pageable, isDeleted);
-//        List<UserDto> items = new ArrayList<>();
-//
-//        for (User user : listUser) {
-//            UserDto userDto = modelMapper.map(user, UserDto.class);
-//            userDto.add(linkTo(methodOn(UserRestController.class).findUserById(user.getId())).withSelfRel(),
-//                    linkTo(UserRestController.class).slash("search?login=" + user.getLogin()).withSelfRel());
-//            items.add(userDto);
-//        }
-//
-//        return CollectionModel.of(items, linkTo(UserRestController.class).withRel("users"));
-//    }
+    /**
+     * Find users with pagination, sorting and info about deleted users
+     *
+     * @param pageable  - pagination config
+     * @param column    - user column
+     * @param sort      - sort type
+     * @param isDeleted - info about deleted users
+     * @return - list of users or empty list
+     */
+    @GetMapping
+    @ResponseStatus(HttpStatus.OK)
+    public CollectionModel<UserDto> findAllUsers(@PageableDefault(size = 2) Pageable pageable,
+                                               @RequestParam(value = "column", defaultValue = "ID") Set<ColumnUserName> column,
+                                               @RequestParam(value = "sort", defaultValue = "ASC") SortType sort,
+                                               @RequestParam(value = "isDeleted", defaultValue = "false") boolean isDeleted) {
+
+        List<User> listUser = userService.findAll(pageable, column, sort, isDeleted);
+        List<UserDto> items = new ArrayList<>();
+
+        for (User user : listUser) {
+            UserDto userDto = modelMapper.map(user, UserDto.class);
+            userDto.add(linkTo(methodOn(UserRestController.class).findUserById(user.getId())).withSelfRel(),
+                    linkTo(UserRestController.class).slash("search?login=" + user.getLogin()).withSelfRel());
+            items.add(userDto);
+        }
+
+        return CollectionModel.of(items, linkTo(UserRestController.class).withRel("users"));
+    }
 
     /**
      * Find user by id
