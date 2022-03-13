@@ -1,6 +1,5 @@
 package com.epam.esm.dto;
 
-import com.epam.esm.domain.User;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -23,8 +22,6 @@ public class OrderDto extends RepresentationModel<OrderDto> {
     private Integer count;
 
     private LocalDateTime purchaseDate;
-
-    //private User user;
 
     private Set<OrderDetailsDto> orderDetails;
 }

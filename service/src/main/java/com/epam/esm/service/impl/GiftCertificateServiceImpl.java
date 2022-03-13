@@ -110,7 +110,10 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             optionalTag = tagRepository.findByName(name);
             Long tagId = optionalTag.get().getId();
             foundCertificates = giftCertificateRepository.findByTagId(tagId);
-            giftCertificates.addAll(foundCertificates);
+
+            if (!giftCertificates.equals(foundCertificates)) {
+                giftCertificates.addAll(foundCertificates);
+            }
         }
 
         for (GiftCertificate name : foundCertificates) {
@@ -121,6 +124,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
                 throw new ServiceNotFoundException(CERTIFICATE_NOT_FOUND);
             }
         }
+
 
         if (!giftCertificates.isEmpty()) {
             return giftCertificates;

@@ -11,7 +11,6 @@ import com.epam.esm.service.UserService;
 import com.epam.esm.validator.TagValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -43,16 +42,15 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public Page<Tag> findAllTags(Pageable pageable) {
-        return tagRepository.findAllTags(pageable);
-    }
-
-    @Override
     public Optional<Tag> findById(Long id) {
         Optional<Tag> tag = tagRepository.findById(id);
 
         if (tag.isEmpty()) {
             log.error("tag with id " + id + " was not found");
+            throw new ServiceNotFoundException(TAG_NOT_FOUND);
+        }
+
+        if (tag.get().isActive()) {
             throw new ServiceNotFoundException(TAG_NOT_FOUND);
         }
 
@@ -65,6 +63,10 @@ public class TagServiceImpl implements TagService {
 
         if (tag.isEmpty()) {
             log.error("tag with name " + name + " was not found");
+            throw new ServiceNotFoundException(TAG_NOT_FOUND);
+        }
+
+        if (tag.get().isActive()) {
             throw new ServiceNotFoundException(TAG_NOT_FOUND);
         }
 
@@ -92,6 +94,10 @@ public class TagServiceImpl implements TagService {
 
         if (tag.isEmpty()) {
             log.error("Tag was not found");
+            throw new ServiceNotFoundException(TAG_NOT_FOUND);
+        }
+
+        if (tag.get().isActive()) {
             throw new ServiceNotFoundException(TAG_NOT_FOUND);
         }
 

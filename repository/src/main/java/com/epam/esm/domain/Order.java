@@ -86,11 +86,12 @@ public class Order implements Serializable {
         return Objects.equals(id, order.id)
                 && Objects.equals(totalPrice, order.totalPrice)
                 && Objects.equals(count, order.count)
-                && Objects.equals(purchaseDate, order.purchaseDate);
+                && Objects.equals(purchaseDate, order.purchaseDate)
+                && Objects.equals(isActive, order.isActive);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, totalPrice, count, purchaseDate);
+        return Objects.hash(id, totalPrice, count, purchaseDate, isActive);
     }
 }

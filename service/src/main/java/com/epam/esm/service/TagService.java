@@ -20,8 +20,6 @@ public interface TagService {
      */
     List<Tag> findAll(Pageable pageable, boolean isDeleted);
 
-    Page<Tag> findAllTags(Pageable pageable);
-
     /**
      * Find a tag by id.
      *

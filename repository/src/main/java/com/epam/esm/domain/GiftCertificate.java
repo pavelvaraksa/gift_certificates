@@ -65,6 +65,7 @@ public class GiftCertificate implements Serializable {
     @Column(name = "deleted")
     private boolean isActive;
 
+    @JsonIgnore
     @ManyToMany(mappedBy = "certificateList", fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     Set<Tag> tag = new HashSet<>();
 
@@ -80,18 +81,18 @@ public class GiftCertificate implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         GiftCertificate that = (GiftCertificate) o;
-        return Objects.equals(id, that.id)
+        return isActive == that.isActive
+                && Objects.equals(id, that.id)
                 && Objects.equals(name, that.name)
                 && Objects.equals(description, that.description)
                 && Objects.equals(currentPrice, that.currentPrice)
                 && Objects.equals(duration, that.duration)
                 && Objects.equals(createDate, that.createDate)
-                && Objects.equals(lastUpdateDate, that.lastUpdateDate)
-                && Objects.equals(tag, that.tag);
+                && Objects.equals(lastUpdateDate, that.lastUpdateDate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, description, currentPrice, duration, createDate, lastUpdateDate, tag);
+        return Objects.hash(id, name, description, currentPrice, duration, createDate, lastUpdateDate, isActive);
     }
 }

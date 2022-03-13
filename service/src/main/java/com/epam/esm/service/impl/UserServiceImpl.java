@@ -3,16 +3,11 @@ package com.epam.esm.service.impl;
 import com.epam.esm.domain.User;
 import com.epam.esm.exception.ServiceExistException;
 import com.epam.esm.exception.ServiceNotFoundException;
-import com.epam.esm.repository.TagRepository;
 import com.epam.esm.repository.UserRepository;
 import com.epam.esm.service.UserService;
 import com.epam.esm.validator.UserValidator;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -58,6 +53,10 @@ public class UserServiceImpl implements UserService {
             throw new ServiceNotFoundException(USER_NOT_FOUND);
         }
 
+        if (user.get().isActive()) {
+            throw new ServiceNotFoundException(USER_NOT_FOUND);
+        }
+
         return user;
     }
 
@@ -67,6 +66,10 @@ public class UserServiceImpl implements UserService {
 
         if (user.isEmpty()) {
             log.error("User with login " + login + " was not found");
+            throw new ServiceNotFoundException(USER_NOT_FOUND);
+        }
+
+        if (user.get().isActive()) {
             throw new ServiceNotFoundException(USER_NOT_FOUND);
         }
 
@@ -94,6 +97,10 @@ public class UserServiceImpl implements UserService {
 
         if (userById.isEmpty()) {
             log.error("User was not found");
+            throw new ServiceNotFoundException(USER_NOT_FOUND);
+        }
+
+        if (userById.get().isActive()) {
             throw new ServiceNotFoundException(USER_NOT_FOUND);
         }
 
@@ -131,6 +138,10 @@ public class UserServiceImpl implements UserService {
 
         if (user.isEmpty()) {
             log.error("User was not found");
+            throw new ServiceNotFoundException(USER_NOT_FOUND);
+        }
+
+        if (user.get().isActive()) {
             throw new ServiceNotFoundException(USER_NOT_FOUND);
         }
 
