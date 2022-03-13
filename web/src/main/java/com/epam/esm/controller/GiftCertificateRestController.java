@@ -136,7 +136,7 @@ public class GiftCertificateRestController {
      * @param id              - gift certificate id
      * @param giftCertificate - gift certificate
      */
-    @PatchMapping("/update/{id}")
+    @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public EntityModel<GiftCertificateDto> updateGiftCertificate(@PathVariable Long id,
                                                                  @RequestBody GiftCertificate giftCertificate) {

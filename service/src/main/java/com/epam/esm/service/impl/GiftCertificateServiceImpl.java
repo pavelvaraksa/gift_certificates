@@ -47,7 +47,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         List<Long> allTags;
 
         for (Long certificateId : certificates) {
-            allTags = tagRepository.findByCertificate(certificateId);
+            allTags = tagRepository.findAllIdByCertificateId(certificateId);
 
             Optional<GiftCertificate> giftCertificate = giftCertificateRepository.findById(certificateId);
 
@@ -124,7 +124,6 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
                 throw new ServiceNotFoundException(CERTIFICATE_NOT_FOUND);
             }
         }
-
 
         if (!giftCertificates.isEmpty()) {
             return giftCertificates;
@@ -219,6 +218,8 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         giftCertificate.setId(giftCertificateById.get().getId());
         giftCertificate.setCreateDate(giftCertificateById.get().getCreateDate());
         giftCertificate.setLastUpdateDate(LocalDateTime.now());
+        List<Tag> existTags = tagRepository.findAllByCertificateId(giftCertificate.getId());
+        giftCertificate.setTag(existTags);
 
         log.info("Gift certificate with name " + giftCertificate.getName() + " updated");
         return giftCertificateRepository.updateById(giftCertificate);

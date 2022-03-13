@@ -9,18 +9,12 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Restrictions;
-import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.Query;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Tag repository implementation
@@ -30,7 +24,9 @@ import java.util.stream.Collectors;
 public class TagRepositoryImpl implements TagRepository {
     private final SessionFactory sessionFactory;
     private final String FIND_ALL_QUERY = "select tag from Tag tag";
-    private final String FIND_ALL_QUERY_BY_CERTIFICATE_ID = "select tag.id from Tag tag " +
+    private final String FIND_ALL_QUERY_ID_BY_CERTIFICATE_ID = "select tag.id from Tag tag " +
+            "join GiftCertificateToTag gctt on tag.id = gctt.tag where gctt.giftCertificate = ";
+    private final String FIND_ALL_QUERY_TAG_BY_CERTIFICATE_ID = "select tag from Tag tag " +
             "join GiftCertificateToTag gctt on tag.id = gctt.tag where gctt.giftCertificate = ";
 
     @Override
@@ -51,16 +47,15 @@ public class TagRepositoryImpl implements TagRepository {
     }
 
     @Override
-    public Page<Tag> findAllTags(Pageable pageable) {
+    public List<Long> findAllIdByCertificateId(Long id) {
         Session session = sessionFactory.openSession();
-        List<Tag> list = session.createQuery(FIND_ALL_QUERY, Tag.class).list();
+        return session.createQuery(FIND_ALL_QUERY_ID_BY_CERTIFICATE_ID + id).list();
+    }
 
-        int pageNumber = pageable.getPageNumber();
-        int pageSize = pageable.getPageSize();
-        Sort sort = pageable.getSort();
-        Pageable pageable1 = PageRequest.of(pageNumber, pageSize, sort);
-
-        return new PageImpl<>(list);
+    @Override
+    public List<Tag> findAllByCertificateId(Long id) {
+        Session session = sessionFactory.openSession();
+        return session.createQuery(FIND_ALL_QUERY_TAG_BY_CERTIFICATE_ID + id).list();
     }
 
     @Override
@@ -74,12 +69,6 @@ public class TagRepositoryImpl implements TagRepository {
         Criteria criteria = sessionFactory.openSession().createCriteria(Tag.class);
         criteria.add(Restrictions.like("name", name));
         return Optional.ofNullable((Tag) criteria.uniqueResult());
-    }
-
-    @Override
-    public List<Long> findByCertificate(Long id) {
-        Session session = sessionFactory.openSession();
-        return session.createQuery(FIND_ALL_QUERY_BY_CERTIFICATE_ID + id).list();
     }
 
     @Override

@@ -118,7 +118,7 @@ public class TagServiceImpl implements TagService {
         certificates.addAll(allCertificates);
 
         for (Long certificateId : certificates) {
-            allTags = tagRepository.findByCertificate(certificateId);
+            allTags = tagRepository.findAllIdByCertificateId(certificateId);
             tags.addAll(allTags);
         }
 
