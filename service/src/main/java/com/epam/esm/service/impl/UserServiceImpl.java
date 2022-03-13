@@ -28,11 +28,6 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     @Override
-    public List<User> findAll(Pageable pageable, boolean isDeleted) {
-        return userRepository.findAll(pageable, isDeleted);
-    }
-
-    @Override
     public List<Long> findAllForWidelyUsedTag() {
         List<Long> listId = userRepository.findAllForWidelyUsedTag();
 

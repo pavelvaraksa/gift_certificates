@@ -4,6 +4,8 @@ import com.epam.esm.domain.Tag;
 import com.epam.esm.dto.TagDto;
 import com.epam.esm.repository.TagRepository;
 import com.epam.esm.service.TagService;
+import com.epam.esm.util.ColumnTagName;
+import com.epam.esm.util.SortType;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Pageable;
@@ -24,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -37,16 +40,22 @@ public class TagRestController {
     private final ModelMapper modelMapper;
 
     /**
-     * Find list of tags
+     * Find tags with pagination, sorting and info about deleted tags
      *
-     * @return - page of tags or empty page
+     * @param pageable  - pagination config
+     * @param column    - tag column
+     * @param sort      - sort type
+     * @param isDeleted - info about deleted tags
+     * @return - list of tags or empty list
      */
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public CollectionModel<TagDto> findAllTags(@PageableDefault(size = 5) Pageable pageable,
-                                               @RequestParam(value = "isDeleted",
-                                                       required = false, defaultValue = "false") boolean isDeleted) {
-        List<Tag> tags = tagService.findAll(pageable, isDeleted);
+    public CollectionModel<TagDto> findAllTags(@PageableDefault(size = 2) Pageable pageable,
+                                               @RequestParam(value = "column", defaultValue = "ID") Set<ColumnTagName> column,
+                                               @RequestParam(value = "sort", defaultValue = "ASC") SortType sort,
+                                               @RequestParam(value = "isDeleted", defaultValue = "false") boolean isDeleted) {
+
+        List<Tag> tags = tagService.findAll(pageable, column, sort, isDeleted);
         List<TagDto> items = new ArrayList<>();
 
         for (Tag tag : tags) {

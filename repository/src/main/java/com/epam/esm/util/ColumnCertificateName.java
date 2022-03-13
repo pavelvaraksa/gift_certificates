@@ -1,6 +1,6 @@
 package com.epam.esm.util;
 
-public enum ColumnName {
+public enum ColumnCertificateName {
     ID,
     NAME,
     DESCRIPTION,

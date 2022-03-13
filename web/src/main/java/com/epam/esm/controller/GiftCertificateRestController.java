@@ -37,28 +37,28 @@ public class GiftCertificateRestController {
     public final TagService tagService;
     private final ModelMapper modelMapper;
 
-    /**
-     * Find list of gift certificates
-     *
-     * @return - page of gift certificates or empty page
-     */
-    @GetMapping
-    @ResponseStatus(HttpStatus.OK)
-    public CollectionModel<GiftCertificateDto> findAllGiftCertificates(@PageableDefault(size = 5) Pageable pageable,
-                                                                       @RequestParam(value = "isDeleted",
-                                                                               required = false, defaultValue = "false") boolean isDeleted) {
-        List<GiftCertificate> certificates = giftCertificateService.findAll(pageable, isDeleted);
-        List<GiftCertificateDto> items = new ArrayList<>();
-
-        for (GiftCertificate certificate : certificates) {
-            GiftCertificateDto certificateDto = modelMapper.map(certificate, GiftCertificateDto.class);
-            certificateDto.add(linkTo(methodOn(GiftCertificateRestController.class).findGiftCertificateById(certificate.getId())).withSelfRel(),
-                    linkTo(GiftCertificateRestController.class).slash("search/name?name=" + certificate.getName()).withSelfRel());
-            items.add(certificateDto);
-        }
-
-        return CollectionModel.of(items, linkTo(GiftCertificateRestController.class).withRel("certificates"));
-    }
+//    /**
+//     * Find list of gift certificates
+//     *
+//     * @return - page of gift certificates or empty page
+//     */
+//    @GetMapping
+//    @ResponseStatus(HttpStatus.OK)
+//    public CollectionModel<GiftCertificateDto> findAllGiftCertificates(@PageableDefault(size = 5) Pageable pageable,
+//                                                                       @RequestParam(value = "isDeleted",
+//                                                                               required = false, defaultValue = "false") boolean isDeleted) {
+//        List<GiftCertificate> certificates = giftCertificateService.findAll(pageable, isDeleted);
+//        List<GiftCertificateDto> items = new ArrayList<>();
+//
+//        for (GiftCertificate certificate : certificates) {
+//            GiftCertificateDto certificateDto = modelMapper.map(certificate, GiftCertificateDto.class);
+//            certificateDto.add(linkTo(methodOn(GiftCertificateRestController.class).findGiftCertificateById(certificate.getId())).withSelfRel(),
+//                    linkTo(GiftCertificateRestController.class).slash("search/name?name=" + certificate.getName()).withSelfRel());
+//            items.add(certificateDto);
+//        }
+//
+//        return CollectionModel.of(items, linkTo(GiftCertificateRestController.class).withRel("certificates"));
+//    }
 
     /**
      * Find gift certificate by id

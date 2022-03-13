@@ -27,22 +27,6 @@ public class UserRepositoryImpl implements UserRepository {
     private final String FIND_ALL_QUERY_ID = "select user.id from User user";
 
     @Override
-    public List<User> findAll(Pageable pageable, boolean isDeleted) {
-        Session session = sessionFactory.openSession();
-        session.unwrap(Session.class);
-        int pageNumber = pageable.getPageNumber();
-        int pageSize = pageable.getPageSize();
-        Filter filter = session.enableFilter("userFilter");
-        filter.setParameter("isDeleted", isDeleted);
-        Query queryUsers = session.createQuery(FIND_ALL_QUERY, User.class);
-        queryUsers.setFirstResult(pageNumber * pageSize);
-        queryUsers.setMaxResults(pageSize);
-        List<User> list = queryUsers.getResultList();
-        session.disableFilter("userFilter");
-        return list;
-    }
-
-    @Override
     public List<Long> findAllForWidelyUsedTag() {
         Session session = sessionFactory.openSession();
         return session.createQuery(FIND_ALL_QUERY_ID).list();

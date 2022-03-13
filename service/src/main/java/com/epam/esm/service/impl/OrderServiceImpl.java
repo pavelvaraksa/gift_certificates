@@ -38,11 +38,6 @@ public class OrderServiceImpl implements OrderService {
     private final GiftCertificateService giftCertificateService;
 
     @Override
-    public List<Order> findAll(Pageable pageable, boolean isDeleted) {
-        return orderRepository.findAll(pageable, isDeleted);
-    }
-
-    @Override
     public Long findIdWithHighestCost(List<Long> id) {
         List<Order> listAllOrders = new ArrayList<>();
         List<Order> listOrders;

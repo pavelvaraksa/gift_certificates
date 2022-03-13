@@ -2,10 +2,13 @@ package com.epam.esm.service;
 
 import com.epam.esm.domain.Tag;
 
+import com.epam.esm.util.ColumnTagName;
+import com.epam.esm.util.SortType;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Tag service layer
@@ -13,11 +16,15 @@ import java.util.Optional;
  */
 public interface TagService {
     /**
-     * Find all tags
+     * Find tags with pagination, sorting and info about deleted tags
      *
-     * @return - page of tags or empty page
+     * @param pageable  - pagination config
+     * @param column    - tag column
+     * @param sort      - sort type
+     * @param isDeleted - info about deleted tags
+     * @return - list of tags or empty list
      */
-    List<Tag> findAll(Pageable pageable, boolean isDeleted);
+    List<Tag> findAll(Pageable pageable, Set<ColumnTagName> column, SortType sort, boolean isDeleted);
 
     /**
      * Find a tag by id.

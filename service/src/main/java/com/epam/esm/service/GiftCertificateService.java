@@ -13,13 +13,6 @@ import java.util.Optional;
  */
 public interface GiftCertificateService {
     /**
-     * Find all gift certificates
-     *
-     * @return - page of gift certificates or empty page
-     */
-    List<GiftCertificate> findAll(Pageable pageable, boolean isDeleted);
-
-    /**
      * Find all gift certificates id by order id
      *
      * @param id - order id

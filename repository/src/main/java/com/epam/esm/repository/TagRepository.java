@@ -1,9 +1,13 @@
 package com.epam.esm.repository;
 
 import com.epam.esm.domain.Tag;
+import com.epam.esm.util.ColumnTagName;
+import com.epam.esm.util.SortType;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Tag repository interface layer
@@ -11,12 +15,23 @@ import java.util.Optional;
  */
 public interface TagRepository extends CrdRepository<Long, Tag> {
     /**
-     * Find tag by name
+     * Find tags with pagination, sorting and info about deleted tags
      *
-     * @param name - tag name
-     * @return - optional of found tag
+     * @param pageable  - pagination config
+     * @param column    - tag column
+     * @param sort      - sort type
+     * @param isDeleted - info about deleted tags
+     * @return - list of tags or empty list
      */
-    Optional<Tag> findByName(String name);
+    List<Tag> findAll(Pageable pageable, Set<ColumnTagName> column, SortType sort, boolean isDeleted);
+
+    /**
+     * Find tags by gift certificate id
+     *
+     * @param id - gift certificate id
+     * @return - list of tags or empty list
+     */
+    List<Tag> findAllByCertificateId(Long id);
 
     /**
      * Find tags id by gift certificate id
@@ -27,10 +42,10 @@ public interface TagRepository extends CrdRepository<Long, Tag> {
     List<Long> findAllIdByCertificateId(Long id);
 
     /**
-     * Find tags by gift certificate id
+     * Find tag by name
      *
-     * @param id - gift certificate id
-     * @return - list of tags or empty list
+     * @param name - tag name
+     * @return - optional of found tag
      */
-    List<Tag> findAllByCertificateId(Long id);
+    Optional<Tag> findByName(String name);
 }

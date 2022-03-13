@@ -8,6 +8,8 @@ import com.epam.esm.service.GiftCertificateService;
 import com.epam.esm.service.OrderService;
 import com.epam.esm.service.TagService;
 import com.epam.esm.service.UserService;
+import com.epam.esm.util.ColumnTagName;
+import com.epam.esm.util.SortType;
 import com.epam.esm.validator.TagValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -19,6 +21,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.BinaryOperator;
 
 import static com.epam.esm.exception.MessageException.TAG_EXIST;
@@ -37,8 +40,8 @@ public class TagServiceImpl implements TagService {
     private final GiftCertificateService giftCertificateService;
 
     @Override
-    public List<Tag> findAll(Pageable pageable, boolean isDeleted) {
-        return tagRepository.findAll(pageable, isDeleted);
+    public List<Tag> findAll(Pageable pageable, Set<ColumnTagName> column, SortType sort, boolean isDeleted) {
+        return tagRepository.findAll(pageable, column, sort, isDeleted);
     }
 
     @Override

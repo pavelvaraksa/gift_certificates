@@ -36,11 +36,6 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     private final GiftCertificateToTagRepository certificateTagLink;
     private final TagRepository tagRepository;
 
-    @Override
-    public List<GiftCertificate> findAll(Pageable pageable, boolean isDeleted) {
-        return giftCertificateRepository.findAll(pageable, isDeleted);
-    }
-
     public List<Long> findAllIdByOrderId(Long id) {
         List<Long> certificates = giftCertificateRepository.findAllByOrderId(id);
         List<Long> tags = new ArrayList<>();

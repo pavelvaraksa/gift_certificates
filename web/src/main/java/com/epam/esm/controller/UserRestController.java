@@ -34,27 +34,27 @@ public class UserRestController {
     public final UserService userService;
     private final ModelMapper modelMapper;
 
-    /**
-     * Find list of users
-     *
-     * @return - page of users or empty page
-     */
-    @GetMapping
-    @ResponseStatus(HttpStatus.OK)
-    public CollectionModel<UserDto> findAllUsers(Pageable pageable, @RequestParam(value = "isDeleted",
-            required = false, defaultValue = "false") boolean isDeleted) {
-        List<User> listUser = userService.findAll(pageable, isDeleted);
-        List<UserDto> items = new ArrayList<>();
-
-        for (User user : listUser) {
-            UserDto userDto = modelMapper.map(user, UserDto.class);
-            userDto.add(linkTo(methodOn(UserRestController.class).findUserById(user.getId())).withSelfRel(),
-                    linkTo(UserRestController.class).slash("search?login=" + user.getLogin()).withSelfRel());
-            items.add(userDto);
-        }
-
-        return CollectionModel.of(items, linkTo(UserRestController.class).withRel("users"));
-    }
+//    /**
+//     * Find list of users
+//     *
+//     * @return - page of users or empty page
+//     */
+//    @GetMapping
+//    @ResponseStatus(HttpStatus.OK)
+//    public CollectionModel<UserDto> findAllUsers(Pageable pageable, @RequestParam(value = "isDeleted",
+//            required = false, defaultValue = "false") boolean isDeleted) {
+//        List<User> listUser = userService.findAll(pageable, isDeleted);
+//        List<UserDto> items = new ArrayList<>();
+//
+//        for (User user : listUser) {
+//            UserDto userDto = modelMapper.map(user, UserDto.class);
+//            userDto.add(linkTo(methodOn(UserRestController.class).findUserById(user.getId())).withSelfRel(),
+//                    linkTo(UserRestController.class).slash("search?login=" + user.getLogin()).withSelfRel());
+//            items.add(userDto);
+//        }
+//
+//        return CollectionModel.of(items, linkTo(UserRestController.class).withRel("users"));
+//    }
 
     /**
      * Find user by id

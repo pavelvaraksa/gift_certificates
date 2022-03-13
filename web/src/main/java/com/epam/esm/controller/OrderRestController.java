@@ -32,26 +32,26 @@ public class OrderRestController {
     private final OrderService orderService;
     private final ModelMapper modelMapper;
 
-    /**
-     * Find list of orders
-     *
-     * @return - page of orders or empty page
-     */
-    @GetMapping
-    @ResponseStatus(HttpStatus.OK)
-    public CollectionModel<OrderDto> findAllOrders(Pageable pageable, @RequestParam(value = "isDeleted",
-            required = false, defaultValue = "false") boolean isDeleted) {
-        List<Order> listOrder = orderService.findAll(pageable, isDeleted);
-        List<OrderDto> items = new ArrayList<>();
-
-        for (Order order : listOrder) {
-            OrderDto orderDto = modelMapper.map(order, OrderDto.class);
-            orderDto.add(linkTo(methodOn(OrderRestController.class).findOrderById(order.getId())).withSelfRel());
-            items.add(orderDto);
-        }
-
-        return CollectionModel.of(items, linkTo(OrderRestController.class).withRel("orders"));
-    }
+//    /**
+//     * Find list of orders
+//     *
+//     * @return - page of orders or empty page
+//     */
+//    @GetMapping
+//    @ResponseStatus(HttpStatus.OK)
+//    public CollectionModel<OrderDto> findAllOrders(Pageable pageable, @RequestParam(value = "isDeleted",
+//            required = false, defaultValue = "false") boolean isDeleted) {
+//        List<Order> listOrder = orderService.findAll(pageable, isDeleted);
+//        List<OrderDto> items = new ArrayList<>();
+//
+//        for (Order order : listOrder) {
+//            OrderDto orderDto = modelMapper.map(order, OrderDto.class);
+//            orderDto.add(linkTo(methodOn(OrderRestController.class).findOrderById(order.getId())).withSelfRel());
+//            items.add(orderDto);
+//        }
+//
+//        return CollectionModel.of(items, linkTo(OrderRestController.class).withRel("orders"));
+//    }
 
     /**
      * Find order by id

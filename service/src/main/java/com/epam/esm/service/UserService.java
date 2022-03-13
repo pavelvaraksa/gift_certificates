@@ -14,13 +14,6 @@ import java.util.Optional;
  */
 public interface UserService {
     /**
-     * Find all users
-     *
-     * @return - page of users or empty page
-     */
-    List<User> findAll(Pageable pageable, boolean isDeleted);
-
-    /**
      * Find all users id
      *
      * @return - list of users id

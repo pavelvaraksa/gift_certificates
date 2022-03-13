@@ -26,22 +26,6 @@ public class OrderRepositoryImpl implements OrderRepository {
             "join User user on order.user = user.id where user.id = ";
 
     @Override
-    public List<Order> findAll(Pageable pageable, boolean isDeleted) {
-        Session session = sessionFactory.openSession();
-        session.unwrap(Session.class);
-        int pageNumber = pageable.getPageNumber();
-        int pageSize = pageable.getPageSize();
-        Filter filter = session.enableFilter("orderFilter");
-        filter.setParameter("isDeleted", isDeleted);
-        Query queryOrders = session.createQuery(FIND_ALL_QUERY, Order.class);
-        queryOrders.setFirstResult(pageNumber * pageSize);
-        queryOrders.setMaxResults(pageSize);
-        List<Order> list = queryOrders.getResultList();
-        session.disableFilter("orderFilter");
-        return list;
-    }
-
-    @Override
     public List<Order> findAllOrdersByUserId(Long id) {
         Session session = sessionFactory.openSession();
         return session.createQuery(FIND_ALL_ID_QUERY_BY_USER_ID + id).list();

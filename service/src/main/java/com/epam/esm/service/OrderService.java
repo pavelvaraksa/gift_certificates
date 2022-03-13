@@ -13,13 +13,6 @@ import java.util.Optional;
  */
 public interface OrderService {
     /**
-     * Find all orders
-     *
-     * @return - page of orders or empty page
-     */
-    List<Order> findAll(Pageable pageable, boolean isDeleted);
-
-    /**
      * Find order id with the highest cost by user id
      *
      * @param id - user id

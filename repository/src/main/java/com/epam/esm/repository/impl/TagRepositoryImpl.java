@@ -2,6 +2,9 @@ package com.epam.esm.repository.impl;
 
 import com.epam.esm.domain.Tag;
 import com.epam.esm.repository.TagRepository;
+import com.epam.esm.util.ColumnTagName;
+import com.epam.esm.util.SortType;
+import com.epam.esm.util.SqlTagQuery;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.Criteria;
 import org.hibernate.Filter;
@@ -15,6 +18,7 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.Query;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Tag repository implementation
@@ -23,24 +27,23 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class TagRepositoryImpl implements TagRepository {
     private final SessionFactory sessionFactory;
-    private final String FIND_ALL_QUERY = "select tag from Tag tag";
     private final String FIND_ALL_QUERY_ID_BY_CERTIFICATE_ID = "select tag.id from Tag tag " +
             "join GiftCertificateToTag gctt on tag.id = gctt.tag where gctt.giftCertificate = ";
     private final String FIND_ALL_QUERY_TAG_BY_CERTIFICATE_ID = "select tag from Tag tag " +
             "join GiftCertificateToTag gctt on tag.id = gctt.tag where gctt.giftCertificate = ";
 
     @Override
-    public List<Tag> findAll(Pageable pageable, boolean isDeleted) {
+    public List<Tag> findAll(Pageable pageable, Set<ColumnTagName> column, SortType sort, boolean isDeleted) {
         Session session = sessionFactory.openSession();
         session.unwrap(Session.class);
-//        int pageNumber = pageable.getPageNumber();
-//        int pageSize = pageable.getPageSize();
-//        Sort sort = pageable.getSort();
+        int pageNumber = pageable.getPageNumber();
+        int pageSize = pageable.getPageSize();
         Filter filter = session.enableFilter("tagFilter");
         filter.setParameter("isDeleted", isDeleted);
-        Query queryTags = session.createQuery(FIND_ALL_QUERY, Tag.class);
-//        queryTags.setFirstResult(pageNumber * pageSize);
-//        queryTags.setMaxResults(pageSize);
+        String sqlQuery = SqlTagQuery.findAllSorted(column, sort);
+        Query queryTags = session.createQuery(sqlQuery, Tag.class);
+        queryTags.setFirstResult(pageNumber * pageSize);
+        queryTags.setMaxResults(pageSize);
         List<Tag> list = queryTags.getResultList();
         session.disableFilter("tagFilter");
         return list;

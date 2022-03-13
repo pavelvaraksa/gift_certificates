@@ -31,22 +31,6 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
             "join OrderDetails od on gc.id = od.certificate where od.order = ";
 
     @Override
-    public List<GiftCertificate> findAll(Pageable pageable, boolean isDeleted) {
-        Session session = sessionFactory.openSession();
-        session.unwrap(Session.class);
-        int pageNumber = pageable.getPageNumber();
-        int pageSize = pageable.getPageSize();
-        Filter filter = session.enableFilter("certificateFilter");
-        filter.setParameter("isDeleted", isDeleted);
-        Query queryCertificates = session.createQuery(FIND_ALL_QUERY, GiftCertificate.class);
-        queryCertificates.setFirstResult(pageNumber * pageSize);
-        queryCertificates.setMaxResults(pageSize);
-        List<GiftCertificate> list = queryCertificates.getResultList();
-        session.disableFilter("certificateFilter");
-        return list;
-    }
-
-    @Override
     public List<Long> findAllByOrderId(Long id) {
         Session session = sessionFactory.openSession();
         return session.createQuery(FIND_ALL_QUERY_BY_ORDER_ID + id).list();
