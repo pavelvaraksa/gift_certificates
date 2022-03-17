@@ -50,21 +50,23 @@ public class UserRestController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public CollectionModel<UserDto> findAllUsers(@PageableDefault(size = 2) Pageable pageable,
-                                               @RequestParam(value = "column", defaultValue = "ID") Set<ColumnUserName> column,
-                                               @RequestParam(value = "sort", defaultValue = "ASC") SortType sort,
-                                               @RequestParam(value = "isDeleted", defaultValue = "false") boolean isDeleted) {
-
+                                                 @RequestParam(value = "column", defaultValue = "ID") Set<ColumnUserName> column,
+                                                 @RequestParam(value = "sort", defaultValue = "ASC") SortType sort,
+                                                 @RequestParam(value = "isDeleted", defaultValue = "false") boolean isDeleted) {
         List<User> listUser = userService.findAll(pageable, column, sort, isDeleted);
         List<UserDto> items = new ArrayList<>();
 
         for (User user : listUser) {
             UserDto userDto = modelMapper.map(user, UserDto.class);
-            userDto.add(linkTo(methodOn(UserRestController.class).findUserById(user.getId())).withSelfRel(),
-                    linkTo(UserRestController.class).slash("search?login=" + user.getLogin()).withSelfRel());
+            userDto.add(linkTo(methodOn(UserRestController.class).findUserById(user.getId())).withRel("find by id"),
+                    linkTo(methodOn(UserRestController.class).findUserByLogin(user.getLogin())).withRel("find by login"),
+                    linkTo(methodOn(UserRestController.class).updateUser(user.getId(), user)).withRel("update by id"),
+                    linkTo(methodOn(UserRestController.class).deleteUser(user.getId())).withRel("delete by id"));
             items.add(userDto);
         }
 
-        return CollectionModel.of(items, linkTo(UserRestController.class).withRel("users"));
+        return CollectionModel.of(items, linkTo(methodOn(UserRestController.class)
+                .findAllUsers(pageable, column, sort, isDeleted)).withRel("find all users"));
     }
 
     /**
@@ -78,9 +80,10 @@ public class UserRestController {
     public EntityModel<UserDto> findUserById(@PathVariable Long id) {
         Optional<User> user = userService.findById(id);
         return EntityModel.of(modelMapper.map(user.get(), UserDto.class),
-                linkTo(UserRestController.class).slash(id).withSelfRel(),
-                linkTo(UserRestController.class).slash("search?login=" + user.get().getLogin()).withSelfRel(),
-                linkTo(UserRestController.class).withRel("users"));
+                linkTo(methodOn(UserRestController.class).findUserById(id)).withRel("find by id"),
+                linkTo(methodOn(UserRestController.class).findUserByLogin(user.get().getLogin())).withRel("find by login"),
+                linkTo(methodOn(UserRestController.class).updateUser(id, user.get())).withRel("update by id"),
+                linkTo(methodOn(UserRestController.class).deleteUser(id)).withRel("delete by id"));
     }
 
     /**
@@ -91,12 +94,13 @@ public class UserRestController {
      */
     @GetMapping("/search")
     @ResponseStatus(HttpStatus.OK)
-    public EntityModel<UserDto> findUserByLogin(@RequestParam(value = "login", required = false) String login) {
+    public EntityModel<UserDto> findUserByLogin(@RequestParam(value = "login") String login) {
         Optional<User> user = userService.findByLogin(login);
         return EntityModel.of(modelMapper.map(user.get(), UserDto.class),
-                linkTo(UserRestController.class).slash(user.get().getId()).withSelfRel(),
-                linkTo(UserRestController.class).slash("search?login=" + user.get().getLogin()).withSelfRel(),
-                linkTo(UserRestController.class).withRel("users"));
+                linkTo(methodOn(UserRestController.class).findUserById(user.get().getId())).withRel("find by id"),
+                linkTo(methodOn(UserRestController.class).findUserByLogin(user.get().getLogin())).withRel("find by login"),
+                linkTo(methodOn(UserRestController.class).updateUser(user.get().getId(), user.get())).withRel("update by id"),
+                linkTo(methodOn(UserRestController.class).deleteUser(user.get().getId())).withRel("delete by id"));
     }
 
     /**
@@ -110,9 +114,10 @@ public class UserRestController {
     public EntityModel<UserDto> saveUser(@RequestBody User user) {
         User newUser = userService.save(user);
         return EntityModel.of(modelMapper.map(newUser, UserDto.class),
-                linkTo(UserRestController.class).slash(newUser.getId()).withSelfRel(),
-                linkTo(UserRestController.class).slash("search?login=" + newUser.getLogin()).withSelfRel(),
-                linkTo(UserRestController.class).withRel("users"));
+                linkTo(methodOn(UserRestController.class).findUserById(newUser.getId())).withRel("find by id"),
+                linkTo(methodOn(UserRestController.class).findUserByLogin(newUser.getLogin())).withRel("find by login"),
+                linkTo(methodOn(UserRestController.class).updateUser(newUser.getId(), newUser)).withRel("update by id"),
+                linkTo(methodOn(UserRestController.class).deleteUser(newUser.getId())).withRel("delete by id"));
     }
 
     /**
@@ -121,14 +126,33 @@ public class UserRestController {
      * @param id   - user id
      * @param user - user
      */
-    @PatchMapping("/{id}")
+    @PatchMapping("/update/{id}")
     @ResponseStatus(HttpStatus.OK)
     public EntityModel<UserDto> updateUser(@PathVariable Long id, @RequestBody User user) {
         User updatedUser = userService.updateById(id, user);
         return EntityModel.of(modelMapper.map(updatedUser, UserDto.class),
-                linkTo(UserRestController.class).slash(updatedUser.getId()).withSelfRel(),
-                linkTo(UserRestController.class).slash("search?login=" + updatedUser.getLogin()).withSelfRel(),
-                linkTo(UserRestController.class).withRel("users"));
+                linkTo(methodOn(UserRestController.class).findUserById(id)).withRel("find by id"),
+                linkTo(methodOn(UserRestController.class).findUserByLogin(updatedUser.getLogin())).withRel("find by login"),
+                linkTo(methodOn(UserRestController.class).updateUser(id, updatedUser)).withRel("update by id"),
+                linkTo(methodOn(UserRestController.class).deleteUser(id)).withRel("delete by id"));
+    }
+
+    /**
+     * Activate user by id
+     *
+     * @param id        - user id
+     * @param isCommand - command for activate
+     */
+    @PatchMapping("/activation/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public EntityModel<UserDto> activateGiftCertificate(@PathVariable Long id,
+                                                        @RequestParam(value = "isCommand", defaultValue = "false") boolean isCommand) {
+        User activatedUser = userService.activateById(id, isCommand);
+        return EntityModel.of(modelMapper.map(activatedUser, UserDto.class),
+                linkTo(methodOn(UserRestController.class).findUserById(id)).withRel("find by id"),
+                linkTo(methodOn(UserRestController.class).findUserByLogin(activatedUser.getLogin())).withRel("find by login"),
+                linkTo(methodOn(UserRestController.class).updateUser(id, activatedUser)).withRel("update by id"),
+                linkTo(methodOn(UserRestController.class).deleteUser(id)).withRel("delete by id"));
     }
 
     /**
@@ -138,7 +162,8 @@ public class UserRestController {
      */
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public void deleteUser(@PathVariable Long id) {
-        userService.deleteById(id);
+    public EntityModel<UserDto> deleteUser(@PathVariable Long id) {
+        User deletedUser = userService.deleteById(id);
+        return EntityModel.of(modelMapper.map(deletedUser, UserDto.class));
     }
 }

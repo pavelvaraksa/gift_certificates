@@ -34,14 +34,14 @@ public class OrderRepositoryImpl implements OrderRepository {
         session.unwrap(Session.class);
         int pageNumber = pageable.getPageNumber();
         int pageSize = pageable.getPageSize();
-        Filter filter = session.enableFilter("tagFilter");
+        Filter filter = session.enableFilter("orderFilter");
         filter.setParameter("isDeleted", isDeleted);
         String sqlQuery = SqlOrderQuery.findAllSorted(column, sort);
         Query queryOrders = session.createQuery(sqlQuery, Order.class);
         queryOrders.setFirstResult(pageNumber * pageSize);
         queryOrders.setMaxResults(pageSize);
         List<Order> list = queryOrders.getResultList();
-        session.disableFilter("tagFilter");
+        session.disableFilter("orderFilter");
         return list;
     }
 
@@ -64,6 +64,18 @@ public class OrderRepositoryImpl implements OrderRepository {
     }
 
     @Override
+    public Order activateById(Long id) {
+        Session session = sessionFactory.openSession();
+        Transaction transaction = session.getTransaction();
+        transaction.begin();
+        Order activatedOrder = session.find(Order.class, id);
+        activatedOrder.setActive(!activatedOrder.isActive());
+        session.merge(activatedOrder);
+        transaction.commit();
+        return activatedOrder;
+    }
+
+    @Override
     public Order save(Order order) {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.getTransaction();
@@ -74,12 +86,13 @@ public class OrderRepositoryImpl implements OrderRepository {
     }
 
     @Override
-    public void deleteById(Long id) {
+    public Order deleteById(Long id) {
         Session session = sessionFactory.openSession();
         Order order = session.find(Order.class, id);
         Transaction transaction = session.getTransaction();
         transaction.begin();
         session.delete(order);
         transaction.commit();
+        return order;
     }
 }

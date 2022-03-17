@@ -1,7 +1,6 @@
 package com.epam.esm.service;
 
 import com.epam.esm.domain.Tag;
-
 import com.epam.esm.util.ColumnTagName;
 import com.epam.esm.util.SortType;
 import org.springframework.data.domain.Pageable;
@@ -55,7 +54,7 @@ public interface TagService {
      *
      * @param id - tag id
      */
-    void deleteById(Long id);
+    Tag deleteById(Long id);
 
     /**
      * Find most widely used tag
@@ -63,4 +62,13 @@ public interface TagService {
      * @return - tag
      */
     Optional<Tag> findMostWidelyUsed();
+
+    /**
+     * Activate a tag
+     *
+     * @param id        - tag id
+     * @param isCommand - command for activate
+     * @return - activated tag
+     */
+    Tag activateById(Long id, boolean isCommand);
 }

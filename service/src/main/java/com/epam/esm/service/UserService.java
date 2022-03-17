@@ -1,5 +1,6 @@
 package com.epam.esm.service;
 
+import com.epam.esm.domain.GiftCertificate;
 import com.epam.esm.domain.User;
 import com.epam.esm.util.ColumnUserName;
 import com.epam.esm.util.SortType;
@@ -70,5 +71,14 @@ public interface UserService {
      *
      * @param id - user id
      */
-    void deleteById(Long id);
+    User deleteById(Long id);
+
+    /**
+     * Activate a user
+     *
+     * @param id        - user id
+     * @param isCommand - command for activate
+     * @return - activated user
+     */
+    User activateById(Long id, boolean isCommand);
 }

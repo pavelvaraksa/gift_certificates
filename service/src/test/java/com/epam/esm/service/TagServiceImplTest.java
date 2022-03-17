@@ -54,8 +54,8 @@ public class TagServiceImplTest {
                 new Tag(2L, "tag_2", false, null),
                 new Tag(3L, "tag_3", false, null));
 
-        Mockito.when(tagRepository.findAll(null, false)).thenReturn(expectedTags);
-        List<Tag> actualTags = tagRepository.findAll(null, false);
+        Mockito.when(tagRepository.findAll(null, null, null, false)).thenReturn(expectedTags);
+        List<Tag> actualTags = tagRepository.findAll(null, null, null, false);
         assertEquals(expectedTags, actualTags);
     }
 
@@ -66,9 +66,9 @@ public class TagServiceImplTest {
                 new Tag(2L, "tag_222", false, null),
                 new Tag(3L, "tag_333", false, null));
 
-        Mockito.when(tagRepository.findAll(null, false)).thenReturn(expectedTags);
+        Mockito.when(tagRepository.findAll(null, null, null, false)).thenReturn(expectedTags);
         expectedTags = new ArrayList<>();
-        List<Tag> actualTags = tagRepository.findAll(null, false);
+        List<Tag> actualTags = tagRepository.findAll(null, null, null, false);
         assertNotEquals(expectedTags, actualTags);
     }
 

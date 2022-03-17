@@ -52,21 +52,23 @@ public class GiftCertificateRestController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public CollectionModel<GiftCertificateDto> findAllCertificates(@PageableDefault(size = 2) Pageable pageable,
-                                               @RequestParam(value = "column", defaultValue = "ID") Set<ColumnCertificateName> column,
-                                               @RequestParam(value = "sort", defaultValue = "ASC") SortType sort,
-                                               @RequestParam(value = "isDeleted", defaultValue = "false") boolean isDeleted) {
-
+                                                                   @RequestParam(value = "column", defaultValue = "ID") Set<ColumnCertificateName> column,
+                                                                   @RequestParam(value = "sort", defaultValue = "ASC") SortType sort,
+                                                                   @RequestParam(value = "isDeleted", defaultValue = "false") boolean isDeleted) {
         List<GiftCertificate> certificates = giftCertificateService.findAll(pageable, column, sort, isDeleted);
         List<GiftCertificateDto> items = new ArrayList<>();
 
         for (GiftCertificate certificate : certificates) {
             GiftCertificateDto certificateDto = modelMapper.map(certificate, GiftCertificateDto.class);
-            certificateDto.add(linkTo(methodOn(GiftCertificateRestController.class).findGiftCertificateById(certificate.getId())).withSelfRel(),
-                    linkTo(GiftCertificateRestController.class).slash("search/name?name=" + certificate.getName()).withSelfRel());
+            certificateDto.add(linkTo(methodOn(GiftCertificateRestController.class).findGiftCertificateById(certificate.getId())).withRel("find by id"),
+                    linkTo(methodOn(GiftCertificateRestController.class).findGiftCertificateByName(certificate.getName())).withRel("find by name"),
+                    linkTo(methodOn(GiftCertificateRestController.class).updateGiftCertificate(certificate.getId(), certificate)).withRel("update by id"),
+                    linkTo(methodOn(GiftCertificateRestController.class).deleteGiftCertificate(certificate.getId())).withRel("delete by id"));
             items.add(certificateDto);
         }
 
-        return CollectionModel.of(items, linkTo(GiftCertificateRestController.class).withRel("certificates"));
+        return CollectionModel.of(items, linkTo(methodOn(GiftCertificateRestController.class).
+                findAllCertificates(pageable, column, sort, isDeleted)).withRel("find all certificates"));
     }
 
     /**
@@ -80,9 +82,10 @@ public class GiftCertificateRestController {
     public EntityModel<GiftCertificateDto> findGiftCertificateById(@PathVariable Long id) {
         Optional<GiftCertificate> giftCertificate = giftCertificateService.findById(id);
         return EntityModel.of(modelMapper.map(giftCertificate.get(), GiftCertificateDto.class),
-                linkTo(GiftCertificateRestController.class).slash(id).withSelfRel(),
-                linkTo(GiftCertificateRestController.class).slash("search/name?name=" + giftCertificate.get().getName()).withSelfRel(),
-                linkTo(GiftCertificateRestController.class).withRel("certificates"));
+                linkTo(methodOn(GiftCertificateRestController.class).findGiftCertificateById(giftCertificate.get().getId())).withRel("find by id"),
+                linkTo(methodOn(GiftCertificateRestController.class).findGiftCertificateByName(giftCertificate.get().getName())).withRel("find by name"),
+                linkTo(methodOn(GiftCertificateRestController.class).updateGiftCertificate(giftCertificate.get().getId(), giftCertificate.get())).withRel("update by id"),
+                linkTo(methodOn(GiftCertificateRestController.class).deleteGiftCertificate(giftCertificate.get().getId())).withRel("delete by id"));
     }
 
     /**
@@ -96,9 +99,10 @@ public class GiftCertificateRestController {
     public EntityModel<GiftCertificateDto> findGiftCertificateByName(@RequestParam String name) {
         Optional<GiftCertificate> giftCertificate = giftCertificateService.findByName(name);
         return EntityModel.of(modelMapper.map(giftCertificate.get(), GiftCertificateDto.class),
-                linkTo(GiftCertificateRestController.class).slash(giftCertificate.get().getId()).withSelfRel(),
-                linkTo(GiftCertificateRestController.class).slash("search/name?name=" + giftCertificate.get().getName()).withSelfRel(),
-                linkTo(GiftCertificateRestController.class).withRel("certificates"));
+                linkTo(methodOn(GiftCertificateRestController.class).findGiftCertificateById(giftCertificate.get().getId())).withRel("find by id"),
+                linkTo(methodOn(GiftCertificateRestController.class).findGiftCertificateByName(giftCertificate.get().getName())).withRel("find by name"),
+                linkTo(methodOn(GiftCertificateRestController.class).updateGiftCertificate(giftCertificate.get().getId(), giftCertificate.get())).withRel("update by id"),
+                linkTo(methodOn(GiftCertificateRestController.class).deleteGiftCertificate(giftCertificate.get().getId())).withRel("delete by id"));
     }
 
     /**
@@ -115,12 +119,14 @@ public class GiftCertificateRestController {
 
         for (GiftCertificate certificate : listGiftCertificate) {
             GiftCertificateDto certificateDto = modelMapper.map(certificate, GiftCertificateDto.class);
-            certificateDto.add(linkTo(methodOn(GiftCertificateRestController.class).findGiftCertificateById(certificate.getId())).withSelfRel(),
-                    linkTo(GiftCertificateRestController.class).slash("search/name?name=" + certificate.getName()).withSelfRel());
+            certificateDto.add(linkTo(methodOn(GiftCertificateRestController.class).findGiftCertificateById(certificate.getId())).withRel("find by id"),
+                    linkTo(methodOn(GiftCertificateRestController.class).findGiftCertificateByName(certificate.getName())).withRel("find by name"),
+                    linkTo(methodOn(GiftCertificateRestController.class).updateGiftCertificate(certificate.getId(), certificate)).withRel("update by id"),
+                    linkTo(methodOn(GiftCertificateRestController.class).deleteGiftCertificate(certificate.getId())).withRel("delete by id"));
             items.add(certificateDto);
         }
 
-        return CollectionModel.of(items, linkTo(GiftCertificateRestController.class).withRel("certificates"));
+        return CollectionModel.of(items);
     }
 
     /**
@@ -134,9 +140,10 @@ public class GiftCertificateRestController {
     public EntityModel<GiftCertificateDto> saveGiftCertificate(@RequestBody GiftCertificate giftCertificate) {
         GiftCertificate newGiftCertificate = giftCertificateService.save(giftCertificate);
         return EntityModel.of(modelMapper.map(newGiftCertificate, GiftCertificateDto.class),
-                linkTo(GiftCertificateRestController.class).slash(newGiftCertificate.getId()).withSelfRel(),
-                linkTo(GiftCertificateRestController.class).slash("search/name?name=" + newGiftCertificate.getName()).withSelfRel(),
-                linkTo(GiftCertificateRestController.class).withRel("certificates"));
+                linkTo(methodOn(GiftCertificateRestController.class).findGiftCertificateById(newGiftCertificate.getId())).withRel("find by id"),
+                linkTo(methodOn(GiftCertificateRestController.class).findGiftCertificateByName(newGiftCertificate.getName())).withRel("find by name"),
+                linkTo(methodOn(GiftCertificateRestController.class).updateGiftCertificate(newGiftCertificate.getId(), newGiftCertificate)).withRel("update by id"),
+                linkTo(methodOn(GiftCertificateRestController.class).deleteGiftCertificate(newGiftCertificate.getId())).withRel("delete by id"));
     }
 
     /**
@@ -151,9 +158,10 @@ public class GiftCertificateRestController {
                                                                  @RequestBody GiftCertificate giftCertificate) {
         GiftCertificate updatedGiftCertificate = giftCertificateService.updateById(id, giftCertificate);
         return EntityModel.of(modelMapper.map(updatedGiftCertificate, GiftCertificateDto.class),
-                linkTo(GiftCertificateRestController.class).slash(giftCertificate.getId()).withSelfRel(),
-                linkTo(GiftCertificateRestController.class).slash("search/name?name=" + giftCertificate.getName()).withSelfRel(),
-                linkTo(GiftCertificateRestController.class).withRel("certificates"));
+                linkTo(methodOn(GiftCertificateRestController.class).findGiftCertificateById(id)).withRel("find by id"),
+                linkTo(methodOn(GiftCertificateRestController.class).findGiftCertificateByName(updatedGiftCertificate.getName())).withRel("find by name"),
+                linkTo(methodOn(GiftCertificateRestController.class).updateGiftCertificate(id, updatedGiftCertificate)).withRel("update by id"),
+                linkTo(methodOn(GiftCertificateRestController.class).deleteGiftCertificate(id)).withRel("delete by id"));
     }
 
     /**
@@ -162,15 +170,16 @@ public class GiftCertificateRestController {
      * @param id        - gift certificate id
      * @param isCommand - command for activate
      */
-    @PatchMapping("/active/{id}")
+    @PatchMapping("/activation/{id}")
     @ResponseStatus(HttpStatus.OK)
     public EntityModel<GiftCertificateDto> activateGiftCertificate(@PathVariable Long id,
                                                                    @RequestParam(value = "isCommand", defaultValue = "false") boolean isCommand) {
         GiftCertificate activatedGiftCertificate = giftCertificateService.activateById(id, isCommand);
         return EntityModel.of(modelMapper.map(activatedGiftCertificate, GiftCertificateDto.class),
-                linkTo(GiftCertificateRestController.class).slash(activatedGiftCertificate.getId()).withSelfRel(),
-                linkTo(GiftCertificateRestController.class).slash("search/name?name=" + activatedGiftCertificate.getName()).withSelfRel(),
-                linkTo(GiftCertificateRestController.class).withRel("certificates"));
+                linkTo(methodOn(GiftCertificateRestController.class).findGiftCertificateById(id)).withRel("find by id"),
+                linkTo(methodOn(GiftCertificateRestController.class).findGiftCertificateByName(activatedGiftCertificate.getName())).withRel("find by name"),
+                linkTo(methodOn(GiftCertificateRestController.class).updateGiftCertificate(id, activatedGiftCertificate)).withRel("update by id"),
+                linkTo(methodOn(GiftCertificateRestController.class).deleteGiftCertificate(id)).withRel("delete by id"));
     }
 
     /**
@@ -180,8 +189,9 @@ public class GiftCertificateRestController {
      */
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public void deleteGiftCertificate(@PathVariable Long id) {
-        giftCertificateService.deleteById(id);
+    public EntityModel<GiftCertificateDto> deleteGiftCertificate(@PathVariable Long id) {
+        GiftCertificate deletedGiftCertificate = giftCertificateService.deleteById(id);
+        return EntityModel.of(modelMapper.map(deletedGiftCertificate, GiftCertificateDto.class));
     }
 }
 

@@ -48,4 +48,12 @@ public interface TagRepository extends CrdRepository<Long, Tag> {
      * @return - optional of found tag
      */
     Optional<Tag> findByName(String name);
+
+    /**
+     * Activate tag by id
+     *
+     * @param id - tag id
+     * @return - activated tag
+     */
+    Tag activateById(Long id);
 }

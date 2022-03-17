@@ -75,6 +75,18 @@ public class TagRepositoryImpl implements TagRepository {
     }
 
     @Override
+    public Tag activateById(Long id) {
+        Session session = sessionFactory.openSession();
+        Transaction transaction = session.getTransaction();
+        transaction.begin();
+        Tag activatedTag = session.find(Tag.class, id);
+        activatedTag.setActive(!activatedTag.isActive());
+        session.merge(activatedTag);
+        transaction.commit();
+        return activatedTag;
+    }
+
+    @Override
     public Tag save(Tag tag) {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.getTransaction();
@@ -85,12 +97,13 @@ public class TagRepositoryImpl implements TagRepository {
     }
 
     @Override
-    public void deleteById(Long id) {
+    public Tag deleteById(Long id) {
         Session session = sessionFactory.openSession();
         Tag tag = session.find(Tag.class, id);
         Transaction transaction = session.getTransaction();
         transaction.begin();
         session.delete(tag);
         transaction.commit();
+        return tag;
     }
 }

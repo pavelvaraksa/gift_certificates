@@ -67,7 +67,6 @@ public class GiftCertificate implements Serializable {
     @Column(name = "deleted")
     private boolean isActive;
 
-    @JsonIgnore
     @ManyToMany(mappedBy = "certificateList", fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     List<Tag> tag = new ArrayList<>();
 

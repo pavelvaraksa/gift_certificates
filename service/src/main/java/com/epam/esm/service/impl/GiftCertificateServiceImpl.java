@@ -128,12 +128,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             }
         }
 
-        if (!giftCertificates.isEmpty()) {
-            return giftCertificates;
-        } else {
-            log.error("Gift certificate by tag name " + tagName + " was not found");
-            throw new ServiceNotFoundException(CERTIFICATE_NOT_FOUND);
-        }
+        return giftCertificates;
     }
 
     @Override
@@ -160,10 +155,10 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         giftCertificate.getTag().forEach(tag -> {
             if (TagValidator.isTagValid(tag)) {
                 String tagName = tag.getName();
-                Optional<Tag> optionalTag = tagRepository.findByName(tagName);
+                Optional<Tag> optionalTag2 = tagRepository.findByName(tagName);
 
-                if (optionalTag.isPresent()) {
-                    Tag existTag = optionalTag.get();
+                if (optionalTag2.isPresent()) {
+                    Tag existTag = optionalTag2.get();
                     boolean isExistLink = certificateTagLink.isExistLink(newGiftCertificate.getId(), existTag.getId());
 
                     if (!isExistLink) {
@@ -245,7 +240,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    public void deleteById(Long id) {
+    public GiftCertificate deleteById(Long id) {
         Optional<GiftCertificate> giftCertificate = giftCertificateRepository.findById(id);
 
         if (giftCertificate.isEmpty()) {
@@ -259,5 +254,6 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
         log.info("Gift certificate with id " + id + " deleted");
         giftCertificateRepository.deleteById(id);
+        return giftCertificate.get();
     }
 }

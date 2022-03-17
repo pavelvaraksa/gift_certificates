@@ -37,14 +37,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<Long> findAllForWidelyUsedTag() {
-        List<Long> listId = userRepository.findAllForWidelyUsedTag();
-
-        if (listId.isEmpty()) {
-            log.error("Tag was not found");
-            throw new ServiceNotFoundException(TAG_NOT_FOUND);
-        }
-
-        return listId;
+        return userRepository.findAllForWidelyUsedTag();
     }
 
     @Override
@@ -136,7 +129,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void deleteById(Long id) {
+    public User deleteById(Long id) {
         Optional<User> user = userRepository.findById(id);
 
         if (user.isEmpty()) {
@@ -150,5 +143,22 @@ public class UserServiceImpl implements UserService {
 
         log.info("User with id " + id + " deleted");
         userRepository.deleteById(id);
+        return user.get();
+    }
+
+    @Override
+    public User activateById(Long id, boolean isCommand) {
+        Optional<User> user = userRepository.findById(id);
+
+        if (user.isEmpty()) {
+            log.error("User was not found");
+            throw new ServiceNotFoundException(USER_NOT_FOUND);
+        }
+
+        if (user.get().isActive()) {
+            return userRepository.activateById(id);
+        } else {
+            throw new ServiceNotFoundException(USER_NOT_FOUND);
+        }
     }
 }

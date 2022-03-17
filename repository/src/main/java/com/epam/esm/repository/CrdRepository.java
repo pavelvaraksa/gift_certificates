@@ -24,5 +24,5 @@ public interface CrdRepository<K, V> {
      *
      * @param key - object id
      */
-    void deleteById(K key);
+    V deleteById(K key);
 }

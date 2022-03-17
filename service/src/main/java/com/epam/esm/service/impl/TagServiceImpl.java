@@ -92,7 +92,7 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public void deleteById(Long id) {
+    public Tag deleteById(Long id) {
         Optional<Tag> tag = tagRepository.findById(id);
 
         if (tag.isEmpty()) {
@@ -106,6 +106,7 @@ public class TagServiceImpl implements TagService {
 
         log.info("Tag with id " + id + " deleted");
         tagRepository.deleteById(id);
+        return tag.get();
     }
 
     @Override
@@ -133,6 +134,22 @@ public class TagServiceImpl implements TagService {
         Long widelyUsedTagId = tags.stream()
                 .reduce(BinaryOperator.maxBy(Comparator.comparingInt(tag -> Collections.frequency(tags, tag)))).orElseThrow();
         return tagRepository.findById(widelyUsedTagId);
+    }
+
+    @Override
+    public Tag activateById(Long id, boolean isCommand) {
+        Optional<Tag> tag = tagRepository.findById(id);
+
+        if (tag.isEmpty()) {
+            log.error("Tag was not found");
+            throw new ServiceNotFoundException(TAG_NOT_FOUND);
+        }
+
+        if (tag.get().isActive()) {
+            return tagRepository.activateById(id);
+        } else {
+            throw new ServiceNotFoundException(TAG_NOT_FOUND);
+        }
     }
 }
 

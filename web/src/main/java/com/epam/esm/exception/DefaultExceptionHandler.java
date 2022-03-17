@@ -34,7 +34,7 @@ public class DefaultExceptionHandler {
 
     @ExceptionHandler(ServiceExistException.class)
     public ResponseEntity<FrameException> handleDuplicateNameException(ServiceExistException ex, Locale locale) {
-        return createResponseEntity(ex, locale, ErrorCode.ITEM_DUPLICATE_NAME_EXCEPTION, HttpStatus.BAD_REQUEST);
+        return createResponseEntity(ex, locale, ErrorCode.ITEM_DUPLICATE_NAME_EXCEPTION, HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)

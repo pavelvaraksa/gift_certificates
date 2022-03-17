@@ -15,6 +15,7 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -54,18 +55,19 @@ public class TagRestController {
                                                @RequestParam(value = "column", defaultValue = "ID") Set<ColumnTagName> column,
                                                @RequestParam(value = "sort", defaultValue = "ASC") SortType sort,
                                                @RequestParam(value = "isDeleted", defaultValue = "false") boolean isDeleted) {
-
         List<Tag> tags = tagService.findAll(pageable, column, sort, isDeleted);
         List<TagDto> items = new ArrayList<>();
 
         for (Tag tag : tags) {
             TagDto tagDto = modelMapper.map(tag, TagDto.class);
-            tagDto.add(linkTo(methodOn(TagRestController.class).findTagById(tag.getId())).withSelfRel(),
-                    linkTo(TagRestController.class).slash("search?name=" + tag.getName()).withSelfRel());
+            tagDto.add(linkTo(methodOn(TagRestController.class).findTagById(tag.getId())).withRel("find by id"),
+                    linkTo(methodOn(TagRestController.class).findTagByName(tag.getName())).withRel("find by name"),
+                    linkTo(methodOn(TagRestController.class).deleteTag(tag.getId())).withRel("delete by id"));
             items.add(tagDto);
         }
 
-        return CollectionModel.of(items, linkTo(TagRestController.class).withRel("tags"));
+        return CollectionModel.of(items, linkTo(methodOn(TagRestController.class)
+                .findAllTags(pageable, column, sort, isDeleted)).withRel("find all tags"));
     }
 
     /**
@@ -78,10 +80,10 @@ public class TagRestController {
     @ResponseStatus(HttpStatus.OK)
     public EntityModel<TagDto> findTagById(@PathVariable Long id) {
         Optional<Tag> tag = tagService.findById(id);
-        return EntityModel.of((modelMapper.map(tag.get(), TagDto.class)),
-                linkTo(TagRestController.class).slash(id).withSelfRel(),
-                linkTo(TagRestController.class).slash("search?name=" + tag.get().getName()).withSelfRel(),
-                linkTo(TagRestController.class).withRel("tags"));
+        return EntityModel.of(modelMapper.map(tag.get(), TagDto.class),
+                linkTo(methodOn(TagRestController.class).findTagById(id)).withRel("find by id"),
+                linkTo(methodOn(TagRestController.class).findTagByName(tag.get().getName())).withRel("find by name"),
+                linkTo(methodOn(TagRestController.class).deleteTag(id)).withRel("delete by id"));
     }
 
     /**
@@ -95,9 +97,9 @@ public class TagRestController {
     public EntityModel<TagDto> findTagByName(@RequestParam(value = "name", required = false) String name) {
         Optional<Tag> tag = tagService.findByName(name);
         return EntityModel.of(modelMapper.map(tag.get(), TagDto.class),
-                linkTo(TagRestController.class).slash(tag.get().getId()).withSelfRel(),
-                linkTo(TagRestController.class).slash("search?name=" + name).withSelfRel(),
-                linkTo(TagRestController.class).withRel("tags"));
+                linkTo(methodOn(TagRestController.class).findTagById(tag.get().getId())).withRel("find by id"),
+                linkTo(methodOn(TagRestController.class).findTagByName(tag.get().getName())).withRel("find by name"),
+                linkTo(methodOn(TagRestController.class).deleteTag(tag.get().getId())).withRel("delete by id"));
     }
 
     /**
@@ -111,9 +113,9 @@ public class TagRestController {
     public EntityModel<TagDto> createTag(@RequestBody Tag tag) {
         Tag newTag = tagService.save(tag);
         return EntityModel.of(modelMapper.map(newTag, TagDto.class),
-                linkTo(TagRestController.class).slash(newTag.getId()).withSelfRel(),
-                linkTo(TagRestController.class).slash("search?name=" + newTag.getName()).withSelfRel(),
-                linkTo(TagRestController.class).withRel("tags"));
+                linkTo(methodOn(TagRestController.class).findTagById(newTag.getId())).withRel("find by id"),
+                linkTo(methodOn(TagRestController.class).findTagByName(newTag.getName())).withRel("find by name"),
+                linkTo(methodOn(TagRestController.class).deleteTag(newTag.getId())).withRel("delete by id"));
     }
 
     /**
@@ -126,9 +128,26 @@ public class TagRestController {
     public EntityModel<TagDto> findMostWidelyUsed() {
         Optional<Tag> tag = tagService.findMostWidelyUsed();
         return EntityModel.of(modelMapper.map(tag.get(), TagDto.class),
-                linkTo(TagRestController.class).slash(tag.get().getId()).withSelfRel(),
-                linkTo(TagRestController.class).slash("search?name=" + tag.get().getName()).withSelfRel(),
-                linkTo(TagRestController.class).withRel("tags"));
+                linkTo(methodOn(TagRestController.class).findTagById(tag.get().getId())).withRel("find by id"),
+                linkTo(methodOn(TagRestController.class).findTagByName(tag.get().getName())).withRel("find by name"),
+                linkTo(methodOn(TagRestController.class).deleteTag(tag.get().getId())).withRel("delete by id"));
+    }
+
+    /**
+     * Activate tag by id
+     *
+     * @param id        - tag id
+     * @param isCommand - command for activate
+     */
+    @PatchMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public EntityModel<TagDto> activateGiftCertificate(@PathVariable Long id,
+                                                       @RequestParam(value = "isCommand", defaultValue = "false") boolean isCommand) {
+        Tag activatedTag = tagService.activateById(id, isCommand);
+        return EntityModel.of(modelMapper.map(activatedTag, TagDto.class),
+                linkTo(methodOn(TagRestController.class).findTagById(id)).withRel("find by id"),
+                linkTo(methodOn(TagRestController.class).findTagByName(activatedTag.getName())).withRel("find by name"),
+                linkTo(methodOn(TagRestController.class).deleteTag(id)).withRel("delete by id"));
     }
 
     /**
@@ -138,8 +157,9 @@ public class TagRestController {
      */
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public void deleteTag(@PathVariable Long id) {
-        tagService.deleteById(id);
+    public EntityModel<TagDto> deleteTag(@PathVariable Long id) {
+        Tag deletedTag = tagService.deleteById(id);
+        return EntityModel.of(modelMapper.map(deletedTag, TagDto.class));
     }
 }
 

@@ -47,4 +47,12 @@ public interface UserRepository extends CrdRepository<Long, User> {
      * @return - updated user
      */
     User updateById(User user);
+
+    /**
+     * Activate user by id
+     *
+     * @param id - user id
+     * @return - activated user
+     */
+    User activateById(Long id);
 }

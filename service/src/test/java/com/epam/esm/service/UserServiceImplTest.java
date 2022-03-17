@@ -60,8 +60,8 @@ public class UserServiceImplTest {
                 new User(2L, "login_2", "firstname_2", "lastname_2", false, null),
                 new User(3L, "login_3", "firstname_3", "lastname_3", false, null));
 
-        Mockito.when(userRepository.findAll(null, false)).thenReturn(expectedUsers);
-        List<User> actualUsers = userRepository.findAll(null, false);
+        Mockito.when(userRepository.findAll(null, null, null, false)).thenReturn(expectedUsers);
+        List<User> actualUsers = userRepository.findAll(null, null, null, false);
         assertEquals(expectedUsers, actualUsers);
     }
 
@@ -72,9 +72,9 @@ public class UserServiceImplTest {
                 new User(2L, "login_222", "firstname_22", "lastname_22", false, null),
                 new User(3L, "login_333", "firstname_33", "lastname_33", false, null));
 
-        Mockito.when(userRepository.findAll(null, false)).thenReturn(expectedUsers);
+        Mockito.when(userRepository.findAll(null, null, null, false)).thenReturn(expectedUsers);
         expectedUsers = new ArrayList<>();
-        List<User> actualUsers = userRepository.findAll(null, false);
+        List<User> actualUsers = userRepository.findAll(null, null, null, false);
         assertNotEquals(expectedUsers, actualUsers);
     }
 

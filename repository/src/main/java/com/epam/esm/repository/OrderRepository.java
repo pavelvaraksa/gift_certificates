@@ -39,6 +39,14 @@ public interface OrderRepository extends CrdRepository<Long, Order> {
      * @return - optional of found order
      */
     Order findByExistId(Long id);
+
+    /**
+     * Activate gift order by id
+     *
+     * @param id - order id
+     * @return - activated order
+     */
+    Order activateById(Long id);
 }
 
 

@@ -39,14 +39,14 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
         session.unwrap(Session.class);
         int pageNumber = pageable.getPageNumber();
         int pageSize = pageable.getPageSize();
-        Filter filter = session.enableFilter("tagFilter");
+        Filter filter = session.enableFilter("certificateFilter");
         filter.setParameter("isDeleted", isDeleted);
         String sqlQuery = SqlCertificateQuery.findAllSorted(column, sort);
         Query queryCertificates = session.createQuery(sqlQuery, GiftCertificate.class);
         queryCertificates.setFirstResult(pageNumber * pageSize);
         queryCertificates.setMaxResults(pageSize);
         List<GiftCertificate> list = queryCertificates.getResultList();
-        session.disableFilter("tagFilter");
+        session.disableFilter("certificateFilter");
         return list;
     }
 
@@ -114,12 +114,13 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
     }
 
     @Override
-    public void deleteById(Long id) {
+    public GiftCertificate deleteById(Long id) {
         Session session = sessionFactory.openSession();
         GiftCertificate giftCertificate = session.find(GiftCertificate.class, id);
         Transaction transaction = session.getTransaction();
         transaction.begin();
         session.delete(giftCertificate);
         transaction.commit();
+        return giftCertificate;
     }
 }

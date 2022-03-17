@@ -1,6 +1,8 @@
 package com.epam.esm.service;
 
+import com.epam.esm.domain.GiftCertificate;
 import com.epam.esm.domain.Order;
+import com.epam.esm.domain.User;
 import com.epam.esm.util.ColumnOrderName;
 import com.epam.esm.util.SortType;
 import org.springframework.data.domain.Pageable;
@@ -43,17 +45,26 @@ public interface OrderService {
 
     /**
      * Create an order
-     * @param userId - user id
-     * @param giftCertificateId - list of certificates id
      *
+     * @param userId            - user id
+     * @param giftCertificateId - list of certificates id
      * @return - created order
      */
-    Order save(Long userId, List<Long> giftCertificateId);
+    Order save(Long user, List<Long> giftCertificate);
 
     /**
      * Delete an order
      *
      * @param id - order id
      */
-    void deleteById(Long id);
+    Order deleteById(Long id);
+
+    /**
+     * Activate an order
+     *
+     * @param id        - order id
+     * @param isCommand - command for activate
+     * @return - activated order
+     */
+    Order activateById(Long id, boolean isCommand);
 }

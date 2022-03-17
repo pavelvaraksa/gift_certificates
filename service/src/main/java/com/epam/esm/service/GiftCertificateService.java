@@ -88,5 +88,5 @@ public interface GiftCertificateService {
      *
      * @param id - gift certificate id
      */
-    void deleteById(Long id);
+    GiftCertificate deleteById(Long id);
 }

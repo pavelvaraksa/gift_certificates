@@ -55,10 +55,10 @@ public class OrderServiceImpl implements OrderService {
             listAllOrders.addAll(listOrders);
         }
 
-        if (listAllOrders.isEmpty()) {
-            log.error("Tag was not found");
-            throw new ServiceNotFoundException(TAG_NOT_FOUND);
-        }
+//        if (listAllOrders.isEmpty()) {
+//            log.error("Tag was not found");
+//            throw new ServiceNotFoundException(TAG_NOT_FOUND);
+//        }
 
         Optional<Order> optionalOrder = Optional.ofNullable(listAllOrders
                 .stream()
@@ -120,7 +120,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void deleteById(Long id) {
+    public Order deleteById(Long id) {
         Optional<Order> order = orderRepository.findById(id);
 
         if (order.isEmpty()) {
@@ -134,5 +134,22 @@ public class OrderServiceImpl implements OrderService {
 
         log.info("Order with id " + id + " deleted");
         orderRepository.deleteById(id);
+        return order.get();
+    }
+
+    @Override
+    public Order activateById(Long id, boolean isCommand) {
+        Optional<Order> order = orderRepository.findById(id);
+
+        if (order.isEmpty()) {
+            log.error("Order was not found");
+            throw new ServiceNotFoundException(ORDER_NOT_FOUND);
+        }
+
+        if (order.get().isActive()) {
+            return orderRepository.activateById(id);
+        } else {
+            throw new ServiceNotFoundException(ORDER_NOT_FOUND);
+        }
     }
 }

@@ -92,7 +92,7 @@ public class GiftCertificateServiceImplTest {
                 existsGiftCertificateThree
         );
 
-        Mockito.when(giftCertificateRepository.findAll(null, false)).thenReturn(giftCertificates);
+        Mockito.when(giftCertificateRepository.findAll(null, null, null, false)).thenReturn(giftCertificates);
 
         existsGiftCertificateOne.setTag(existsTagsOne);
         existsGiftCertificateTwo.setTag(existsTagsTwo);
@@ -103,7 +103,7 @@ public class GiftCertificateServiceImplTest {
                 existsGiftCertificateTwo,
                 existsGiftCertificateThree);
 
-        List<GiftCertificate> actualGiftCertificates = giftCertificateService.findAll(null, false);
+        List<GiftCertificate> actualGiftCertificates = giftCertificateService.findAll(null, null, null, false);
         assertEquals(expectedGiftCertificates, actualGiftCertificates);
     }
 

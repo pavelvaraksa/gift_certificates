@@ -35,14 +35,14 @@ public class UserRepositoryImpl implements UserRepository {
         session.unwrap(Session.class);
         int pageNumber = pageable.getPageNumber();
         int pageSize = pageable.getPageSize();
-        Filter filter = session.enableFilter("tagFilter");
+        Filter filter = session.enableFilter("userFilter");
         filter.setParameter("isDeleted", isDeleted);
         String sqlQuery = SqlUserQuery.findAllSorted(column, sort);
         Query queryUsers = session.createQuery(sqlQuery, User.class);
         queryUsers.setFirstResult(pageNumber * pageSize);
         queryUsers.setMaxResults(pageSize);
         List<User> list = queryUsers.getResultList();
-        session.disableFilter("tagFilter");
+        session.disableFilter("userFilter");
         return list;
     }
 
@@ -86,12 +86,25 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public void deleteById(Long id) {
+    public User activateById(Long id) {
+        Session session = sessionFactory.openSession();
+        Transaction transaction = session.getTransaction();
+        transaction.begin();
+        User activatedUser = session.find(User.class, id);
+        activatedUser.setActive(!activatedUser.isActive());
+        session.merge(activatedUser);
+        transaction.commit();
+        return activatedUser;
+    }
+
+    @Override
+    public User deleteById(Long id) {
         Session session = sessionFactory.openSession();
         User user = session.find(User.class, id);
         Transaction transaction = session.getTransaction();
         transaction.begin();
         session.delete(user);
         transaction.commit();
+        return user;
     }
 }

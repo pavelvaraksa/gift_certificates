@@ -59,8 +59,8 @@ public class OrderServiceImplTest {
                 new Order(2L, 25.43, 2, LocalDateTime.now(), false),
                 new Order(3L, 25.77, 3, LocalDateTime.now(), false));
 
-        Mockito.when(orderRepository.findAll(null, false)).thenReturn(expectedOrders);
-        List<Order> actualOrders = orderRepository.findAll(null, false);
+        Mockito.when(orderRepository.findAll(null, null, null, false)).thenReturn(expectedOrders);
+        List<Order> actualOrders = orderRepository.findAll(null, null, null, false);
         assertEquals(expectedOrders, actualOrders);
     }
 
@@ -71,9 +71,9 @@ public class OrderServiceImplTest {
                 new Order(22L, 25.43, 2, LocalDateTime.now(), false),
                 new Order(33L, 25.77, 3, LocalDateTime.now(), false));
 
-        Mockito.when(orderRepository.findAll(null, false)).thenReturn(expectedOrders);
+        Mockito.when(orderRepository.findAll(null, null, null, false)).thenReturn(expectedOrders);
         expectedOrders = new ArrayList<>();
-        List<Order> actualOrders = orderRepository.findAll(null, false);
+        List<Order> actualOrders = orderRepository.findAll(null, null, null, false);
         assertNotEquals(expectedOrders, actualOrders);
     }
 
