@@ -126,11 +126,11 @@ public class TagRestController {
     @GetMapping("/widelyUsed")
     @ResponseStatus(HttpStatus.OK)
     public EntityModel<TagDto> findMostWidelyUsed() {
-        Optional<Tag> tag = tagService.findMostWidelyUsed();
-        return EntityModel.of(modelMapper.map(tag.get(), TagDto.class),
-                linkTo(methodOn(TagRestController.class).findTagById(tag.get().getId())).withRel("find by id"),
-                linkTo(methodOn(TagRestController.class).findTagByName(tag.get().getName())).withRel("find by name"),
-                linkTo(methodOn(TagRestController.class).deleteTag(tag.get().getId())).withRel("delete by id"));
+        Tag tag = tagService.findMostWidelyUsed();
+        return EntityModel.of(modelMapper.map(tag, TagDto.class),
+                linkTo(methodOn(TagRestController.class).findTagById(tag.getId())).withRel("find by id"),
+                linkTo(methodOn(TagRestController.class).findTagByName(tag.getName())).withRel("find by name"),
+                linkTo(methodOn(TagRestController.class).deleteTag(tag.getId())).withRel("delete by id"));
     }
 
     /**

@@ -61,7 +61,7 @@ public interface TagService {
      *
      * @return - tag
      */
-    Optional<Tag> findMostWidelyUsed();
+    Tag findMostWidelyUsed();
 
     /**
      * Activate a tag

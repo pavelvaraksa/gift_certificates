@@ -56,4 +56,11 @@ public interface TagRepository extends CrdRepository<Long, Tag> {
      * @return - activated tag
      */
     Tag activateById(Long id);
+
+    /**
+     * Find most widely used tag
+     *
+     * @return - tag
+     */
+    Tag findMostWidelyUsed();
 }

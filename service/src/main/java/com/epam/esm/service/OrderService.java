@@ -1,8 +1,6 @@
 package com.epam.esm.service;
 
-import com.epam.esm.domain.GiftCertificate;
 import com.epam.esm.domain.Order;
-import com.epam.esm.domain.User;
 import com.epam.esm.util.ColumnOrderName;
 import com.epam.esm.util.SortType;
 import org.springframework.data.domain.Pageable;
@@ -46,8 +44,8 @@ public interface OrderService {
     /**
      * Create an order
      *
-     * @param userId            - user id
-     * @param giftCertificateId - list of certificates id
+     * @param user            - user
+     * @param giftCertificate - list of certificates
      * @return - created order
      */
     Order save(Long user, List<Long> giftCertificate);

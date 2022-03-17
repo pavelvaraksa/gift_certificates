@@ -1,6 +1,5 @@
 package com.epam.esm.service;
 
-import com.epam.esm.domain.GiftCertificate;
 import com.epam.esm.domain.User;
 import com.epam.esm.util.ColumnUserName;
 import com.epam.esm.util.SortType;

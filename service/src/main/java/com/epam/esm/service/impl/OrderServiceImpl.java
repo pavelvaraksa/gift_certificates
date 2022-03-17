@@ -55,10 +55,10 @@ public class OrderServiceImpl implements OrderService {
             listAllOrders.addAll(listOrders);
         }
 
-//        if (listAllOrders.isEmpty()) {
-//            log.error("Tag was not found");
-//            throw new ServiceNotFoundException(TAG_NOT_FOUND);
-//        }
+        if (listAllOrders.isEmpty()) {
+            log.error("Tag was not found");
+            throw new ServiceNotFoundException(TAG_NOT_FOUND);
+        }
 
         Optional<Order> optionalOrder = Optional.ofNullable(listAllOrders
                 .stream()

@@ -31,6 +31,13 @@ public class TagRepositoryImpl implements TagRepository {
             "join GiftCertificateToTag gctt on tag.id = gctt.tag where gctt.giftCertificate = ";
     private final String FIND_ALL_QUERY_TAG_BY_CERTIFICATE_ID = "select tag from Tag tag " +
             "join GiftCertificateToTag gctt on tag.id = gctt.tag where gctt.giftCertificate = ";
+    private final String FIND_MOST_WIDELY_USED_TAG =
+            "select tag from Tag tag " +
+                    "join GiftCertificateToTag gctt on tag.id = gctt.tag " +
+                    "join GiftCertificate gc on gc.id = gctt.giftCertificate " +
+                    "join OrderDetails od on gc.id = od.certificate.id " +
+                    "join Order ord on ord.id = od.order.id " +
+                    "group by tag order by count(tag) desc";
 
     @Override
     public List<Tag> findAll(Pageable pageable, Set<ColumnTagName> column, SortType sort, boolean isDeleted) {
@@ -105,5 +112,13 @@ public class TagRepositoryImpl implements TagRepository {
         session.delete(tag);
         transaction.commit();
         return tag;
+    }
+
+    @Override
+    public Tag findMostWidelyUsed() {
+        Session session = sessionFactory.openSession();
+        return (Tag) session.createQuery(FIND_MOST_WIDELY_USED_TAG)
+                .setMaxResults(1)
+                .getSingleResult();
     }
 }

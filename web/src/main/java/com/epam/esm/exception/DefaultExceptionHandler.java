@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+import javax.persistence.NoResultException;
 import java.util.Locale;
 
 @ControllerAdvice
@@ -21,6 +22,7 @@ public class DefaultExceptionHandler {
     private final String INCORRECT_SEARCH = "Incorrect input in search field";
     private final String INCORRECT_SYNTAX = "Incorrect input in body field";
     private final String NOT_ALLOWED = "Method not allowed this function";
+    private final String NO_RESULT= "Tag was not found";
 
     @ExceptionHandler(ServiceValidException.class)
     public ResponseEntity<FrameException> handleValidException(ServiceValidException ex, Locale locale) {
@@ -62,6 +64,11 @@ public class DefaultExceptionHandler {
         return new ResponseEntity<>(new ErrorMessage(400, INCORRECT_SEARCH), HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(NoResultException.class)
+    public ResponseEntity<ErrorMessage> handleNoResultException(NoResultException ex) {
+        return new ResponseEntity<>(new ErrorMessage(404, NO_RESULT), HttpStatus.NOT_FOUND);
+    }
+
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ResponseEntity<ErrorMessage> handleNotSupportException(HttpRequestMethodNotSupportedException ex) {
         return new ResponseEntity<>(new ErrorMessage(405, NOT_ALLOWED), HttpStatus.METHOD_NOT_ALLOWED);
@@ -74,4 +81,3 @@ public class DefaultExceptionHandler {
         return new ResponseEntity<>(frameException, httpStatus);
     }
 }
-

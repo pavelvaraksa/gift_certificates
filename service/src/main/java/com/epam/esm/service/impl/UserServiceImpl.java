@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import static com.epam.esm.exception.MessageException.TAG_NOT_FOUND;
 import static com.epam.esm.exception.MessageException.USER_EXIST;
 import static com.epam.esm.exception.MessageException.USER_NOT_FOUND;
 
