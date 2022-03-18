@@ -26,14 +26,6 @@ public interface GiftCertificateService {
     List<GiftCertificate> findAll(Pageable pageable, Set<ColumnCertificateName> column, SortType sort, boolean isDeleted);
 
     /**
-     * Find all gift certificates id by order id
-     *
-     * @param id - order id
-     * @return - list of gift certificates id or empty list
-     */
-    List<Long> findAllIdByOrderId(Long id);
-
-    /**
      * Find a gift certificate by id
      *
      * @param id - gift certificate id
@@ -87,6 +79,7 @@ public interface GiftCertificateService {
      * Delete a gift certificate
      *
      * @param id - gift certificate id
+     * @return - gift certificate
      */
     GiftCertificate deleteById(Long id);
 }

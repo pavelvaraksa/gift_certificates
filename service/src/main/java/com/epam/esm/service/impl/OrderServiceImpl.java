@@ -18,15 +18,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
 import static com.epam.esm.exception.MessageException.ORDER_NOT_FOUND;
-import static com.epam.esm.exception.MessageException.TAG_NOT_FOUND;
 
 /**
  * Order service implementation
@@ -43,29 +40,6 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public List<Order> findAll(Pageable pageable, Set<ColumnOrderName> column, SortType sort, boolean isDeleted) {
         return orderRepository.findAll(pageable, column, sort, isDeleted);
-    }
-
-    @Override
-    public Long findIdWithHighestCost(List<Long> id) {
-        List<Order> listAllOrders = new ArrayList<>();
-        List<Order> listOrders;
-
-        for (Long userId : id) {
-            listOrders = orderRepository.findAllOrdersByUserId(userId);
-            listAllOrders.addAll(listOrders);
-        }
-
-        if (listAllOrders.isEmpty()) {
-            log.error("Tag was not found");
-            throw new ServiceNotFoundException(TAG_NOT_FOUND);
-        }
-
-        Optional<Order> optionalOrder = Optional.ofNullable(listAllOrders
-                .stream()
-                .max(Comparator.comparing(Order::getTotalPrice))
-                .get());
-
-        return optionalOrder.get().getId();
     }
 
     @Override
@@ -120,6 +94,22 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    public Order activateById(Long id, boolean isCommand) {
+        Optional<Order> order = orderRepository.findById(id);
+
+        if (order.isEmpty()) {
+            log.error("Order was not found");
+            throw new ServiceNotFoundException(ORDER_NOT_FOUND);
+        }
+
+        if (order.get().isActive()) {
+            return orderRepository.activateById(id);
+        } else {
+            throw new ServiceNotFoundException(ORDER_NOT_FOUND);
+        }
+    }
+
+    @Override
     public Order deleteById(Long id) {
         Optional<Order> order = orderRepository.findById(id);
 
@@ -135,21 +125,5 @@ public class OrderServiceImpl implements OrderService {
         log.info("Order with id " + id + " deleted");
         orderRepository.deleteById(id);
         return order.get();
-    }
-
-    @Override
-    public Order activateById(Long id, boolean isCommand) {
-        Optional<Order> order = orderRepository.findById(id);
-
-        if (order.isEmpty()) {
-            log.error("Order was not found");
-            throw new ServiceNotFoundException(ORDER_NOT_FOUND);
-        }
-
-        if (order.get().isActive()) {
-            return orderRepository.activateById(id);
-        } else {
-            throw new ServiceNotFoundException(ORDER_NOT_FOUND);
-        }
     }
 }

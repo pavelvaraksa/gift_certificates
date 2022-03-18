@@ -82,24 +82,6 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public Tag deleteById(Long id) {
-        Optional<Tag> tag = tagRepository.findById(id);
-
-        if (tag.isEmpty()) {
-            log.error("Tag was not found");
-            throw new ServiceNotFoundException(TAG_NOT_FOUND);
-        }
-
-        if (tag.get().isActive()) {
-            throw new ServiceNotFoundException(TAG_NOT_FOUND);
-        }
-
-        log.info("Tag with id " + id + " deleted");
-        tagRepository.deleteById(id);
-        return tag.get();
-    }
-
-    @Override
     public Tag findMostWidelyUsed() {
         return tagRepository.findMostWidelyUsed();
     }
@@ -118,6 +100,24 @@ public class TagServiceImpl implements TagService {
         } else {
             throw new ServiceNotFoundException(TAG_NOT_FOUND);
         }
+    }
+
+    @Override
+    public Tag deleteById(Long id) {
+        Optional<Tag> tag = tagRepository.findById(id);
+
+        if (tag.isEmpty()) {
+            log.error("Tag was not found");
+            throw new ServiceNotFoundException(TAG_NOT_FOUND);
+        }
+
+        if (tag.get().isActive()) {
+            throw new ServiceNotFoundException(TAG_NOT_FOUND);
+        }
+
+        log.info("Tag with id " + id + " deleted");
+        tagRepository.deleteById(id);
+        return tag.get();
     }
 }
 

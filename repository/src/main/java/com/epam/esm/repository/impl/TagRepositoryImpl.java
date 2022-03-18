@@ -27,8 +27,6 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class TagRepositoryImpl implements TagRepository {
     private final SessionFactory sessionFactory;
-    private final String FIND_ALL_QUERY_ID_BY_CERTIFICATE_ID = "select tag.id from Tag tag " +
-            "join GiftCertificateToTag gctt on tag.id = gctt.tag where gctt.giftCertificate = ";
     private final String FIND_ALL_QUERY_TAG_BY_CERTIFICATE_ID = "select tag from Tag tag " +
             "join GiftCertificateToTag gctt on tag.id = gctt.tag where gctt.giftCertificate = ";
     private final String FIND_MOST_WIDELY_USED_TAG =
@@ -37,7 +35,7 @@ public class TagRepositoryImpl implements TagRepository {
                     "join GiftCertificate gc on gc.id = gctt.giftCertificate " +
                     "join OrderDetails od on gc.id = od.certificate.id " +
                     "join Order ord on ord.id = od.order.id " +
-                    "group by tag order by count(tag) desc";
+                    "group by tag order by count(tag) desc, max(ord.totalPrice) desc";
 
     @Override
     public List<Tag> findAll(Pageable pageable, Set<ColumnTagName> column, SortType sort, boolean isDeleted) {
@@ -54,12 +52,6 @@ public class TagRepositoryImpl implements TagRepository {
         List<Tag> list = queryTags.getResultList();
         session.disableFilter("tagFilter");
         return list;
-    }
-
-    @Override
-    public List<Long> findAllIdByCertificateId(Long id) {
-        Session session = sessionFactory.openSession();
-        return session.createQuery(FIND_ALL_QUERY_ID_BY_CERTIFICATE_ID + id).list();
     }
 
     @Override
@@ -104,6 +96,14 @@ public class TagRepositoryImpl implements TagRepository {
     }
 
     @Override
+    public Tag findMostWidelyUsed() {
+        Session session = sessionFactory.openSession();
+        return (Tag) session.createQuery(FIND_MOST_WIDELY_USED_TAG)
+                .setMaxResults(1)
+                .getSingleResult();
+    }
+
+    @Override
     public Tag deleteById(Long id) {
         Session session = sessionFactory.openSession();
         Tag tag = session.find(Tag.class, id);
@@ -112,13 +112,5 @@ public class TagRepositoryImpl implements TagRepository {
         session.delete(tag);
         transaction.commit();
         return tag;
-    }
-
-    @Override
-    public Tag findMostWidelyUsed() {
-        Session session = sessionFactory.openSession();
-        return (Tag) session.createQuery(FIND_MOST_WIDELY_USED_TAG)
-                .setMaxResults(1)
-                .getSingleResult();
     }
 }

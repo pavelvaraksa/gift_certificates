@@ -25,14 +25,6 @@ public interface OrderRepository extends CrdRepository<Long, Order> {
     List<Order> findAll(Pageable pageable, Set<ColumnOrderName> column, SortType sort, boolean isDeleted);
 
     /**
-     * Find all orders by user id
-     *
-     * @param id - user id
-     * @return - list of orders
-     */
-    List<Order> findAllOrdersByUserId(Long id);
-
-    /**
      * Find exist order by id
      *
      * @param id - order id

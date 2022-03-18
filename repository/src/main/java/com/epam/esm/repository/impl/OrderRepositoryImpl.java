@@ -25,8 +25,6 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class OrderRepositoryImpl implements OrderRepository {
     private final SessionFactory sessionFactory;
-    private final String FIND_ALL_ID_QUERY_BY_USER_ID = "select order from Order order " +
-            "join User user on order.user = user.id where user.id = ";
 
     @Override
     public List<Order> findAll(Pageable pageable, Set<ColumnOrderName> column, SortType sort, boolean isDeleted) {
@@ -43,12 +41,6 @@ public class OrderRepositoryImpl implements OrderRepository {
         List<Order> list = queryOrders.getResultList();
         session.disableFilter("orderFilter");
         return list;
-    }
-
-    @Override
-    public List<Order> findAllOrdersByUserId(Long id) {
-        Session session = sessionFactory.openSession();
-        return session.createQuery(FIND_ALL_ID_QUERY_BY_USER_ID + id).list();
     }
 
     @Override

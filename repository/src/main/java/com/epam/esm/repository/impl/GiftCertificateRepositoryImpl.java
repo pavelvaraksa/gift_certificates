@@ -30,8 +30,6 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
     private final SessionFactory sessionFactory;
     private final String FIND_ALL_QUERY_BY_TAG_ID = "select gc from GiftCertificate gc " +
             "join GiftCertificateToTag gctt on gc.id = gctt.giftCertificate where gctt.tag = ";
-    private final String FIND_ALL_QUERY_BY_ORDER_ID = "select gc.id from GiftCertificate gc " +
-            "join OrderDetails od on gc.id = od.certificate where od.order = ";
 
     @Override
     public List<GiftCertificate> findAll(Pageable pageable, Set<ColumnCertificateName> column, SortType sort, boolean isDeleted) {
@@ -48,12 +46,6 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
         List<GiftCertificate> list = queryCertificates.getResultList();
         session.disableFilter("certificateFilter");
         return list;
-    }
-
-    @Override
-    public List<Long> findAllByOrderId(Long id) {
-        Session session = sessionFactory.openSession();
-        return session.createQuery(FIND_ALL_QUERY_BY_ORDER_ID + id).list();
     }
 
     @Override

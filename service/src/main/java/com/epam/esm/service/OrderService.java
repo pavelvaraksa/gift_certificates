@@ -26,14 +26,6 @@ public interface OrderService {
     List<Order> findAll(Pageable pageable, Set<ColumnOrderName> column, SortType sort, boolean isDeleted);
 
     /**
-     * Find order id with the highest cost by user id
-     *
-     * @param id - user id
-     * @return - order id
-     */
-    Long findIdWithHighestCost(List<Long> id);
-
-    /**
      * Find an order by id
      *
      * @param id - order id
@@ -51,13 +43,6 @@ public interface OrderService {
     Order save(Long user, List<Long> giftCertificate);
 
     /**
-     * Delete an order
-     *
-     * @param id - order id
-     */
-    Order deleteById(Long id);
-
-    /**
      * Activate an order
      *
      * @param id        - order id
@@ -65,4 +50,12 @@ public interface OrderService {
      * @return - activated order
      */
     Order activateById(Long id, boolean isCommand);
+
+    /**
+     * Delete an order
+     *
+     * @param id - order id
+     * @return - order
+     */
+    Order deleteById(Long id);
 }

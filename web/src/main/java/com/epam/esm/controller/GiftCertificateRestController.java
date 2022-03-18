@@ -170,7 +170,7 @@ public class GiftCertificateRestController {
      * @param id        - gift certificate id
      * @param isCommand - command for activate
      */
-    @PatchMapping("/activation/{id}")
+    @PatchMapping("/activate/{id}")
     @ResponseStatus(HttpStatus.OK)
     public EntityModel<GiftCertificateDto> activateGiftCertificate(@PathVariable Long id,
                                                                    @RequestParam(value = "isCommand", defaultValue = "false") boolean isCommand) {

@@ -26,13 +26,6 @@ public interface UserRepository extends CrdRepository<Long, User> {
     List<User> findAll(Pageable pageable, Set<ColumnUserName> column, SortType sort, boolean isDeleted);
 
     /**
-     * Find all users id
-     *
-     * @return - list of users id
-     */
-    List<Long> findAllForWidelyUsedTag();
-
-    /**
      * Find user by login
      *
      * @param login - user login

@@ -34,14 +34,6 @@ public interface TagRepository extends CrdRepository<Long, Tag> {
     List<Tag> findAllByCertificateId(Long id);
 
     /**
-     * Find tags id by gift certificate id
-     *
-     * @param id - gift certificate id
-     * @return - list of tags id or empty list
-     */
-    List<Long> findAllIdByCertificateId(Long id);
-
-    /**
      * Find tag by name
      *
      * @param name - tag name

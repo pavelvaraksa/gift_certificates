@@ -26,14 +26,6 @@ public interface GiftCertificateRepository extends CrdRepository<Long, GiftCerti
     List<GiftCertificate> findAll(Pageable pageable, Set<ColumnCertificateName> column, SortType sort, boolean isDeleted);
 
     /**
-     * Find all gift certificates id by order id
-     *
-     * @param id - order id
-     * @return - list of gift certificates id or empty list
-     */
-    List<Long> findAllByOrderId(Long id);
-
-    /**
      * Find gift certificate by name
      *
      * @param name - gift certificate name

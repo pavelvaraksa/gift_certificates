@@ -50,11 +50,13 @@ public interface TagService {
     Tag save(Tag tag);
 
     /**
-     * Delete a tag
+     * Activate a tag
      *
-     * @param id - tag id
+     * @param id        - tag id
+     * @param isCommand - command for activate
+     * @return - activated tag
      */
-    Tag deleteById(Long id);
+    Tag activateById(Long id, boolean isCommand);
 
     /**
      * Find most widely used tag
@@ -64,11 +66,10 @@ public interface TagService {
     Tag findMostWidelyUsed();
 
     /**
-     * Activate a tag
+     * Delete a tag
      *
-     * @param id        - tag id
-     * @param isCommand - command for activate
-     * @return - activated tag
+     * @param id - tag id
+     * @return - tag
      */
-    Tag activateById(Long id, boolean isCommand);
+    Tag deleteById(Long id);
 }

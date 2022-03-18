@@ -47,12 +47,6 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public List<Long> findAllForWidelyUsedTag() {
-        Session session = sessionFactory.openSession();
-        return session.createQuery(FIND_ALL_QUERY_ID).list();
-    }
-
-    @Override
     public Optional<User> findById(Long id) {
         Session session = sessionFactory.openSession();
         return Optional.ofNullable(session.find(User.class, id));

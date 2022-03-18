@@ -126,7 +126,7 @@ public class UserRestController {
      * @param id   - user id
      * @param user - user
      */
-    @PatchMapping("/update/{id}")
+    @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public EntityModel<UserDto> updateUser(@PathVariable Long id, @RequestBody User user) {
         User updatedUser = userService.updateById(id, user);
@@ -143,7 +143,7 @@ public class UserRestController {
      * @param id        - user id
      * @param isCommand - command for activate
      */
-    @PatchMapping("/activation/{id}")
+    @PatchMapping("/activate/{id}")
     @ResponseStatus(HttpStatus.OK)
     public EntityModel<UserDto> activateGiftCertificate(@PathVariable Long id,
                                                         @RequestParam(value = "isCommand", defaultValue = "false") boolean isCommand) {

@@ -26,13 +26,6 @@ public interface UserService {
     List<User> findAll(Pageable pageable, Set<ColumnUserName> column, SortType sort, boolean isDeleted);
 
     /**
-     * Find all users id
-     *
-     * @return - list of users id
-     */
-    List<Long> findAllForWidelyUsedTag();
-
-    /**
      * Find a user by id
      *
      * @param id - user id
@@ -66,13 +59,6 @@ public interface UserService {
     User updateById(Long id, User user);
 
     /**
-     * Delete a user
-     *
-     * @param id - user id
-     */
-    User deleteById(Long id);
-
-    /**
      * Activate a user
      *
      * @param id        - user id
@@ -80,4 +66,12 @@ public interface UserService {
      * @return - activated user
      */
     User activateById(Long id, boolean isCommand);
+
+    /**
+     * Delete a user
+     *
+     * @param id - user id
+     * @return - deleted user
+     */
+    User deleteById(Long id);
 }
