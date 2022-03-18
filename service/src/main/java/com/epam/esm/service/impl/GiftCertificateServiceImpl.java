@@ -26,7 +26,6 @@ import java.util.Set;
 
 import static com.epam.esm.exception.MessageException.CERTIFICATE_EXIST;
 import static com.epam.esm.exception.MessageException.CERTIFICATE_NOT_FOUND;
-import static com.epam.esm.exception.MessageException.TAG_NOT_FOUND;
 
 /**
  * Gift certificate service implementation
@@ -86,8 +85,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             optionalTag = tagRepository.findByName(name);
 
             if (!optionalTag.isPresent()) {
-                log.error("Tag with name " + tagName + " was not found");
-                throw new ServiceNotFoundException(TAG_NOT_FOUND);
+                return giftCertificates;
             }
         }
 
