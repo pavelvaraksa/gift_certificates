@@ -2,185 +2,117 @@ package com.epam.esm.repository.impl;
 
 import com.epam.esm.domain.GiftCertificate;
 import com.epam.esm.repository.GiftCertificateRepository;
-import com.epam.esm.util.ColumnName;
+import com.epam.esm.util.ColumnCertificateName;
 import com.epam.esm.util.SortType;
-import com.epam.esm.util.SqlQuery;
-import lombok.extern.log4j.Log4j2;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
+import com.epam.esm.util.SqlCertificateQuery;
+import lombok.RequiredArgsConstructor;
+import org.hibernate.Criteria;
+import org.hibernate.Filter;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.criterion.Restrictions;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.time.Instant;
-import java.util.*;
+import javax.persistence.Query;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 /**
- * Gift certificate repository implementation.
+ * Gift certificate repository implementation
  */
-@Log4j2
 @Repository
+@RequiredArgsConstructor
 public class GiftCertificateRepositoryImpl implements GiftCertificateRepository {
-    private static final String ID = "id";
-    private static final String NAME = "name";
-    private static final String DESCRIPTION = "description";
-    private static final String PRICE = "price";
-    private static final String DURATION = "duration";
-    private static final String CREATE_DATE = "create_date";
-    private static final String LAST_UPDATE_DATE = "last_update_date";
+    private final SessionFactory sessionFactory;
+    private final String FIND_ALL_QUERY_BY_TAG_ID = "select gc from GiftCertificate gc " +
+            "join GiftCertificateToTag gctt on gc.id = gctt.giftCertificate where gctt.tag = ";
 
-    private static final String FIND_ALL_QUERY = "select * from gift_certificate";
-    private static final String FIND_BY_ID_QUERY = "select * from gift_certificate where id = ?";
-    private static final String FIND_BY_NAME_QUERY = "select * from gift_certificate where name = ?";
-    private static final String FIND_BY_PART_NAME_QUERY = "select * from gift_certificate where name like ?";
-    private static final String FIND_BY_PART_DESCRIPTION_QUERY = "select * from gift_certificate where description like ?";
-    private static final String FIND_BY_TAG_ID_QUERY = "select gc.id, gc.name, gc.description," + " gc.price, gc.duration, " +
-            "gc.create_date, gc.last_update_date from gift_certificate as gc inner join gift_certificate_to_tag on " +
-            "gc.id = gift_certificate_to_tag.gift_certificate_id " +
-            "where gift_certificate_to_tag.tag_id = ?";
-    private static final String CREATE_QUERY = "insert into gift_certificate " +
-            "(name, description, price, duration, create_date, last_update_date) " +
-            "values (:name, :description, :price, :duration, :create_date, :last_update_date);";
-    private static final String UPDATE_QUERY = "update gift_certificate set " +
-            "name = :name, " +
-            "description = :description, " +
-            "price = :price, " +
-            "duration = :duration, " +
-            "last_update_date = :last_update_date " +
-            "where id = :id";
-    private static final String DELETE_QUERY = "delete from gift_certificate where id = :id";
-
-    private final JdbcTemplate jdbcTemplate;
-    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
-
-    public GiftCertificateRepositoryImpl(NamedParameterJdbcTemplate namedParameterJdbcTemplate, JdbcTemplate jdbcTemplate) {
-        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
-    private GiftCertificate getGiftCertificateRowMapper(ResultSet resultSet, int rowNumber) throws SQLException {
-        GiftCertificate giftCertificate = new GiftCertificate();
-        giftCertificate.setId(resultSet.getLong(ID));
-        giftCertificate.setName(resultSet.getString(NAME));
-        giftCertificate.setDescription(resultSet.getString(DESCRIPTION));
-        giftCertificate.setPrice(resultSet.getBigDecimal(PRICE));
-        giftCertificate.setDuration(resultSet.getInt(DURATION));
-        giftCertificate.setCreateDate(resultSet.getTimestamp(CREATE_DATE).toLocalDateTime());
-        giftCertificate.setLastUpdateDate(resultSet.getTimestamp(LAST_UPDATE_DATE).toLocalDateTime());
-        return giftCertificate;
+    @Override
+    public List<GiftCertificate> findAll(Pageable pageable, Set<ColumnCertificateName> column, SortType sort, boolean isDeleted) {
+        Session session = sessionFactory.openSession();
+        session.unwrap(Session.class);
+        int pageNumber = pageable.getPageNumber();
+        int pageSize = pageable.getPageSize();
+        Filter filter = session.enableFilter("certificateFilter");
+        filter.setParameter("isDeleted", isDeleted);
+        String sqlQuery = SqlCertificateQuery.findAllSorted(column, sort);
+        Query queryCertificates = session.createQuery(sqlQuery, GiftCertificate.class);
+        queryCertificates.setFirstResult(pageNumber * pageSize);
+        queryCertificates.setMaxResults(pageSize);
+        List<GiftCertificate> list = queryCertificates.getResultList();
+        session.disableFilter("certificateFilter");
+        return list;
     }
 
     @Override
-    public List<GiftCertificate> findAll() {
-        return namedParameterJdbcTemplate.query(FIND_ALL_QUERY, this::getGiftCertificateRowMapper);
-    }
-
-    @Override
-    public List<GiftCertificate> findAllSorted(Set<ColumnName> orderBy, SortType sortType) {
-        String sqlQuery = SqlQuery.findAllSorted(orderBy, sortType);
-
-        return namedParameterJdbcTemplate.query(sqlQuery, this::getGiftCertificateRowMapper);
-    }
-
-    @Override
-    public Optional<GiftCertificate> findById(Long key) {
-        Optional<GiftCertificate> optionalGiftCertificate;
-
-        try {
-            optionalGiftCertificate = Optional.ofNullable(jdbcTemplate.queryForObject(FIND_BY_ID_QUERY,
-                    new BeanPropertyRowMapper<>(GiftCertificate.class), key));
-        } catch (EmptyResultDataAccessException e) {
-            log.error("Method 'find gift certificate by id' was not implemented");
-            optionalGiftCertificate = Optional.empty();
-        }
-
-        return optionalGiftCertificate;
+    public Optional<GiftCertificate> findById(Long id) {
+        Session session = sessionFactory.openSession();
+        return Optional.ofNullable(session.find(GiftCertificate.class, id));
     }
 
     @Override
     public Optional<GiftCertificate> findByName(String name) {
-        Optional<GiftCertificate> optionalGiftCertificate;
-
-        try {
-            optionalGiftCertificate = Optional.ofNullable(jdbcTemplate.queryForObject(FIND_BY_NAME_QUERY,
-                    new BeanPropertyRowMapper<>(GiftCertificate.class), name));
-        } catch (EmptyResultDataAccessException e) {
-            optionalGiftCertificate = Optional.empty();
-        }
-
-        return optionalGiftCertificate;
-    }
-
-    @Override
-    public List<GiftCertificate> findByPartName(String partName) {
-        String sqlQuery = SqlQuery.accessQueryForPercent(partName);
-        return jdbcTemplate.query(FIND_BY_PART_NAME_QUERY,
-                new BeanPropertyRowMapper<>(GiftCertificate.class), sqlQuery);
-    }
-
-    @Override
-    public List<GiftCertificate> findByPartDescription(String partDescription) {
-        String sqlQuery = SqlQuery.accessQueryForPercent(partDescription);
-        return jdbcTemplate.query(FIND_BY_PART_DESCRIPTION_QUERY,
-                new BeanPropertyRowMapper<>(GiftCertificate.class), sqlQuery);
+        Criteria criteria = sessionFactory.openSession().createCriteria(GiftCertificate.class);
+        criteria.add(Restrictions.like("name", name));
+        return Optional.ofNullable((GiftCertificate) criteria.uniqueResult());
     }
 
     @Override
     public List<GiftCertificate> findByTagId(Long id) {
-        return jdbcTemplate.query(FIND_BY_TAG_ID_QUERY, new BeanPropertyRowMapper<>(GiftCertificate.class), id);
+        Session session = sessionFactory.openSession();
+        return session.createQuery(FIND_ALL_QUERY_BY_TAG_ID + id, GiftCertificate.class).list();
     }
 
     @Override
-    public GiftCertificate create(GiftCertificate giftCertificate) {
-        Timestamp createTimestamp = Timestamp.from(Instant.now());
-
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        MapSqlParameterSource parameterSource = new MapSqlParameterSource();
-        parameterSource.addValue(NAME, giftCertificate.getName());
-        parameterSource.addValue(DESCRIPTION, giftCertificate.getDescription());
-        parameterSource.addValue(PRICE, giftCertificate.getPrice());
-        parameterSource.addValue(DURATION, giftCertificate.getDuration());
-        parameterSource.addValue(CREATE_DATE, createTimestamp);
-        parameterSource.addValue(LAST_UPDATE_DATE, createTimestamp);
-
-        namedParameterJdbcTemplate.update(CREATE_QUERY, parameterSource, keyHolder, new String[]{"id"});
-        long createdGiftCertificateId = Objects.requireNonNull(keyHolder.getKey()).longValue();
-        giftCertificate.setId(createdGiftCertificateId);
-
+    public GiftCertificate save(GiftCertificate giftCertificate) {
+        Session session = sessionFactory.openSession();
+        Transaction transaction = session.getTransaction();
+        transaction.begin();
+        session.save(giftCertificate);
+        transaction.commit();
         return giftCertificate;
     }
 
     @Override
-    public GiftCertificate updateById(Long id, GiftCertificate giftCertificate) {
-        MapSqlParameterSource parameterSource = new MapSqlParameterSource();
-        Timestamp updateTimestamp = Timestamp.from(Instant.now());
-
-        parameterSource.addValue(NAME, giftCertificate.getName());
-        parameterSource.addValue(DESCRIPTION, giftCertificate.getDescription());
-        parameterSource.addValue(PRICE, giftCertificate.getPrice());
-        parameterSource.addValue(DURATION, giftCertificate.getDuration());
-        parameterSource.addValue(LAST_UPDATE_DATE, updateTimestamp);
-        parameterSource.addValue(ID, id);
-
-        namedParameterJdbcTemplate.update(UPDATE_QUERY, parameterSource);
-        giftCertificate.setId(id);
-
+    public GiftCertificate updateById(GiftCertificate giftCertificate) {
+        Session session = sessionFactory.openSession();
+        Transaction transaction = session.getTransaction();
+        transaction.begin();
+        GiftCertificate updatedGiftCertificate = session.find(GiftCertificate.class, giftCertificate.getId());
+        updatedGiftCertificate.setName(giftCertificate.getName());
+        updatedGiftCertificate.setDescription(giftCertificate.getDescription());
+        updatedGiftCertificate.setCurrentPrice(giftCertificate.getCurrentPrice());
+        updatedGiftCertificate.setDuration(giftCertificate.getDuration());
+        updatedGiftCertificate.setLastUpdateDate(LocalDateTime.now());
+        session.merge(updatedGiftCertificate);
+        transaction.commit();
         return giftCertificate;
-
     }
 
     @Override
-    public boolean deleteById(Long id) {
-        MapSqlParameterSource parameterSource = new MapSqlParameterSource();
-        parameterSource.addValue(ID, id);
-        namedParameterJdbcTemplate.update(DELETE_QUERY, parameterSource);
-        return true;
+    public GiftCertificate activateById(Long id) {
+        Session session = sessionFactory.openSession();
+        Transaction transaction = session.getTransaction();
+        transaction.begin();
+        GiftCertificate activatedGiftCertificate = session.find(GiftCertificate.class, id);
+        activatedGiftCertificate.setActive(!activatedGiftCertificate.isActive());
+        session.merge(activatedGiftCertificate);
+        transaction.commit();
+        return activatedGiftCertificate;
+    }
+
+    @Override
+    public GiftCertificate deleteById(Long id) {
+        Session session = sessionFactory.openSession();
+        GiftCertificate giftCertificate = session.find(GiftCertificate.class, id);
+        Transaction transaction = session.getTransaction();
+        transaction.begin();
+        session.delete(giftCertificate);
+        transaction.commit();
+        return giftCertificate;
     }
 }
-

@@ -36,7 +36,7 @@ public class GiftCertificateValidator {
     public static boolean isGiftCertificateValid(GiftCertificate giftCertificate) {
         String name = giftCertificate.getName();
         String description = giftCertificate.getDescription();
-        BigDecimal price = giftCertificate.getPrice();
+        Double price = giftCertificate.getCurrentPrice();
         Integer duration = giftCertificate.getDuration();
 
         return isGiftCertificateNameValid(name)
@@ -46,7 +46,6 @@ public class GiftCertificateValidator {
     }
 
     private static boolean isGiftCertificateNameValid(String name) {
-
         if (name == null) {
             log.error("Gift certificate name was not filled");
             throw new ServiceValidException(CERTIFICATE_NAME_NOT_FILLED);
@@ -59,7 +58,6 @@ public class GiftCertificateValidator {
     }
 
     private static boolean isDescriptionValid(String description) {
-
         if (description == null) {
             log.error("Gift certificate description was not filled");
             throw new ServiceValidException(DESCRIPTION_NOT_FILLED);
@@ -72,7 +70,6 @@ public class GiftCertificateValidator {
     }
 
     private static boolean isPriceValid(String price) {
-
         if (price.equals("null")) {
             log.error("Gift certificate price was not filled");
             throw new ServiceValidException(PRICE_NOT_FILLED);
@@ -85,7 +82,6 @@ public class GiftCertificateValidator {
     }
 
     private static boolean isDurationValid(String duration) {
-
         if (duration.equals("null")) {
             log.error("Gift certificate duration was not filled");
             throw new ServiceValidException(DURATION_NOT_FILLED);

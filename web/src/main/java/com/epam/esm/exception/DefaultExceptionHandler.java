@@ -1,20 +1,19 @@
 package com.epam.esm.exception;
 
 import lombok.AllArgsConstructor;
+import org.postgresql.util.PSQLException;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+import javax.persistence.NoResultException;
 import java.util.Locale;
-
-import static com.epam.esm.exception.ErrorCode.ITEM_VALID_EXCEPTION;
-import static com.epam.esm.exception.ErrorCode.ITEM_DUPLICATE_NAME_EXCEPTION;
-import static com.epam.esm.exception.ErrorCode.ITEM_NOT_FOUND_EXCEPTION;
 
 @ControllerAdvice
 @AllArgsConstructor
@@ -23,40 +22,55 @@ public class DefaultExceptionHandler {
     private final String INCORRECT_SEARCH = "Incorrect input in search field";
     private final String INCORRECT_SYNTAX = "Incorrect input in body field";
     private final String NOT_ALLOWED = "Method not allowed this function";
+    private final String NO_RESULT= "Tag was not found";
 
     @ExceptionHandler(ServiceValidException.class)
     public ResponseEntity<FrameException> handleValidException(ServiceValidException ex, Locale locale) {
-
-        return createResponseEntity(ex, locale, ITEM_VALID_EXCEPTION, HttpStatus.BAD_REQUEST);
+        return createResponseEntity(ex, locale, ErrorCode.ITEM_VALID_EXCEPTION, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(ServiceNotFoundException.class)
     public ResponseEntity<FrameException> handleNotFoundException(ServiceNotFoundException ex, Locale locale) {
-
-        return createResponseEntity(ex, locale, ITEM_NOT_FOUND_EXCEPTION, HttpStatus.NOT_FOUND);
+        return createResponseEntity(ex, locale, ErrorCode.ITEM_NOT_FOUND_EXCEPTION, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(ServiceExistException.class)
     public ResponseEntity<FrameException> handleDuplicateNameException(ServiceExistException ex, Locale locale) {
-
-        return createResponseEntity(ex, locale, ITEM_DUPLICATE_NAME_EXCEPTION, HttpStatus.BAD_REQUEST);
+        return createResponseEntity(ex, locale, ErrorCode.ITEM_DUPLICATE_NAME_EXCEPTION, HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ErrorMessage> handleIncorrectSearchException(MethodArgumentTypeMismatchException ex) {
+        return new ResponseEntity<>(new ErrorMessage(400, INCORRECT_SEARCH), HttpStatus.BAD_REQUEST);
+    }
 
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<ErrorMessage> handleIncorrectSearchException(MissingServletRequestParameterException ex) {
         return new ResponseEntity<>(new ErrorMessage(400, INCORRECT_SEARCH), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorMessage> handleIncorrectSyntaxException(HttpMessageNotReadableException ex) {
-
         return new ResponseEntity<>(new ErrorMessage(400, INCORRECT_SYNTAX), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(PSQLException.class)
+    public ResponseEntity<ErrorMessage> handlePSQLException(PSQLException ex) {
+        return new ResponseEntity<>(new ErrorMessage(400, INCORRECT_SEARCH), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorMessage> handlePSQLException(IllegalArgumentException ex) {
+        return new ResponseEntity<>(new ErrorMessage(400, INCORRECT_SEARCH), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(NoResultException.class)
+    public ResponseEntity<ErrorMessage> handleNoResultException(NoResultException ex) {
+        return new ResponseEntity<>(new ErrorMessage(404, NO_RESULT), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ResponseEntity<ErrorMessage> handleNotSupportException(HttpRequestMethodNotSupportedException ex) {
-
         return new ResponseEntity<>(new ErrorMessage(405, NOT_ALLOWED), HttpStatus.METHOD_NOT_ALLOWED);
     }
 

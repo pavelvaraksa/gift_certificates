@@ -1,43 +1,75 @@
 package com.epam.esm.service;
 
 import com.epam.esm.domain.Tag;
+import com.epam.esm.util.ColumnTagName;
+import com.epam.esm.util.SortType;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
- * Tag service layer.
- * Works with tag repository layer.
+ * Tag service layer
+ * Works with tag repository layer
  */
 public interface TagService {
     /**
-     * Find all tags.
+     * Find tags with pagination, sorting and info about deleted tags
      *
-     * @return - list of tags or empty list.
+     * @param pageable  - pagination config
+     * @param column    - tag column
+     * @param sort      - sort type
+     * @param isDeleted - info about deleted tags
+     * @return - list of tags or empty list
      */
-    List<Tag> findAll();
+    List<Tag> findAll(Pageable pageable, Set<ColumnTagName> column, SortType sort, boolean isDeleted);
 
     /**
-     * Find a tag by ID.
+     * Find a tag by id.
      *
-     * @param id - tag ID.
-     * @return - optional of found tag.
+     * @param id - tag id
+     * @return - optional of found tag
      */
     Optional<Tag> findById(Long id);
 
     /**
-     * Create a tag.
+     * Find a tag name
      *
-     * @param tag - create a tag.
-     * @return - created tag.
+     * @param name - tag name
+     * @return - optional of found tag
      */
-    Tag create(Tag tag);
+    Optional<Tag> findByName(String name);
 
     /**
-     * Delete a tag.
+     * Create a tag
      *
-     * @param id - tag ID.
-     * @return - operation result (tag deleted or not)
+     * @param tag - create a tag
+     * @return - created tag
      */
-    boolean deleteById(Long id);
+    Tag save(Tag tag);
+
+    /**
+     * Activate a tag
+     *
+     * @param id        - tag id
+     * @param isCommand - command for activate
+     * @return - activated tag
+     */
+    Tag activateById(Long id, boolean isCommand);
+
+    /**
+     * Find most widely used tag
+     *
+     * @return - tag
+     */
+    Tag findMostWidelyUsed();
+
+    /**
+     * Delete a tag
+     *
+     * @param id - tag id
+     * @return - tag
+     */
+    Tag deleteById(Long id);
 }

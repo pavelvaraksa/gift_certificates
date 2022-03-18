@@ -2,122 +2,115 @@ package com.epam.esm.repository.impl;
 
 import com.epam.esm.domain.Tag;
 import com.epam.esm.repository.TagRepository;
-import lombok.extern.log4j.Log4j2;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
+import com.epam.esm.util.ColumnTagName;
+import com.epam.esm.util.SortType;
+import com.epam.esm.util.SqlTagQuery;
+import lombok.RequiredArgsConstructor;
+import org.hibernate.Criteria;
+import org.hibernate.Filter;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.criterion.Restrictions;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.*;
+import javax.persistence.Query;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 /**
- * Tag repository implementation.
+ * Tag repository implementation
  */
-@Log4j2
 @Repository
+@RequiredArgsConstructor
 public class TagRepositoryImpl implements TagRepository {
-    private static final String ID = "id";
-    private static final String NAME = "name";
+    private final SessionFactory sessionFactory;
+    private final String FIND_ALL_QUERY_TAG_BY_CERTIFICATE_ID = "select tag from Tag tag " +
+            "join GiftCertificateToTag gctt on tag.id = gctt.tag where gctt.giftCertificate = ";
+    private final String FIND_MOST_WIDELY_USED_TAG =
+            "select tag from Tag tag " +
+                    "join GiftCertificateToTag gctt on tag.id = gctt.tag " +
+                    "join GiftCertificate gc on gc.id = gctt.giftCertificate " +
+                    "join OrderDetails od on gc.id = od.certificate.id " +
+                    "join Order ord on ord.id = od.order.id " +
+                    "group by tag order by count(tag) desc, max(ord.totalPrice) desc";
 
-    private static final String FIND_ALL_QUERY = "select * from tag";
-    private static final String FIND_BY_ID_QUERY = "select * from tag where id = ?";
-    private static final String FIND_BY_NAME_QUERY = "select * from tag where name = ?";
-    private static final String CREATE_QUERY = "insert into tag (name) values (:name)";
-    private static final String DELETE_QUERY = "delete from tag where id = :id";
-    private static final String FIND_TAGS_BY_CERTIFICATE_ID_QUERY = "select id, name from tag " +
-            " join gift_certificate_to_tag on gift_certificate_to_tag.tag_id = id " +
-            " where gift_certificate_to_tag.gift_certificate_id = ?";
-    private static final String DELETE_GIFT_CERTIFICATE_TO_TAG_BY_ID_QUERY = "delete from gift_certificate_to_tag " +
-            "where gift_certificate_id = ?";
-
-    private final JdbcTemplate jdbcTemplate;
-    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
-
-    public TagRepositoryImpl(NamedParameterJdbcTemplate namedParameterJdbcTemplate, JdbcTemplate jdbcTemplate) {
-        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
-    private Tag getTagRowMapper(ResultSet resultSet, int rowNumber) throws SQLException {
-        Tag tag = new Tag();
-        tag.setId(resultSet.getLong(ID));
-        tag.setName(resultSet.getString(NAME));
-        return tag;
+    @Override
+    public List<Tag> findAll(Pageable pageable, Set<ColumnTagName> column, SortType sort, boolean isDeleted) {
+        Session session = sessionFactory.openSession();
+        session.unwrap(Session.class);
+        int pageNumber = pageable.getPageNumber();
+        int pageSize = pageable.getPageSize();
+        Filter filter = session.enableFilter("tagFilter");
+        filter.setParameter("isDeleted", isDeleted);
+        String sqlQuery = SqlTagQuery.findAllSorted(column, sort);
+        Query queryTags = session.createQuery(sqlQuery, Tag.class);
+        queryTags.setFirstResult(pageNumber * pageSize);
+        queryTags.setMaxResults(pageSize);
+        List<Tag> list = queryTags.getResultList();
+        session.disableFilter("tagFilter");
+        return list;
     }
 
     @Override
-    public List<Tag> findAll() {
-        return namedParameterJdbcTemplate.query(FIND_ALL_QUERY, this::getTagRowMapper);
+    public List<Tag> findAllByCertificateId(Long id) {
+        Session session = sessionFactory.openSession();
+        return session.createQuery(FIND_ALL_QUERY_TAG_BY_CERTIFICATE_ID + id).list();
     }
 
     @Override
-    public Optional<Tag> findById(Long key) {
-        Optional<Tag> optionalTag;
-
-        try {
-            optionalTag = Optional.ofNullable(jdbcTemplate.queryForObject(FIND_BY_ID_QUERY,
-                    new BeanPropertyRowMapper<>(Tag.class), key));
-        } catch (EmptyResultDataAccessException e) {
-            log.error("Method 'find tag by id' was not implemented");
-            optionalTag = Optional.empty();
-        }
-
-        return optionalTag;
+    public Optional<Tag> findById(Long id) {
+        Session session = sessionFactory.openSession();
+        return Optional.ofNullable(session.find(Tag.class, id));
     }
 
     @Override
     public Optional<Tag> findByName(String name) {
-        Optional<Tag> optionalTag;
-
-        try {
-            optionalTag = Optional.ofNullable(jdbcTemplate.queryForObject(FIND_BY_NAME_QUERY, new BeanPropertyRowMapper<>(Tag.class), name));
-        } catch (EmptyResultDataAccessException e) {
-            optionalTag = Optional.empty();
-        }
-
-        return optionalTag;
+        Criteria criteria = sessionFactory.openSession().createCriteria(Tag.class);
+        criteria.add(Restrictions.like("name", name));
+        return Optional.ofNullable((Tag) criteria.uniqueResult());
     }
 
     @Override
-    public Tag create(Tag tag) {
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        MapSqlParameterSource parameterSource = new MapSqlParameterSource();
-        parameterSource.addValue(NAME, tag.getName());
+    public Tag activateById(Long id) {
+        Session session = sessionFactory.openSession();
+        Transaction transaction = session.getTransaction();
+        transaction.begin();
+        Tag activatedTag = session.find(Tag.class, id);
+        activatedTag.setActive(!activatedTag.isActive());
+        session.merge(activatedTag);
+        transaction.commit();
+        return activatedTag;
+    }
 
-        namedParameterJdbcTemplate.update(CREATE_QUERY, parameterSource, keyHolder, new String[]{"id"});
-        long createdTagId = Objects.requireNonNull(keyHolder.getKey()).longValue();
-        tag.setId(createdTagId);
-
+    @Override
+    public Tag save(Tag tag) {
+        Session session = sessionFactory.openSession();
+        Transaction transaction = session.getTransaction();
+        transaction.begin();
+        session.save(tag);
+        transaction.commit();
         return tag;
     }
 
     @Override
-    public Tag updateById(Long id, Tag object) {
-        return null;
+    public Tag findMostWidelyUsed() {
+        Session session = sessionFactory.openSession();
+        return (Tag) session.createQuery(FIND_MOST_WIDELY_USED_TAG)
+                .setMaxResults(1)
+                .getSingleResult();
     }
 
     @Override
-    public boolean deleteById(Long id) {
-        MapSqlParameterSource parameterSource = new MapSqlParameterSource();
-        parameterSource.addValue(ID, id);
-
-        namedParameterJdbcTemplate.update(DELETE_QUERY, parameterSource);
-        return true;
-    }
-
-    @Override
-    public Set<Tag> findByGiftCertificateId(Long id) {
-        return new HashSet<>(jdbcTemplate.query(FIND_TAGS_BY_CERTIFICATE_ID_QUERY, new BeanPropertyRowMapper<>(Tag.class), id));
-    }
-
-    @Override
-    public void deleteAllTagsByGiftCertificateId(Long giftCertificateId) {
-        jdbcTemplate.update(DELETE_GIFT_CERTIFICATE_TO_TAG_BY_ID_QUERY, giftCertificateId);
+    public Tag deleteById(Long id) {
+        Session session = sessionFactory.openSession();
+        Tag tag = session.find(Tag.class, id);
+        Transaction transaction = session.getTransaction();
+        transaction.begin();
+        session.delete(tag);
+        transaction.commit();
+        return tag;
     }
 }

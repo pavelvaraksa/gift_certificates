@@ -2,79 +2,164 @@ package com.epam.esm.controller;
 
 import com.epam.esm.domain.Tag;
 import com.epam.esm.dto.TagDto;
-import com.epam.esm.service.impl.TagServiceImpl;
+import com.epam.esm.repository.TagRepository;
+import com.epam.esm.service.TagService;
+import com.epam.esm.util.ColumnTagName;
+import com.epam.esm.util.SortType;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.Set;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @RequestMapping("/tags")
 @RequiredArgsConstructor
 public class TagRestController {
-    public final TagServiceImpl tagService;
+    public final TagService tagService;
+    public final TagRepository tagRepository;
     private final ModelMapper modelMapper;
 
     /**
-     * Find list of tags.
+     * Find tags with pagination, sorting and info about deleted tags
      *
-     * @return - list of tags or empty list.
+     * @param pageable  - pagination config
+     * @param column    - tag column
+     * @param sort      - sort type
+     * @param isDeleted - info about deleted tags
+     * @return - list of tags or empty list
      */
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<TagDto> findAllTags() {
-        List<Tag> listTag = tagService.findAll();
-        return listTag
-                .stream()
-                .map(tag -> modelMapper.map(tag, TagDto.class))
-                .collect(Collectors.toList());
+    public CollectionModel<TagDto> findAllTags(@PageableDefault(size = 2) Pageable pageable,
+                                               @RequestParam(value = "column", defaultValue = "ID") Set<ColumnTagName> column,
+                                               @RequestParam(value = "sort", defaultValue = "ASC") SortType sort,
+                                               @RequestParam(value = "isDeleted", defaultValue = "false") boolean isDeleted) {
+        List<Tag> tags = tagService.findAll(pageable, column, sort, isDeleted);
+        List<TagDto> items = new ArrayList<>();
+
+        for (Tag tag : tags) {
+            TagDto tagDto = modelMapper.map(tag, TagDto.class);
+            tagDto.add(linkTo(methodOn(TagRestController.class).findTagById(tag.getId())).withRel("find by id"),
+                    linkTo(methodOn(TagRestController.class).findTagByName(tag.getName())).withRel("find by name"),
+                    linkTo(methodOn(TagRestController.class).deleteTag(tag.getId())).withRel("delete by id"));
+            items.add(tagDto);
+        }
+
+        return CollectionModel.of(items, linkTo(methodOn(TagRestController.class)
+                .findAllTags(pageable, column, sort, isDeleted)).withRel("find all tags"));
     }
 
     /**
-     * Find tag by ID.
+     * Find tag by id
      *
-     * @param id - tag ID.
-     * @return - tag.
+     * @param id - tag id
+     * @return - tag
      */
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public TagDto findTagById(@PathVariable Long id) {
+    public EntityModel<TagDto> findTagById(@PathVariable Long id) {
         Optional<Tag> tag = tagService.findById(id);
-        return modelMapper.map(tag.get(), TagDto.class);
+        return EntityModel.of(modelMapper.map(tag.get(), TagDto.class),
+                linkTo(methodOn(TagRestController.class).findTagById(id)).withRel("find by id"),
+                linkTo(methodOn(TagRestController.class).findTagByName(tag.get().getName())).withRel("find by name"),
+                linkTo(methodOn(TagRestController.class).deleteTag(id)).withRel("delete by id"));
     }
 
     /**
-     * Create tag.
+     * Find tag by name
      *
-     * @param tag - tag.
-     * @return - tag.
+     * @param name - tag name
+     * @return - tag
+     */
+    @GetMapping("/search")
+    @ResponseStatus(HttpStatus.OK)
+    public EntityModel<TagDto> findTagByName(@RequestParam(value = "name", required = false) String name) {
+        Optional<Tag> tag = tagService.findByName(name);
+        return EntityModel.of(modelMapper.map(tag.get(), TagDto.class),
+                linkTo(methodOn(TagRestController.class).findTagById(tag.get().getId())).withRel("find by id"),
+                linkTo(methodOn(TagRestController.class).findTagByName(tag.get().getName())).withRel("find by name"),
+                linkTo(methodOn(TagRestController.class).deleteTag(tag.get().getId())).withRel("delete by id"));
+    }
+
+    /**
+     * Create tag
+     *
+     * @param tag - tag
+     * @return - tag
      */
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public TagDto createTag(@RequestBody Tag tag) {
-        Tag newTag = tagService.create(tag);
-        return modelMapper.map(newTag, TagDto.class);
+    @ResponseStatus(HttpStatus.OK)
+    public EntityModel<TagDto> createTag(@RequestBody Tag tag) {
+        Tag newTag = tagService.save(tag);
+        return EntityModel.of(modelMapper.map(newTag, TagDto.class),
+                linkTo(methodOn(TagRestController.class).findTagById(newTag.getId())).withRel("find by id"),
+                linkTo(methodOn(TagRestController.class).findTagByName(newTag.getName())).withRel("find by name"),
+                linkTo(methodOn(TagRestController.class).deleteTag(newTag.getId())).withRel("delete by id"));
     }
 
     /**
-     * Delete tag by ID.
+     * Find most widely used tag
      *
-     * @param id - tag ID.
+     * @return - tag
+     */
+    @GetMapping("/widelyUsed")
+    @ResponseStatus(HttpStatus.OK)
+    public EntityModel<TagDto> findMostWidelyUsed() {
+        Tag tag = tagService.findMostWidelyUsed();
+        return EntityModel.of(modelMapper.map(tag, TagDto.class),
+                linkTo(methodOn(TagRestController.class).findTagById(tag.getId())).withRel("find by id"),
+                linkTo(methodOn(TagRestController.class).findTagByName(tag.getName())).withRel("find by name"),
+                linkTo(methodOn(TagRestController.class).deleteTag(tag.getId())).withRel("delete by id"));
+    }
+
+    /**
+     * Activate tag by id
+     *
+     * @param id        - tag id
+     * @param isCommand - command for activate
+     */
+    @PatchMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public EntityModel<TagDto> activateGiftCertificate(@PathVariable Long id,
+                                                       @RequestParam(value = "isCommand", defaultValue = "false") boolean isCommand) {
+        Tag activatedTag = tagService.activateById(id, isCommand);
+        return EntityModel.of(modelMapper.map(activatedTag, TagDto.class),
+                linkTo(methodOn(TagRestController.class).findTagById(id)).withRel("find by id"),
+                linkTo(methodOn(TagRestController.class).findTagByName(activatedTag.getName())).withRel("find by name"),
+                linkTo(methodOn(TagRestController.class).deleteTag(id)).withRel("delete by id"));
+    }
+
+    /**
+     * Delete tag by id
+     *
+     * @param id - tag id
      */
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public void deleteTag(@PathVariable Long id) {
-        tagService.deleteById(id);
+    public EntityModel<TagDto> deleteTag(@PathVariable Long id) {
+        Tag deletedTag = tagService.deleteById(id);
+        return EntityModel.of(modelMapper.map(deletedTag, TagDto.class));
     }
 }
+

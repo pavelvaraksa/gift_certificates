@@ -1,0 +1,18 @@
+spring:
+  datasource:
+    hikari:
+      jdbc-url: "jdbc:postgresql://localhost:5432/rest_api_advanced_database_prod"
+      maximum-pool-size: 100
+    driver-class-name: org.postgresql.Driver
+    username: postgres
+    password: postgres
+
+logging:
+  pattern:
+    console: "%d %-5level %logger : %msg%n"
+    file: "%d %-5level [%thread] %logger : %msg%n"
+  level:
+    org.springframework.web: INFO
+    org.hibernate: INFO
+  file:
+    name: C:/Users/senna/IdeaProjects/gift_certificates/web/src/main/resources/logs.log

@@ -1,79 +1,85 @@
 package com.epam.esm.service;
 
 import com.epam.esm.domain.GiftCertificate;
-import com.epam.esm.util.ColumnName;
+import com.epam.esm.util.ColumnCertificateName;
 import com.epam.esm.util.SortType;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
 /**
- * Gift certificate service layer.
- * Works with gift certificate repository layer.
+ * Gift certificate service layer
+ * Works with gift certificate repository layer
  */
 public interface GiftCertificateService {
     /**
-     * Find all gift certificates.
+     * Find gift certificates with pagination, sorting and info about deleted gift certificates
      *
-     * @return - list of gift certificates or empty list.
+     * @param pageable  - pagination config
+     * @param column    - certificate column
+     * @param sort      - sort type
+     * @param isDeleted - info about deleted certificates
+     * @return - list of gift certificates or empty list
      */
-    List<GiftCertificate> findAll();
+    List<GiftCertificate> findAll(Pageable pageable, Set<ColumnCertificateName> column, SortType sort, boolean isDeleted);
 
     /**
-     * Find all gift certificates with sort column name.
+     * Find a gift certificate by id
      *
-     * @return - sorted list of gift certificates or empty list.
-     */
-    List<GiftCertificate> findAllSorted(Set<ColumnName> columnNames, SortType sortType);
-
-    /**
-     * Find a gift certificate by ID.
-     *
-     * @param id - gift certificate ID.
-     * @return - optional of found gift certificate.
+     * @param id - gift certificate id
+     * @return - optional of found gift certificate
      */
     Optional<GiftCertificate> findById(Long id);
 
     /**
-     //     * Find a gift certificate by part of name or description.
-     //     *
-     //     * @param partname - part of the gift certificate name.
-     //     * @param partDescription - part of the gift certificate description.
-     //     * @return - gift certificate or empty list.
-     //     */
-    List<GiftCertificate> search(String partname, String partDescription);
-
-    /**
-     * Find a gift certificate by tag name.
+     * Find a gift certificate by name
      *
-     * @param tagName - tag name.
-     * @return - gift certificate.
+     * @param name - gift certificate name
+     * @return - optional of found gift certificate
      */
-    List<GiftCertificate> findByTagName(String tagName);
+    Optional<GiftCertificate> findByName(String name);
 
     /**
-     * Create a gift certificate.
+     * Find all gift certificates by tag name
      *
-     * @param giftCertificate - create a gift certificate.
-     * @return - created gift certificate.
+     * @param name- tag name
+     * @return - list of gift certificates
      */
-    GiftCertificate create(GiftCertificate giftCertificate);
+    List<GiftCertificate> findByTagName(List<String> name);
 
     /**
-     * Update a gift certificate.
+     * Create a gift certificate
      *
-     * @param id - gift certificate ID.
-     * @param giftCertificate - updated gift certificate.
+     * @param giftCertificate - create a gift certificate
+     * @return - created gift certificate
+     */
+    GiftCertificate save(GiftCertificate giftCertificate);
+
+    /**
+     * Update a gift certificate
+     *
+     * @param id              - gift certificate id
+     * @param giftCertificate - updated gift certificate
      * @return - operation result (gift certificate updated full or partly)
      */
     GiftCertificate updateById(Long id, GiftCertificate giftCertificate);
 
     /**
-     * Delete a gift certificate.
+     * Activate a gift certificate
      *
-     * @param id - gift certificate ID.
-     * @return - operation result (gift certificate deleted or not)
+     * @param id        - gift certificate id
+     * @param isCommand - command for activate
+     * @return - activated gift certificate
      */
-    boolean deleteById(Long id);
+    GiftCertificate activateById(Long id, boolean isCommand);
+
+    /**
+     * Delete a gift certificate
+     *
+     * @param id - gift certificate id
+     * @return - gift certificate
+     */
+    GiftCertificate deleteById(Long id);
 }
