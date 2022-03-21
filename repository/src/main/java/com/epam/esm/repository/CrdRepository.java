@@ -2,6 +2,10 @@ package com.epam.esm.repository;
 
 import java.util.Optional;
 
+/**
+ * Crd service interface layer
+ * Works with repository layer
+ */
 public interface CrdRepository<K, V> {
     /**
      * Find object by id

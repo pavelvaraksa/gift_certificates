@@ -9,7 +9,7 @@ import org.springframework.context.support.ResourceBundleMessageSource;
 import java.util.Locale;
 
 /**
- * Bean configuration.
+ * Beans configuration
  */
 public class BeanConfig {
     @Bean
