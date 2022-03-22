@@ -4,12 +4,8 @@ import com.epam.esm.domain.GiftCertificate;
 import com.epam.esm.dto.GiftCertificateDto;
 import com.epam.esm.service.GiftCertificateService;
 import com.epam.esm.service.TagService;
-import com.epam.esm.util.ColumnCertificateName;
-import com.epam.esm.util.SortType;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
@@ -27,7 +23,6 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -41,21 +36,14 @@ public class GiftCertificateRestController {
     private final ModelMapper modelMapper;
 
     /**
-     * Find certificates with pagination, sorting and info about deleted certificates
+     * Find all certificates
      *
-     * @param pageable  - pagination config
-     * @param column    - certificate column
-     * @param sort      - sort type
-     * @param isDeleted - info about deleted certificates
      * @return - list of certificates or empty list
      */
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public CollectionModel<GiftCertificateDto> findAllCertificates(@PageableDefault(size = 2) Pageable pageable,
-                                                                   @RequestParam(value = "column", defaultValue = "ID") Set<ColumnCertificateName> column,
-                                                                   @RequestParam(value = "sort", defaultValue = "ASC") SortType sort,
-                                                                   @RequestParam(value = "isDeleted", defaultValue = "false") boolean isDeleted) {
-        List<GiftCertificate> certificates = giftCertificateService.findAll(pageable, column, sort, isDeleted);
+    public CollectionModel<GiftCertificateDto> findAllCertificates() {
+        List<GiftCertificate> certificates = giftCertificateService.findAll();
         List<GiftCertificateDto> items = new ArrayList<>();
 
         for (GiftCertificate certificate : certificates) {
@@ -68,7 +56,7 @@ public class GiftCertificateRestController {
         }
 
         return CollectionModel.of(items, linkTo(methodOn(GiftCertificateRestController.class).
-                findAllCertificates(pageable, column, sort, isDeleted)).withRel("find all certificates"));
+                findAllCertificates()).withRel("find all certificates"));
     }
 
     /**

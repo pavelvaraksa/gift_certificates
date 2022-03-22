@@ -34,7 +34,7 @@ public class UserRestController {
     private final ModelMapper modelMapper;
 
     /**
-     * Find users with pagination, sorting and info about deleted users
+     * Find all users
      *
      * @return - list of users or empty list
      */

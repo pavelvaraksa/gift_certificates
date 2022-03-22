@@ -34,7 +34,7 @@ public class OrderRestController {
     private final ModelMapper modelMapper;
 
     /**
-     * Find orders with pagination, sorting and info about deleted orders
+     * Find all orders
      *
      * @return - list of orders or empty list
      */

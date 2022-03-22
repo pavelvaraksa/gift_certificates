@@ -1,30 +1,18 @@
 package com.epam.esm.repository;
 
 import com.epam.esm.domain.GiftCertificate;
-import com.epam.esm.util.ColumnCertificateName;
-import com.epam.esm.util.SortType;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 /**
- * Gift certificate repository interface layer
+ * Gift certificate repository layer
  * Works with database
  */
-public interface GiftCertificateRepository extends CrdRepository<Long, GiftCertificate> {
-    /**
-     * Find gift certificates with pagination, sorting and info about deleted gift certificates
-     *
-     * @param pageable  - pagination config
-     * @param column    - gift certificate column
-     * @param sort      - sort type
-     * @param isDeleted - info about deleted gift certificates
-     * @return - list of tags or empty list
-     */
-    List<GiftCertificate> findAll(Pageable pageable, Set<ColumnCertificateName> column, SortType sort, boolean isDeleted);
-
+public interface GiftCertificateRepository extends JpaRepository<GiftCertificate, Long> {
     /**
      * Find gift certificate by name
      *
@@ -39,14 +27,17 @@ public interface GiftCertificateRepository extends CrdRepository<Long, GiftCerti
      * @param id - tag id
      * @return - list of gift certificates
      */
+    @Query("select gc from GiftCertificate gc join GiftCertificateToTag gctt on gc.id = gctt.giftCertificate where gctt.tag = ?1")
     List<GiftCertificate> findByTagId(Long id);
 
     /**
-     * Update gift certificate
+     * Update gift certificate by id
      *
      * @param giftCertificate - gift certificate
      * @return - updated gift certificate
      */
+    @Modifying
+    @Query("update GiftCertificate gc set gc.name = ?1, gc.description = ?2, gc.currentPrice = ?3, gc.duration = ?4 where gc.id = ?5")
     GiftCertificate updateById(GiftCertificate giftCertificate);
 
     /**
@@ -55,5 +46,7 @@ public interface GiftCertificateRepository extends CrdRepository<Long, GiftCerti
      * @param id - gift certificate id
      * @return - activated gift certificate
      */
+    @Modifying
+    @Query("update GiftCertificate giftCertificate set giftCertificate.isActive = false where giftCertificate.id = ?1")
     GiftCertificate activateById(Long id);
 }
