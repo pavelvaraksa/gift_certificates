@@ -5,17 +5,13 @@ import com.epam.esm.exception.ServiceExistException;
 import com.epam.esm.exception.ServiceNotFoundException;
 import com.epam.esm.repository.UserRepository;
 import com.epam.esm.service.UserService;
-import com.epam.esm.util.ColumnUserName;
-import com.epam.esm.util.SortType;
 import com.epam.esm.validator.UserValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import static com.epam.esm.exception.MessageException.USER_EXIST;
 import static com.epam.esm.exception.MessageException.USER_NOT_FOUND;
@@ -30,8 +26,8 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     @Override
-    public List<User> findAll(Pageable pageable, Set<ColumnUserName> column, SortType sort, boolean isDeleted) {
-        return userRepository.findAll(pageable, column, sort, isDeleted);
+    public List<User> findAll() {
+        return userRepository.findAll();
     }
 
     @Override

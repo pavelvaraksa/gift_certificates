@@ -9,17 +9,10 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Tag repository interface layer
+ * Tag repository layer
  * Works with database
  */
 public interface TagRepository extends JpaRepository<Tag, Long> {
-    /**
-     * Find all tags
-     *
-     * @return - list of tags or empty list
-     */
-    List<Tag> findAll();
-
     /**
      * Find tags by gift certificate id
      *
@@ -51,20 +44,13 @@ public interface TagRepository extends JpaRepository<Tag, Long> {
      *
      * @return - tag
      */
-    @Query(value = "select tg.id, tg.name, tg.deleted from tag as tg " +
-            "join gift_certificate_to_tag gctt on tg.id = gctt.tag_id " +
+    @Query(value = "select * from tag " +
+            "join gift_certificate_to_tag gctt on tag.id = gctt.tag_id " +
             "join gift_certificate gc on gc.id = gctt.gift_certificate_id " +
             "join order_details od on gc.id = od.gift_certificate_id " +
             "join order_table ot on ot.id = od.order_id " +
-            "group by tg.id order by count(tg.id) desc, max(ot.price) desc limit 1", nativeQuery = true)
+            "group by tag.id order by count(tag.id) desc, max(ot.price) desc limit 1", nativeQuery = true)
     Tag findMostWidelyUsed();
-
-    /**
-     * Delete tag by id
-     *
-     * @param id - tag id
-     */
-    void deleteById(Long id);
 }
 
 
