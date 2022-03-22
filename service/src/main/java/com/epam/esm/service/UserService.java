@@ -9,7 +9,7 @@ import java.util.Optional;
  * User service layer
  * Works with user repository layer
  */
-public interface UserService extends CrdService<User, Long> {
+public interface UserService extends CreateService<User>, ReadDeleteService<User, Long> {
     /**
      * Find all users
      *
@@ -18,28 +18,12 @@ public interface UserService extends CrdService<User, Long> {
     List<User> findAll();
 
     /**
-     * Find user by id
-     *
-     * @param id - user id
-     * @return - optional of found user
-     */
-    Optional<User> findById(Long id);
-
-    /**
      * Find user by login
      *
      * @param login - user login
      * @return - optional of found user
      */
     Optional<User> findByLogin(String login);
-
-    /**
-     * Create user
-     *
-     * @param user - create user
-     * @return - created user
-     */
-    User save(User user);
 
     /**
      * Update user
@@ -58,12 +42,4 @@ public interface UserService extends CrdService<User, Long> {
      * @return - activated user
      */
     User activateById(Long id, boolean isCommand);
-
-    /**
-     * Delete user
-     *
-     * @param id - user id
-     * @return - deleted user
-     */
-    User deleteById(Long id);
 }

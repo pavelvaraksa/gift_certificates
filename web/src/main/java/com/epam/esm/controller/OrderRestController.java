@@ -3,12 +3,8 @@ package com.epam.esm.controller;
 import com.epam.esm.domain.Order;
 import com.epam.esm.dto.OrderDto;
 import com.epam.esm.service.OrderService;
-import com.epam.esm.util.ColumnOrderName;
-import com.epam.esm.util.SortType;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
@@ -26,7 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -41,19 +36,12 @@ public class OrderRestController {
     /**
      * Find orders with pagination, sorting and info about deleted orders
      *
-     * @param pageable  - pagination config
-     * @param column    - order column
-     * @param sort      - sort type
-     * @param isDeleted - info about deleted orders
      * @return - list of orders or empty list
      */
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public CollectionModel<OrderDto> findAllOrders(@PageableDefault(size = 2) Pageable pageable,
-                                                   @RequestParam(value = "column", defaultValue = "ID") Set<ColumnOrderName> column,
-                                                   @RequestParam(value = "sort", defaultValue = "ASC") SortType sort,
-                                                   @RequestParam(value = "isDeleted", defaultValue = "false") boolean isDeleted) {
-        List<Order> listOrder = orderService.findAll(pageable, column, sort, isDeleted);
+    public CollectionModel<OrderDto> findAllOrders() {
+        List<Order> listOrder = orderService.findAll();
         List<OrderDto> items = new ArrayList<>();
 
         for (Order order : listOrder) {
@@ -64,7 +52,7 @@ public class OrderRestController {
         }
 
         return CollectionModel.of(items, linkTo(methodOn(OrderRestController.class)
-                .findAllOrders(pageable, column, sort, isDeleted)).withRel("find all orders"));
+                .findAllOrders()).withRel("find all orders"));
     }
 
     /**

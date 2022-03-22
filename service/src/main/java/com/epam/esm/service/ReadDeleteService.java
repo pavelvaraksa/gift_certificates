@@ -3,18 +3,10 @@ package com.epam.esm.service;
 import java.util.Optional;
 
 /**
- * Crd interface layer
+ * Read/delete interface layer
  * Works with service layer
  */
-public interface CrdService<V, K> {
-    /**
-     * Save object
-     *
-     * @param object- create object
-     * @return - created object
-     */
-    V save(V object);
-
+public interface ReadDeleteService<V, K> {
     /**
      * Find object by id
      *

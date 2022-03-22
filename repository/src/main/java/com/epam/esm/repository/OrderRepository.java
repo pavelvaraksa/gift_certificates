@@ -1,35 +1,22 @@
 package com.epam.esm.repository;
 
 import com.epam.esm.domain.Order;
-import com.epam.esm.util.ColumnOrderName;
-import com.epam.esm.util.SortType;
-import org.springframework.data.domain.Pageable;
-
-import java.util.List;
-import java.util.Set;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 
 /**
- * Order repository interface layer
+ * Order repository layer
  * Works with database
  */
-public interface OrderRepository extends CrdRepository<Long, Order> {
-    /**
-     * Find orders with pagination, sorting and info about deleted orders
-     *
-     * @param pageable  - pagination config
-     * @param column    - order column
-     * @param sort      - sort type
-     * @param isDeleted - info about deleted orders
-     * @return - list of orders or empty list
-     */
-    List<Order> findAll(Pageable pageable, Set<ColumnOrderName> column, SortType sort, boolean isDeleted);
-
+public interface OrderRepository extends JpaRepository<Order, Long> {
     /**
      * Find exist order by id
      *
      * @param id - order id
-     * @return - optional of found order
+     * @return - order
      */
+    @Query("select order from Order order where order.id = ?1")
     Order findByExistId(Long id);
 
     /**
@@ -38,6 +25,8 @@ public interface OrderRepository extends CrdRepository<Long, Order> {
      * @param id - order id
      * @return - activated order
      */
+    @Modifying
+    @Query("update Order order set order.isActive = false where order.id = ?1")
     Order activateById(Long id);
 }
 

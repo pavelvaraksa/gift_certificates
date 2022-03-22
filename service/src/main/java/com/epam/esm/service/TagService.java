@@ -9,7 +9,7 @@ import java.util.Optional;
  * Tag service layer
  * Works with tag repository layer
  */
-public interface TagService extends CrdService<Tag, Long> {
+public interface TagService extends CreateService<Tag>, ReadDeleteService<Tag, Long> {
     /**
      * Find all tags
      *
