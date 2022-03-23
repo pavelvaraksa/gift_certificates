@@ -133,10 +133,10 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         giftCertificate.getTag().forEach(tag -> {
             if (TagValidator.isTagValid(tag)) {
                 String tagName = tag.getName();
-                Optional<Tag> optionalTag2 = tagRepository.findByName(tagName);
+                Optional<Tag> optionalTag = tagRepository.findByName(tagName);
 
-                if (optionalTag2.isPresent()) {
-                    Tag existTag = optionalTag2.get();
+                if (optionalTag.isPresent()) {
+                    Tag existTag = optionalTag.get();
                     boolean isExistLink = certificateTagLink.isExistLink(newGiftCertificate.getId(), existTag.getId());
 
                     if (!isExistLink) {

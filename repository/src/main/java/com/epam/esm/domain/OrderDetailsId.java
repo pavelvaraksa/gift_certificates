@@ -6,7 +6,7 @@ import java.io.Serializable;
 
 @Data
 public class OrderDetailsId implements Serializable {
-    Long order;
+    private Long order;
 
-    Long certificate;
+    private Long certificate;
 }
