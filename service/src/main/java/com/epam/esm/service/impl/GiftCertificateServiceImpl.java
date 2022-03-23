@@ -14,6 +14,7 @@ import com.epam.esm.validator.TagValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -107,6 +108,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         return giftCertificates;
     }
 
+    @Transactional
     @Override
     public GiftCertificate save(GiftCertificate giftCertificate) {
         GiftCertificateValidator.isGiftCertificateValid(giftCertificate);
@@ -152,6 +154,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         return giftCertificate;
     }
 
+    @Transactional
     @Override
     public GiftCertificate updateById(Long id, GiftCertificate giftCertificate) {
         Optional<GiftCertificate> giftCertificateById = giftCertificateRepository.findById(id);
@@ -196,9 +199,13 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         giftCertificate.setTag(existTags);
 
         log.info("Gift certificate with name " + giftCertificate.getName() + " updated");
-        return giftCertificateRepository.updateById(giftCertificate);
+        giftCertificateRepository.updateById(giftCertificate.getName(), giftCertificate.getDescription(),
+                giftCertificate.getCurrentPrice(), giftCertificate.getDuration(), giftCertificate.getId());
+
+        return giftCertificate;
     }
 
+    @Transactional
     @Override
     public GiftCertificate activateById(Long id, boolean isCommand) {
         Optional<GiftCertificate> giftCertificate = giftCertificateRepository.findById(id);
@@ -209,12 +216,14 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         }
 
         if (giftCertificate.get().isActive()) {
-            return giftCertificateRepository.activateById(id);
+            giftCertificateRepository.activateById(id);
+            return giftCertificate.get();
         } else {
             throw new ServiceNotFoundException(CERTIFICATE_NOT_FOUND);
         }
     }
 
+    @Transactional
     @Override
     public GiftCertificate deleteById(Long id) {
         Optional<GiftCertificate> giftCertificate = giftCertificateRepository.findById(id);

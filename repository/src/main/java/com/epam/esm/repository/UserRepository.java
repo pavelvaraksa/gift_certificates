@@ -23,20 +23,21 @@ public interface UserRepository extends JpaRepository<User, Long> {
     /**
      * Update user by id
      *
-     * @param user - user
-     * @return - updated user
+     * @param login - user login
+     * @param firstName - user firstname
+     * @param lastName - user lastname
+     * @param id - user id
      */
     @Modifying
     @Query("update User user set user.login = ?1, user.firstName = ?2, user.lastName = ?3 where user.id = ?4")
-    User updateById(User user);
+    void updateById(String login, String firstName, String lastName, Long id);
 
     /**
      * Activate user by id
      *
      * @param id - user id
-     * @return - activated user
      */
     @Modifying
     @Query("update User user set user.isActive = false where user.id = ?1")
-    User activateById(Long id);
+    void activateById(Long id);
 }

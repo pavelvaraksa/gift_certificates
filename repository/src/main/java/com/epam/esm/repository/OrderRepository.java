@@ -5,29 +5,39 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.Set;
+
 /**
  * Order repository layer
  * Works with database
  */
 public interface OrderRepository extends JpaRepository<Order, Long> {
     /**
+     * Find orders by user id
+     *
+     * @param id - user id
+     * @return - list of orders or empty list
+     */
+    @Query("select ord from Order ord join User user on ord.user.id = user.id where user.id = ?1")
+    Set<Order> findAllByUserId(Long id);
+
+    /**
      * Find exist order by id
      *
      * @param id - order id
      * @return - order
      */
-    @Query("select order from Order order where order.id = ?1")
+    @Query("select ord from Order ord where ord.id = ?1")
     Order findByExistId(Long id);
 
     /**
-     * Activate gift order by id
+     * Activate order by id
      *
      * @param id - order id
-     * @return - activated order
      */
     @Modifying
-    @Query("update Order order set order.isActive = false where order.id = ?1")
-    Order activateById(Long id);
+    @Query("update Order ord set ord.isActive = false where ord.id = ?1")
+    void activateById(Long id);
 }
 
 

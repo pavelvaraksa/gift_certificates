@@ -63,6 +63,7 @@ public class TagServiceImpl implements TagService {
         return tag;
     }
 
+    @Transactional
     @Override
     public Tag save(Tag tag) {
         TagValidator.isTagValid(tag);
@@ -101,6 +102,7 @@ public class TagServiceImpl implements TagService {
         }
     }
 
+    @Transactional
     @Override
     public Tag deleteById(Long id) {
         Optional<Tag> tag = tagRepository.findById(id);

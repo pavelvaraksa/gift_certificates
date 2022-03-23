@@ -1,17 +1,21 @@
 package com.epam.esm.service.impl;
 
+import com.epam.esm.domain.Order;
 import com.epam.esm.domain.User;
 import com.epam.esm.exception.ServiceExistException;
 import com.epam.esm.exception.ServiceNotFoundException;
+import com.epam.esm.repository.OrderRepository;
 import com.epam.esm.repository.UserRepository;
 import com.epam.esm.service.UserService;
 import com.epam.esm.validator.UserValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static com.epam.esm.exception.MessageException.USER_EXIST;
 import static com.epam.esm.exception.MessageException.USER_NOT_FOUND;
@@ -24,6 +28,7 @@ import static com.epam.esm.exception.MessageException.USER_NOT_FOUND;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private final OrderRepository orderRepository;
 
     @Override
     public List<User> findAll() {
@@ -62,6 +67,7 @@ public class UserServiceImpl implements UserService {
         return user;
     }
 
+    @Transactional
     @Override
     public User save(User user) {
         UserValidator.isUserValid(user);
@@ -77,6 +83,7 @@ public class UserServiceImpl implements UserService {
         return userRepository.save(user);
     }
 
+    @Transactional
     @Override
     public User updateById(Long id, User user) {
         Optional<User> userById = userRepository.findById(id);
@@ -111,13 +118,15 @@ public class UserServiceImpl implements UserService {
 
         UserValidator.isUserValid(user);
         user.setId(userById.get().getId());
-        userRepository.updateById(user);
-        Optional<User> updatedUserById = userRepository.findById(user.getId());
+        userRepository.updateById(user.getLogin(), user.getFirstName(), user.getLastName(), user.getId());
+        Set<Order> orderSet = orderRepository.findAllByUserId(user.getId());
+        user.setOrder(orderSet);
 
         log.info("User with login " + user.getLogin() + " updated");
-        return updatedUserById.get();
+        return user;
     }
 
+    @Transactional
     @Override
     public User activateById(Long id, boolean isCommand) {
         Optional<User> user = userRepository.findById(id);
@@ -128,12 +137,14 @@ public class UserServiceImpl implements UserService {
         }
 
         if (user.get().isActive()) {
-            return userRepository.activateById(id);
+            userRepository.activateById(id);
+            return user.get();
         } else {
             throw new ServiceNotFoundException(USER_NOT_FOUND);
         }
     }
 
+    @Transactional
     @Override
     public User deleteById(Long id) {
         Optional<User> user = userRepository.findById(id);

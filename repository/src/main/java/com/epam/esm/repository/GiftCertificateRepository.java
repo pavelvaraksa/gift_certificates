@@ -33,20 +33,21 @@ public interface GiftCertificateRepository extends JpaRepository<GiftCertificate
     /**
      * Update gift certificate by id
      *
-     * @param giftCertificate - gift certificate
-     * @return - updated gift certificate
+     * @param name - gift certificate name
+     * @param description - gift certificate description
+     * @param currentPrice - gift certificate current price
+     * @param id - gift certificate id
      */
     @Modifying
     @Query("update GiftCertificate gc set gc.name = ?1, gc.description = ?2, gc.currentPrice = ?3, gc.duration = ?4 where gc.id = ?5")
-    GiftCertificate updateById(GiftCertificate giftCertificate);
+    void updateById(String name, String description, Double currentPrice, Integer duration, Long id);
 
     /**
      * Activate gift certificate by id
      *
      * @param id - gift certificate id
-     * @return - activated gift certificate
      */
     @Modifying
     @Query("update GiftCertificate giftCertificate set giftCertificate.isActive = false where giftCertificate.id = ?1")
-    GiftCertificate activateById(Long id);
+    void activateById(Long id);
 }

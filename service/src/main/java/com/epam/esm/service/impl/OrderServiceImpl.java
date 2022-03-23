@@ -13,11 +13,14 @@ import com.epam.esm.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static com.epam.esm.exception.MessageException.ORDER_NOT_FOUND;
 
@@ -54,11 +57,13 @@ public class OrderServiceImpl implements OrderService {
         return order;
     }
 
+    @Transactional
     @Override
     public Order save(Long userId, List<Long> giftCertificateId) {
         Optional<User> user = userService.findById(userId);
         Optional<GiftCertificate> giftCertificate;
         OrderDetails orderDetails = new OrderDetails();
+        Set<OrderDetails> orderDetailsSet = new HashSet<>();
         Order order = new Order();
         Double orderPrice = 0D;
 
@@ -81,19 +86,14 @@ public class OrderServiceImpl implements OrderService {
             orderDetails.setActualPrice(giftCertificate.get().getCurrentPrice());
             orderDetails.setOrder(order);
             orderDetails.setCertificate(giftCertificate.get());
+            orderDetailsSet.add(orderDetails);
             orderDetailsRepository.save(orderDetails);
         }
 
-        Long orderId = order.getId();
-
-        if (orderRepository.findByExistId(orderId) == null) {
-            log.error("Order with id " + orderId + " was not found");
-            throw new ServiceNotFoundException(ORDER_NOT_FOUND);
-        }
-
-        return orderRepository.findByExistId(orderId);
+        return order;
     }
 
+    @Transactional
     @Override
     public Order activateById(Long id, boolean isCommand) {
         Optional<Order> order = orderRepository.findById(id);
@@ -104,12 +104,14 @@ public class OrderServiceImpl implements OrderService {
         }
 
         if (order.get().isActive()) {
-            return orderRepository.activateById(id);
+            orderRepository.activateById(id);
+            return order.get();
         } else {
             throw new ServiceNotFoundException(ORDER_NOT_FOUND);
         }
     }
 
+    @Transactional
     @Override
     public Order deleteById(Long id) {
         Optional<Order> order = orderRepository.findById(id);
