@@ -137,7 +137,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
                 if (optionalTag.isPresent()) {
                     Tag existTag = optionalTag.get();
-                    boolean isExistLink = certificateTagLink.isExistLink(newGiftCertificate.getId(), existTag.getId());
+                    boolean isExistLink = certificateTagLink.existsByGiftCertificateAndTag(newGiftCertificate.getId(), existTag.getId());
 
                     if (!isExistLink) {
                         GiftCertificateToTag certificateToTag = new GiftCertificateToTag(newGiftCertificate.getId(), existTag.getId());
