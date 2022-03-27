@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
+import static com.epam.esm.exception.MessageException.USER_NOT_FOUND;
+
 @Log4j2
 @Service
 @RequiredArgsConstructor
@@ -22,20 +24,15 @@ public class UserServiceProvider implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String login) {
-        try {
-            Optional<User> searchUser = userRepository.findByLogin(login);
-            if (searchUser.isPresent()) {
-                String userLogin = searchUser.get().getLogin();
-                String userPassword = searchUser.get().getPassword();
-                List<GrantedAuthority> authorityList = AuthorityUtils.commaSeparatedStringToAuthorityList(String.valueOf(searchUser.get().getRole()));
-                return new org.springframework.security.core.userdetails.User(userLogin, userPassword, authorityList);
-            } else {
-                String errorMessage = "Can't find user with login " + login;
-                log.error(errorMessage);
-                throw new SecurityException(errorMessage);
-            }
-        } catch (ServiceNotFoundException e) {
-            throw new SecurityException("Security exception while trying to find user." + e.getMessage());
+        Optional<User> searchUser = userRepository.findByLogin(login);
+
+        if (searchUser.isPresent()) {
+            String userLogin = searchUser.get().getLogin();
+            String userPassword = searchUser.get().getPassword();
+            List<GrantedAuthority> authorityList = AuthorityUtils.commaSeparatedStringToAuthorityList(String.valueOf(searchUser.get().getRole()));
+            return new org.springframework.security.core.userdetails.User(userLogin, userPassword, authorityList);
         }
+
+        throw new ServiceNotFoundException(USER_NOT_FOUND);
     }
 }

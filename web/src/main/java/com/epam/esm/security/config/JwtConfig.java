@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
 @EqualsAndHashCode
 @Configuration
 @ConfigurationProperties("jwtconfig")
-public class JwtTokenConfig {
+public class JwtConfig {
     private String secret;
 
     private Long expiration;
