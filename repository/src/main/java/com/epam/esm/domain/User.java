@@ -1,6 +1,7 @@
 package com.epam.esm.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,6 +19,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import java.io.Serializable;
 import java.util.HashSet;
@@ -44,6 +46,9 @@ public class User implements Serializable {
     @Column
     private String login;
 
+    @Column
+    private String password;
+
     @Column(name = "firstname")
     private String firstName;
 
@@ -53,6 +58,10 @@ public class User implements Serializable {
     @JsonIgnore
     @Column(name = "deleted")
     private boolean isActive;
+
+    @OneToOne(mappedBy = "user", fetch = FetchType.EAGER, orphanRemoval = true)
+    @JsonManagedReference
+    private UserRole role;
 
     @JsonIgnore
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})

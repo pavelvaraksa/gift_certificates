@@ -19,7 +19,9 @@ public class MessageException {
     public static final String TAG_NOT_FOUND = "tag.not.found";
     public static final String TAG_EXIST= "tag.exist";
     public static final String USER_LOGIN_NOT_FILLED = "user.login.not.filled";
+    public static final String USER_PASSWORD_NOT_FILLED = "user.password.not.filled";
     public static final String USER_LOGIN_INCORRECT = "user.login.incorrect";
+    public static final String USER_PASSWORD_INCORRECT = "user.password.incorrect";
     public static final String USER_FIRSTNAME_NOT_FILLED = "user.firstname.not.filled";
     public static final String USER_FIRSTNAME_INCORRECT = "user.firstname.incorrect";
     public static final String USER_LASTNAME_NOT_FILLED = "user.lastname.not.filled";

@@ -7,6 +7,10 @@ spring:
     username: postgres
     password: postgres
 
+jwtconfig:
+  secret: secret
+  expiration: 100000
+
 logging:
   pattern:
     console: "%d %-5level %logger : %msg%n"
