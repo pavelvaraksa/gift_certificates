@@ -1,5 +1,6 @@
-package com.epam.esm.service.impl;
+package com.epam.esm.security.service;
 
+import com.epam.esm.domain.Role;
 import com.epam.esm.domain.User;
 import com.epam.esm.exception.ServiceNotFoundException;
 import com.epam.esm.repository.UserRepository;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static com.epam.esm.exception.MessageException.USER_NOT_FOUND;
 
@@ -29,10 +31,12 @@ public class UserServiceProvider implements UserDetailsService {
         if (searchUser.isPresent()) {
             String userLogin = searchUser.get().getLogin();
             String userPassword = searchUser.get().getPassword();
-            List<GrantedAuthority> authorityList = AuthorityUtils.commaSeparatedStringToAuthorityList(String.valueOf(searchUser.get().getRole()));
+            Set<Role> roles = searchUser.get().getRoles();
+            List<GrantedAuthority> authorityList = AuthorityUtils.commaSeparatedStringToAuthorityList(String.valueOf(roles));
             return new org.springframework.security.core.userdetails.User(userLogin, userPassword, authorityList);
         }
 
+        log.error("User was not found");
         throw new ServiceNotFoundException(USER_NOT_FOUND);
     }
 }

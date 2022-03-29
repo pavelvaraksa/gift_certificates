@@ -16,23 +16,16 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static io.jsonwebtoken.Claims.SUBJECT;
-import static java.util.Calendar.MILLISECOND;
 
 @Component
 @RequiredArgsConstructor
 public class JwtUtil {
-    public static final String CREATE_VALUE = "created";
-    public static final String ROLE = "role";
-
     private final JwtConfig jwtConfig;
-
-    private Date generateCurrentDate() {
-        return new Date();
-    }
+    private final String ROLE = "roles";
 
     private Date generateExpirationDate() {
         Calendar calendar = Calendar.getInstance();
-        calendar.add(MILLISECOND, jwtConfig.getExpiration().intValue());
+        calendar.add(Calendar.MILLISECOND, jwtConfig.getExpiration().intValue());
         return calendar.getTime();
     }
 
@@ -48,7 +41,6 @@ public class JwtUtil {
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
         claims.put(SUBJECT, userDetails.getUsername());
-        claims.put(CREATE_VALUE, generateCurrentDate());
         claims.put(ROLE, getEncryptedRoles(userDetails));
         return generateToken(claims);
     }
@@ -57,7 +49,6 @@ public class JwtUtil {
         return userDetails.getAuthorities().
                 stream()
                 .map(GrantedAuthority::getAuthority)
-                .map(s -> s.replace("ROLE_", ""))
                 .map(String::toLowerCase)
                 .collect(Collectors.toList());
     }

@@ -1,16 +1,12 @@
 package com.epam.esm.security.config;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
-@Getter
-@Setter
-@EqualsAndHashCode
+@Data
 @Configuration
-@ConfigurationProperties("jwtconfig")
+@ConfigurationProperties(prefix = "jwtconfig")
 public class JwtConfig {
     private String secret;
 

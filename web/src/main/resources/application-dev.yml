@@ -7,10 +7,6 @@ spring:
     username: postgres
     password: postgres
 
-jwtconfig:
-  secret: secret
-  expiration: 100000
-
 logging:
   pattern:
     console: "%d %-5level %logger : %msg%n"
@@ -20,3 +16,7 @@ logging:
     org.hibernate: INFO
   file:
     name: C:/Users/senna/IdeaProjects/gift_certificates/web/src/main/resources/logs.log
+
+jwtconfig:
+  secret: secret
+  expiration: 100000

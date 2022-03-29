@@ -16,3 +16,7 @@ logging:
     org.hibernate: INFO
   file:
     name: C:/Users/senna/IdeaProjects/gift_certificates/web/src/main/resources/logs.log
+
+jwtconfig:
+  secret: secret
+  expiration: 100000

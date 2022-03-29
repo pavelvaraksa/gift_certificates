@@ -21,6 +21,7 @@ dependencies {
     api 'com.h2database:h2:1.4.200'
     compileOnly 'org.projectlombok:lombok:1.18.20'
     annotationProcessor 'org.projectlombok:lombok:1.18.20'
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 }
 
 test {
