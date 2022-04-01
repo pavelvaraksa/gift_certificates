@@ -1,7 +1,7 @@
 package com.epam.esm.controller;
 
-import com.epam.esm.domain.AuthRequest;
-import com.epam.esm.domain.AuthResponse;
+import com.epam.esm.security.domain.AuthRequest;
+import com.epam.esm.security.domain.AuthResponse;
 import com.epam.esm.security.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -24,9 +24,15 @@ public class AuthenticationRestController {
     private final UserDetailsService userDetailsService;
     private final JwtUtil jwtUtil;
 
+    /**
+     * Authenticate user
+     *
+     * @param request - user request data
+     * @return - user response data
+     */
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public AuthResponse loginUser(@RequestBody AuthRequest request) {
+    @ResponseStatus(HttpStatus.OK)
+    public AuthResponse authenticateUser(@RequestBody AuthRequest request) {
         Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 request.getLogin(),
                 request.getPassword()));
@@ -35,6 +41,7 @@ public class AuthenticationRestController {
 
         return AuthResponse.builder()
                 .login(request.getLogin())
+                .role(String.valueOf(authenticate.getAuthorities()).toLowerCase())
                 .token(jwtUtil.generateToken(userDetailsService.loadUserByUsername(request.getLogin())))
                 .build();
     }

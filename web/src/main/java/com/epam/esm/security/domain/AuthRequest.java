@@ -1,4 +1,4 @@
-package com.epam.esm.domain;
+package com.epam.esm.security.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

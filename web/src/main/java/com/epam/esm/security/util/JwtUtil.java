@@ -1,6 +1,7 @@
 package com.epam.esm.security.util;
 
 import com.epam.esm.security.config.JwtConfig;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +14,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static io.jsonwebtoken.Claims.SUBJECT;
@@ -22,6 +24,36 @@ import static io.jsonwebtoken.Claims.SUBJECT;
 public class JwtUtil {
     private final JwtConfig jwtConfig;
     private final String ROLE = "roles";
+
+    public String getUsernameFromToken(String token) {
+        return getClaimFromToken(token, Claims::getSubject);
+    }
+
+    public <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
+        Claims claims = getAllClaimsFromToken(token);
+        return claimsResolver.apply(claims);
+    }
+
+    public Boolean validateToken(String token, UserDetails userDetails) {
+        String username = getUsernameFromToken(token);
+        return (username.equals(userDetails.getUsername()) && !isTokenExpired());
+    }
+
+    public String generateToken(UserDetails userDetails) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put(SUBJECT, userDetails.getUsername());
+        claims.put(ROLE, getRoles(userDetails));
+        return generateToken(claims);
+    }
+
+    private Claims getAllClaimsFromToken(String token) {
+        return Jwts.parser().setSigningKey(jwtConfig.getSecret()).parseClaimsJws(token).getBody();
+    }
+
+    private Boolean isTokenExpired() {
+        Date expiration = generateExpirationDate();
+        return expiration.before(new Date());
+    }
 
     private Date generateExpirationDate() {
         Calendar calendar = Calendar.getInstance();
@@ -34,22 +66,14 @@ public class JwtUtil {
                 .builder()
                 .setClaims(claims)
                 .setExpiration(generateExpirationDate())
-                .signWith(SignatureAlgorithm.HS512, jwtConfig.getSecret())
+                .signWith(SignatureAlgorithm.HS256, jwtConfig.getSecret())
                 .compact();
     }
 
-    public String generateToken(UserDetails userDetails) {
-        Map<String, Object> claims = new HashMap<>();
-        claims.put(SUBJECT, userDetails.getUsername());
-        claims.put(ROLE, getEncryptedRoles(userDetails));
-        return generateToken(claims);
-    }
-
-    private List<String> getEncryptedRoles(UserDetails userDetails) {
+    private List<String> getRoles(UserDetails userDetails) {
         return userDetails.getAuthorities().
                 stream()
                 .map(GrantedAuthority::getAuthority)
-                .map(String::toLowerCase)
                 .collect(Collectors.toList());
     }
 }

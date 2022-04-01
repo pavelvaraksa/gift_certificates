@@ -64,7 +64,7 @@ public class Order implements Serializable {
 
     @JsonIgnore
     @ManyToMany(mappedBy = "order", fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    private Set<GiftCertificate> certificate;
+    private Set<GiftCertificate> certificate = new HashSet<>();
 
     @JsonIgnore
     @OneToMany(mappedBy = "order", fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})

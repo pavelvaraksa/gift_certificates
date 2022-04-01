@@ -13,8 +13,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * Role domain
@@ -33,7 +34,7 @@ public class Role {
     private Roles name;
 
     @ManyToMany(mappedBy = "roles", fetch = FetchType.EAGER)
-    private List<User> users;
+    private Set<User> users = new HashSet<>();
 
     @Override
     public boolean equals(Object o) {
@@ -50,6 +51,6 @@ public class Role {
 
     @Override
     public String toString() {
-        return " - " + name;
+        return name.toString();
     }
 }

@@ -12,11 +12,12 @@ logging:
     console: "%d %-5level %logger : %msg%n"
     file: "%d %-5level [%thread] %logger : %msg%n"
   level:
-    org.springframework.web: INFO
+    org.springframework.web: DEBUG
+    org.springframework:security: DEBUG
     org.hibernate: INFO
   file:
     name: C:/Users/senna/IdeaProjects/gift_certificates/web/src/main/resources/logs.log
 
 jwtconfig:
   secret: secret
-  expiration: 100000
+  expiration: 900000
