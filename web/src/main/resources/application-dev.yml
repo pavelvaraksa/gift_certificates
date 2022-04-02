@@ -13,10 +13,10 @@ logging:
     file: "%d %-5level [%thread] %logger : %msg%n"
   level:
     org.springframework.web: DEBUG
-    org.springframework:security: DEBUG
+#    org.springframework:security: DEBUG
     org.hibernate: INFO
   file:
-    name: C:/Users/senna/IdeaProjects/gift_certificates/web/src/main/resources/logs.log
+    name: C:/Users/senna/IdeaProjects/gift_certificates/web/src/main/resources/logs.txt
 
 jwtconfig:
   secret: secret

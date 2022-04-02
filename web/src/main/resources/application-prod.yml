@@ -15,7 +15,7 @@ logging:
     org.springframework.web: INFO
     org.hibernate: INFO
   file:
-    name: C:/Users/senna/IdeaProjects/gift_certificates/web/src/main/resources/logs.log
+    name: C:/Users/senna/IdeaProjects/gift_certificates/web/src/main/resources/logs.txt
 
 jwtconfig:
   secret: secret

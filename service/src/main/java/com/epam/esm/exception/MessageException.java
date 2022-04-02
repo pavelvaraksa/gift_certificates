@@ -22,11 +22,13 @@ public class MessageException {
     public static final String USER_PASSWORD_NOT_FILLED = "user.password.not.filled";
     public static final String USER_LOGIN_INCORRECT = "user.login.incorrect";
     public static final String USER_PASSWORD_INCORRECT = "user.password.incorrect";
+    public static final String USER_PASSWORD_NOT_MATCH = "user.password.not.match";
     public static final String USER_FIRSTNAME_NOT_FILLED = "user.firstname.not.filled";
     public static final String USER_FIRSTNAME_INCORRECT = "user.firstname.incorrect";
     public static final String USER_LASTNAME_NOT_FILLED = "user.lastname.not.filled";
     public static final String USER_LASTNAME_INCORRECT = "user.lastname.incorrect";
     public static final String USER_NOT_FOUND = "user.not.found";
+    public static final String USER_NOT_AUTHORIZED = "user.not.authorized";
     public static final String USER_EXIST = "user.exist";
     public static final String ORDER_NOT_FOUND = "order.not.found";
 }

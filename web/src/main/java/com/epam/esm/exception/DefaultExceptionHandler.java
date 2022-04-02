@@ -1,5 +1,7 @@
 package com.epam.esm.exception;
 
+import com.epam.esm.security.exception.AuthException;
+import com.epam.esm.security.exception.CustomJwtSignatureException;
 import lombok.AllArgsConstructor;
 import org.postgresql.util.PSQLException;
 import org.springframework.context.support.ResourceBundleMessageSource;
@@ -22,6 +24,7 @@ public class DefaultExceptionHandler {
     private final String INCORRECT_SEARCH = "Incorrect input in search field";
     private final String INCORRECT_SYNTAX = "Incorrect input in body field";
     private final String NOT_ALLOWED = "Method not allowed this function";
+    private final String FORBIDDEN = "Forbidden";
     private final String NO_RESULT= "Tag was not found";
 
     @ExceptionHandler(ServiceValidException.class)
@@ -39,30 +42,35 @@ public class DefaultExceptionHandler {
         return createResponseEntity(ex, locale, ErrorCode.ITEM_DUPLICATE_NAME_EXCEPTION, HttpStatus.CONFLICT);
     }
 
-//    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-//    public ResponseEntity<ErrorMessage> handleIncorrectSearchException(MethodArgumentTypeMismatchException ex) {
-//        return new ResponseEntity<>(new ErrorMessage(400, INCORRECT_SEARCH), HttpStatus.BAD_REQUEST);
-//    }
-//
-//    @ExceptionHandler(MissingServletRequestParameterException.class)
-//    public ResponseEntity<ErrorMessage> handleIncorrectSearchException(MissingServletRequestParameterException ex) {
-//        return new ResponseEntity<>(new ErrorMessage(400, INCORRECT_SEARCH), HttpStatus.BAD_REQUEST);
-//    }
-//
-//    @ExceptionHandler(HttpMessageNotReadableException.class)
-//    public ResponseEntity<ErrorMessage> handleIncorrectSyntaxException(HttpMessageNotReadableException ex) {
-//        return new ResponseEntity<>(new ErrorMessage(400, INCORRECT_SYNTAX), HttpStatus.BAD_REQUEST);
-//    }
-//
-//    @ExceptionHandler(PSQLException.class)
-//    public ResponseEntity<ErrorMessage> handlePSQLException(PSQLException ex) {
-//        return new ResponseEntity<>(new ErrorMessage(400, INCORRECT_SEARCH), HttpStatus.BAD_REQUEST);
-//    }
-//
-//    @ExceptionHandler(IllegalArgumentException.class)
-//    public ResponseEntity<ErrorMessage> handlePSQLException(IllegalArgumentException ex) {
-//        return new ResponseEntity<>(new ErrorMessage(400, INCORRECT_SEARCH), HttpStatus.BAD_REQUEST);
-//    }
+    @ExceptionHandler(ServiceNotAuthorized.class)
+    public ResponseEntity<FrameException> handleNotAuthorizedException(ServiceNotAuthorized ex, Locale locale) {
+        return createResponseEntity(ex, locale, ErrorCode.ITEM_NOT_AUTHORIZED, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ErrorMessage> handleIncorrectSearchException(MethodArgumentTypeMismatchException ex) {
+        return new ResponseEntity<>(new ErrorMessage(400, INCORRECT_SEARCH), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<ErrorMessage> handleIncorrectSearchException(MissingServletRequestParameterException ex) {
+        return new ResponseEntity<>(new ErrorMessage(400, INCORRECT_SEARCH), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorMessage> handleIncorrectSyntaxException(HttpMessageNotReadableException ex) {
+        return new ResponseEntity<>(new ErrorMessage(400, INCORRECT_SYNTAX), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(PSQLException.class)
+    public ResponseEntity<ErrorMessage> handlePSQLException(PSQLException ex) {
+        return new ResponseEntity<>(new ErrorMessage(400, INCORRECT_SEARCH), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorMessage> handlePSQLException(IllegalArgumentException ex) {
+        return new ResponseEntity<>(new ErrorMessage(400, INCORRECT_SEARCH), HttpStatus.BAD_REQUEST);
+    }
 
     @ExceptionHandler(NoResultException.class)
     public ResponseEntity<ErrorMessage> handleNoResultException(NoResultException ex) {
@@ -72,6 +80,11 @@ public class DefaultExceptionHandler {
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ResponseEntity<ErrorMessage> handleNotSupportException(HttpRequestMethodNotSupportedException ex) {
         return new ResponseEntity<>(new ErrorMessage(405, NOT_ALLOWED), HttpStatus.METHOD_NOT_ALLOWED);
+    }
+
+    @ExceptionHandler(AuthException.class)
+    public ResponseEntity<ErrorMessage> handleNotSupportException(AuthException ex) {
+        return new ResponseEntity<>(new ErrorMessage(403, FORBIDDEN), HttpStatus.FORBIDDEN);
     }
 
     private ResponseEntity<FrameException> createResponseEntity(RuntimeException runtimeException, Locale locale, ErrorCode errorCode, HttpStatus httpStatus) {
