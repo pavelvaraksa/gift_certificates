@@ -23,7 +23,7 @@ import static io.jsonwebtoken.Claims.SUBJECT;
 @RequiredArgsConstructor
 public class JwtUtil {
     private final JwtConfig jwtConfig;
-    private final String ROLE = "roles";
+    private final String ROLE = "role";
 
     public String getUsernameFromToken(String token) {
         return getClaimFromToken(token, Claims::getSubject);

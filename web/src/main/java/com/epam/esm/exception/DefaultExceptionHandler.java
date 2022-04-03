@@ -1,7 +1,5 @@
 package com.epam.esm.exception;
 
-import com.epam.esm.security.exception.AuthException;
-import com.epam.esm.security.exception.CustomJwtSignatureException;
 import lombok.AllArgsConstructor;
 import org.postgresql.util.PSQLException;
 import org.springframework.context.support.ResourceBundleMessageSource;
@@ -14,7 +12,6 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
-import javax.persistence.NoResultException;
 import java.util.Locale;
 
 @ControllerAdvice
@@ -24,8 +21,6 @@ public class DefaultExceptionHandler {
     private final String INCORRECT_SEARCH = "Incorrect input in search field";
     private final String INCORRECT_SYNTAX = "Incorrect input in body field";
     private final String NOT_ALLOWED = "Method not allowed this function";
-    private final String FORBIDDEN = "Forbidden";
-    private final String NO_RESULT= "Tag was not found";
 
     @ExceptionHandler(ServiceValidException.class)
     public ResponseEntity<FrameException> handleValidException(ServiceValidException ex, Locale locale) {
@@ -67,24 +62,9 @@ public class DefaultExceptionHandler {
         return new ResponseEntity<>(new ErrorMessage(400, INCORRECT_SEARCH), HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ErrorMessage> handlePSQLException(IllegalArgumentException ex) {
-        return new ResponseEntity<>(new ErrorMessage(400, INCORRECT_SEARCH), HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler(NoResultException.class)
-    public ResponseEntity<ErrorMessage> handleNoResultException(NoResultException ex) {
-        return new ResponseEntity<>(new ErrorMessage(404, NO_RESULT), HttpStatus.NOT_FOUND);
-    }
-
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ResponseEntity<ErrorMessage> handleNotSupportException(HttpRequestMethodNotSupportedException ex) {
         return new ResponseEntity<>(new ErrorMessage(405, NOT_ALLOWED), HttpStatus.METHOD_NOT_ALLOWED);
-    }
-
-    @ExceptionHandler(AuthException.class)
-    public ResponseEntity<ErrorMessage> handleNotSupportException(AuthException ex) {
-        return new ResponseEntity<>(new ErrorMessage(403, FORBIDDEN), HttpStatus.FORBIDDEN);
     }
 
     private ResponseEntity<FrameException> createResponseEntity(RuntimeException runtimeException, Locale locale, ErrorCode errorCode, HttpStatus httpStatus) {

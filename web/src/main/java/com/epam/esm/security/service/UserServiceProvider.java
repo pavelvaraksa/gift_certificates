@@ -18,6 +18,9 @@ import java.util.Optional;
 
 import static com.epam.esm.exception.MessageException.USER_NOT_AUTHORIZED;
 
+/**
+ * Implementation of {@link UserDetailsService} interface for {@link User}
+ */
 @Log4j2
 @Service
 @RequiredArgsConstructor

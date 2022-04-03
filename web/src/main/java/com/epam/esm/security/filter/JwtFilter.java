@@ -1,9 +1,6 @@
 package com.epam.esm.security.filter;
 
-import com.epam.esm.security.exception.AuthException;
-import com.epam.esm.security.exception.CustomJwtSignatureException;
 import com.epam.esm.security.util.JwtUtil;
-import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,8 +16,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.security.SignatureException;
 
+/**
+ * JWT token filter that handles all HTTP requests to application
+ */
 @Log4j2
 @Component
 @RequiredArgsConstructor
@@ -33,23 +32,21 @@ public class JwtFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         String requestTokenHeader = request.getHeader("Authorization");
-        String username;
-        String jwtToken;
+        String username = null;
+        String jwtToken = null;
 
         if (requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")) {
-            try {
-                jwtToken = requestTokenHeader.substring(7);
-                username = jwtUtil.getUsernameFromToken(jwtToken);
-                UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
+            jwtToken = requestTokenHeader.substring(7);
+            username = jwtUtil.getUsernameFromToken(jwtToken);
+        }
 
-                if (jwtUtil.validateToken(jwtToken, userDetails)) {
-                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                            userDetails.getUsername(), "", userDetails.getAuthorities());
-                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
-                }
-            } catch (Exception ex) {
-                throw new AuthException("");
+        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
+            if (jwtUtil.validateToken(jwtToken, userDetails)) {
+                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                        userDetails.getUsername(), "", userDetails.getAuthorities());
+                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         }
 

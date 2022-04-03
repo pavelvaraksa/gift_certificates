@@ -115,6 +115,11 @@ public class TagRestController {
     @ResponseStatus(HttpStatus.OK)
     public EntityModel<TagDto> findMostWidelyUsed() {
         Tag tag = tagService.findMostWidelyUsed();
+
+        if (tag == null) {
+            return EntityModel.of(modelMapper.map(Optional.ofNullable(tag), TagDto.class));
+        }
+
         return EntityModel.of(modelMapper.map(tag, TagDto.class),
                 linkTo(methodOn(TagRestController.class).findTagById(tag.getId())).withRel("find by id"),
                 linkTo(methodOn(TagRestController.class).findTagByName(tag.getName())).withRel("find by name"),
