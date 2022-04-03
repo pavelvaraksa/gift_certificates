@@ -125,12 +125,22 @@ public class UserServiceImpl implements UserService {
             user.setLastName(userById.get().getLastName());
         }
 
+        if (user.getPassword() == null) {
+            user.setPassword("password");
+        }
+
         UserValidator.isUserValid(user);
+
+        if (user.getPassword().equals("password")) {
+            user.setPassword(userById.get().getPassword());
+        } else {
+            user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+        }
+
         user.setId(userById.get().getId());
-        userRepository.updateById(user.getLogin(), user.getFirstName(), user.getLastName(), user.getId());
+        userRepository.updateById(user.getLogin(), user.getFirstName(), user.getLastName(), user.getPassword(), user.getId());
         Set<Order> orderSet = orderRepository.findAllByUserId(user.getId());
         user.setOrder(orderSet);
-
         log.info("User with login " + user.getLogin() + " updated");
         return user;
     }

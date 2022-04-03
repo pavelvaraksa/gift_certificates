@@ -38,8 +38,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
      * @param id        - user id
      */
     @Modifying
-    @Query("update User user set user.login = ?1, user.firstName = ?2, user.lastName = ?3 where user.id = ?4")
-    void updateById(String login, String firstName, String lastName, Long id);
+    @Query("update User user set user.login = ?1, user.firstName = ?2, user.lastName = ?3, user.password = ?4 where user.id = ?5")
+    void updateById(String login, String firstName, String lastName, String password, Long id);
 
     /**
      * t

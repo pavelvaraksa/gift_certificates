@@ -20,7 +20,7 @@ import static com.epam.esm.exception.MessageException.USER_PASSWORD_NOT_FILLED;
 @Log4j2
 @Component
 public class UserValidator {
-    private static final String REGEXP_VALUE = "[\\p{L}\\p{N}_-]{1,30}";
+    private static final String REGEXP_VALUE = "[\\p{L}\\p{N}_-]{1,100}";
 
     private static boolean isMatcherValid(String regexp, String stringFromUi) {
         Pattern pattern = Pattern.compile(regexp);

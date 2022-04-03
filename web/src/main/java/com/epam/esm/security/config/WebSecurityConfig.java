@@ -33,13 +33,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private static final String ACTIVATE_OR_DELETE_ORDER = "/orders/**";
     private static final String CREATE_TAG = "/tags";
     private static final String FIND_ALL_USERS = "/users";
+    private static final String ACTIVATE_USER = "/users/activate/**";
 
     //permissions for user or admin
     private static final String ALL_REQUESTS_FOR_CERTIFICATES = "/certificates/**";
     private static final String MAKE_ORDER = "/orders";
     private static final String FIND_ORDER_BY_ID = "/orders/**";
     private static final String ALL_REQUESTS_FOR_TAGS = "/tags/**";
-    private static final String FIND_USER_BY_ID_OR_LOGIN_OR_UPDATE_OR_ACTIVATE_OR_DELETE = "/users/**";
+    private static final String FIND_USER_BY_ID_OR_LOGIN_OR_UPDATE_OR_DELETE = "/users/**";
 
     //permissions for guest
     private static final String LOG_IN = "/authenticate";
@@ -75,7 +76,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST, MAKE_ORDER).hasAnyRole("USER", "ADMIN")
                 .antMatchers(HttpMethod.GET, FIND_ORDER_BY_ID).hasAnyRole("USER", "ADMIN")
                 .antMatchers(HttpMethod.GET, ALL_REQUESTS_FOR_TAGS).hasAnyRole("USER", "ADMIN")
-                .antMatchers(HttpMethod.GET, FIND_USER_BY_ID_OR_LOGIN_OR_UPDATE_OR_ACTIVATE_OR_DELETE).hasAnyRole("USER", "ADMIN")
+                .antMatchers(HttpMethod.GET, FIND_USER_BY_ID_OR_LOGIN_OR_UPDATE_OR_DELETE).hasAnyRole("USER", "ADMIN")
+                .antMatchers(HttpMethod.PATCH, ACTIVATE_USER).hasRole("ADMIN")
+                .antMatchers(HttpMethod.PATCH, FIND_USER_BY_ID_OR_LOGIN_OR_UPDATE_OR_DELETE).hasAnyRole("USER", "ADMIN")
                 //permissions for admin
                 .antMatchers(HttpMethod.POST, CREATE_CERTIFICATE).hasRole("ADMIN")
                 .antMatchers(HttpMethod.PATCH, ALL_REQUESTS_FOR_CERTIFICATES).hasRole("ADMIN")
@@ -87,8 +90,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.PATCH, ALL_REQUESTS_FOR_TAGS).hasRole("ADMIN")
                 .antMatchers(HttpMethod.DELETE, ALL_REQUESTS_FOR_TAGS).hasRole("ADMIN")
                 .antMatchers(HttpMethod.GET, FIND_ALL_USERS).hasRole("ADMIN")
-                .antMatchers(HttpMethod.PATCH, FIND_USER_BY_ID_OR_LOGIN_OR_UPDATE_OR_ACTIVATE_OR_DELETE).hasRole("ADMIN")
-                .antMatchers(HttpMethod.DELETE, FIND_USER_BY_ID_OR_LOGIN_OR_UPDATE_OR_ACTIVATE_OR_DELETE).hasRole("ADMIN")
+                .antMatchers(HttpMethod.DELETE, FIND_USER_BY_ID_OR_LOGIN_OR_UPDATE_OR_DELETE).hasRole("ADMIN")
                 .and()
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
     }
