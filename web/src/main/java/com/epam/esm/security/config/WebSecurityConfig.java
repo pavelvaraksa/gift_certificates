@@ -1,5 +1,6 @@
 package com.epam.esm.security.config;
 
+import com.epam.esm.security.exception.CustomEntryPoint;
 import com.epam.esm.security.filter.JwtFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
@@ -59,6 +61,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         return super.authenticationManagerBean();
     }
 
+    @Bean
+    public AuthenticationEntryPoint authenticationEntryPoint(){
+        return new CustomEntryPoint();
+    }
+
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
@@ -91,6 +98,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.DELETE, ALL_REQUESTS_FOR_TAGS).hasRole("ADMIN")
                 .antMatchers(HttpMethod.GET, FIND_ALL_USERS).hasRole("ADMIN")
                 .antMatchers(HttpMethod.DELETE, FIND_USER_BY_ID_OR_LOGIN_OR_UPDATE_OR_DELETE).hasRole("ADMIN")
+                .and()
+                .exceptionHandling().authenticationEntryPoint(authenticationEntryPoint())
                 .and()
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
     }
