@@ -39,7 +39,7 @@ public class DefaultExceptionHandler {
 
     @ExceptionHandler(ServiceNotAuthorized.class)
     public ResponseEntity<FrameException> handleNotAuthorizedException(ServiceNotAuthorized ex, Locale locale) {
-        return createResponseEntity(ex, locale, ErrorCode.ITEM_NOT_AUTHORIZED, HttpStatus.UNAUTHORIZED);
+        return createResponseEntity(ex, locale, ErrorCode.ITEM_NOT_AUTHORIZED_EXCEPTION, HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)

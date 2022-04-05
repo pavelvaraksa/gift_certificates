@@ -1,5 +1,6 @@
 package com.epam.esm.security.config;
 
+import com.epam.esm.security.exception.CustomAccessDeniedHandler;
 import com.epam.esm.security.exception.CustomEntryPoint;
 import com.epam.esm.security.filter.JwtFilter;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
@@ -66,6 +68,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         return new CustomEntryPoint();
     }
 
+    @Bean
+    public AccessDeniedHandler accessDeniedHandler(){
+        return new CustomAccessDeniedHandler();
+    }
+
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
@@ -100,6 +107,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.DELETE, FIND_USER_BY_ID_OR_LOGIN_OR_UPDATE_OR_DELETE).hasRole("ADMIN")
                 .and()
                 .exceptionHandling().authenticationEntryPoint(authenticationEntryPoint())
+                .and()
+                .exceptionHandling().accessDeniedHandler(accessDeniedHandler())
                 .and()
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
     }
