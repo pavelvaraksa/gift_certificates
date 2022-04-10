@@ -47,7 +47,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private static final String FIND_USER_BY_ID_OR_LOGIN_OR_UPDATE_OR_DELETE = "/users/**";
 
     //permissions for guest
-    private static final String LOG_IN = "/authenticate";
+    private static final String LOG_IN = "/auth/login";
+    private static final String REFRESH_TOKEN = "/auth/refresh";
     private static final String SIGN_UP = "/users";
     private static final String FIND_ALL_CERTIFICATES = "/certificates";
     private static final String FIND_ALL_TAGS = "/tags";
@@ -82,6 +83,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 //permissions for guest, user or admin
                 .antMatchers(LOG_IN).permitAll()
+                .antMatchers(REFRESH_TOKEN).permitAll()
                 .antMatchers(HttpMethod.POST, SIGN_UP).permitAll()
                 .antMatchers(HttpMethod.GET, FIND_ALL_CERTIFICATES).permitAll()
                 .antMatchers(HttpMethod.GET, FIND_ALL_TAGS).permitAll()

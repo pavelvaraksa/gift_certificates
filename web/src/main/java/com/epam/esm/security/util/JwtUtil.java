@@ -34,6 +34,10 @@ public class JwtUtil {
         return claimsResolver.apply(claims);
     }
 
+    private Claims getAllClaimsFromToken(String token) {
+        return Jwts.parser().setSigningKey(jwtConfig.getAccessSecret()).parseClaimsJws(token).getBody();
+    }
+
     public Boolean validateToken(String token, UserDetails userDetails) {
         String username = getUsernameFromToken(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired());
@@ -46,8 +50,19 @@ public class JwtUtil {
         return generateToken(claims);
     }
 
-    private Claims getAllClaimsFromToken(String token) {
-        return Jwts.parser().setSigningKey(jwtConfig.getSecret()).parseClaimsJws(token).getBody();
+    private String generateToken(Map<String, Object> claims) {
+        return Jwts
+                .builder()
+                .setClaims(claims)
+                .setExpiration(generateExpirationDate())
+                .signWith(SignatureAlgorithm.HS256, jwtConfig.getAccessSecret())
+                .compact();
+    }
+
+    private Date generateExpirationDate() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.MILLISECOND, jwtConfig.getAccessExpiration().intValue());
+        return calendar.getTime();
     }
 
     private Boolean isTokenExpired() {
@@ -55,19 +70,38 @@ public class JwtUtil {
         return expiration.before(new Date());
     }
 
-    private Date generateExpirationDate() {
-        Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.MILLISECOND, jwtConfig.getExpiration().intValue());
-        return calendar.getTime();
+    public String getUsernameFromRefreshToken(String token) {
+        return getClaimFromRefreshToken(token, Claims::getSubject);
     }
 
-    private String generateToken(Map<String, Object> claims) {
+    public <T> T getClaimFromRefreshToken(String token, Function<Claims, T> claimsResolver) {
+        Claims claims = getAllClaimsFromRefreshToken(token);
+        return claimsResolver.apply(claims);
+    }
+
+    private Claims getAllClaimsFromRefreshToken(String token) {
+        return Jwts.parser().setSigningKey(jwtConfig.getRefreshSecret()).parseClaimsJws(token).getBody();
+    }
+
+    public String generateRefreshToken(UserDetails userDetails) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put(SUBJECT, userDetails.getUsername());
+        return generateRefreshToken(claims);
+    }
+
+    private String generateRefreshToken(Map<String, Object> claims) {
         return Jwts
                 .builder()
                 .setClaims(claims)
-                .setExpiration(generateExpirationDate())
-                .signWith(SignatureAlgorithm.HS256, jwtConfig.getSecret())
+                .setExpiration(generateExpirationDateForRefresh())
+                .signWith(SignatureAlgorithm.HS256, jwtConfig.getRefreshSecret())
                 .compact();
+    }
+
+    private Date generateExpirationDateForRefresh() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.HOUR, jwtConfig.getRefreshExpiration().intValue());
+        return calendar.getTime();
     }
 
     private List<String> getRoles(UserDetails userDetails) {

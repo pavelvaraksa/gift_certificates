@@ -1,10 +1,12 @@
 package com.epam.esm.controller;
 
 import com.epam.esm.domain.User;
+import com.epam.esm.exception.ServiceNotAuthorized;
 import com.epam.esm.exception.ServiceValidException;
 import com.epam.esm.repository.UserRepository;
 import com.epam.esm.security.domain.AuthRequest;
 import com.epam.esm.security.domain.AuthResponse;
+import com.epam.esm.security.domain.RefreshTokenRequest;
 import com.epam.esm.security.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -24,12 +26,13 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Optional;
 
 import static com.epam.esm.exception.MessageException.USER_LOGIN_NOT_FILLED;
+import static com.epam.esm.exception.MessageException.USER_NOT_AUTHORIZED;
 import static com.epam.esm.exception.MessageException.USER_PASSWORD_NOT_FILLED;
 import static com.epam.esm.exception.MessageException.USER_PASSWORD_NOT_MATCH;
 
 @Log4j2
 @RestController
-@RequestMapping("/authenticate")
+@RequestMapping("/auth")
 @RequiredArgsConstructor
 public class AuthenticationRestController {
     private final AuthenticationManager authenticationManager;
@@ -44,7 +47,7 @@ public class AuthenticationRestController {
      * @param request - user request data
      * @return - user response data
      */
-    @PostMapping
+    @PostMapping("/login")
     @ResponseStatus(HttpStatus.OK)
     public AuthResponse authenticateUser(@RequestBody AuthRequest request) {
         Optional<User> user = userRepository.findByLogin(request.getLogin());
@@ -75,7 +78,35 @@ public class AuthenticationRestController {
         return AuthResponse.builder()
                 .login(request.getLogin())
                 .role(String.valueOf(authenticate.getAuthorities()).toLowerCase())
-                .token(jwtUtil.generateToken(userDetailsService.loadUserByUsername(request.getLogin())))
+                .accessToken(jwtUtil.generateToken(userDetailsService.loadUserByUsername(request.getLogin())))
+                .refreshToken(jwtUtil.generateRefreshToken(userDetailsService.loadUserByUsername(request.getLogin())))
                 .build();
+    }
+
+    /**
+     * Token refresh
+     *
+     * @param refreshTokenRequest - token request data
+     * @return - user response data
+     */
+    @PostMapping("/refresh")
+    @ResponseStatus(HttpStatus.OK)
+    public AuthResponse refreshToken(@RequestBody RefreshTokenRequest refreshTokenRequest) {
+        String refreshToken = refreshTokenRequest.getRefreshToken();
+        String userNameFromRefreshToken = jwtUtil.getUsernameFromRefreshToken(refreshToken);
+        Optional<User> user = userRepository.findByLogin(userNameFromRefreshToken);
+        String token = jwtUtil.generateToken(userDetailsService.loadUserByUsername(user.get().getLogin()));
+        String userNameFromAccessToken = jwtUtil.getUsernameFromToken(token);
+
+        if (userNameFromRefreshToken != null && userNameFromRefreshToken.equals(userNameFromAccessToken)) {
+            return AuthResponse.builder()
+                    .login(user.get().getLogin())
+                    .role(String.valueOf(user.get().getRoles()).toLowerCase())
+                    .accessToken(token)
+                    .build();
+        }
+
+        log.error("User with login " + user.get().getLogin() + " was not authorized");
+        throw new ServiceNotAuthorized(USER_NOT_AUTHORIZED);
     }
 }

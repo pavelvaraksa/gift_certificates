@@ -41,7 +41,7 @@ public class UserServiceProvider implements UserDetailsService {
             return new org.springframework.security.core.userdetails.User(userLogin, userPassword, authorityList);
         }
 
-        log.error("User " + searchUser + " was not authorized");
+        log.error("User with login " + searchUser.get().getLogin() + " was not authorized");
         throw new ServiceNotAuthorized(USER_NOT_AUTHORIZED);
     }
 }

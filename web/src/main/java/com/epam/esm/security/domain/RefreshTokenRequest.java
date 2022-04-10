@@ -6,18 +6,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * Authentication data response
+ * Token refresh data
  */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AuthResponse {
-    private String login;
-
-    private String role;
-
-    private String accessToken;
-
+public class RefreshTokenRequest {
     private String refreshToken;
 }
