@@ -26,16 +26,18 @@ import java.io.IOException;
 public class JwtFilter extends OncePerRequestFilter {
     private final UserDetailsService userDetailsService;
     private final JwtUtil jwtUtil;
+    private final String REQUEST_HEADER = "Authorization";
+    private final String REQUEST_HEADER_START_WORD = "Bearer ";
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
 
-        String requestTokenHeader = request.getHeader("Authorization");
+        String requestTokenHeader = request.getHeader(REQUEST_HEADER);
         String username = null;
         String jwtToken = null;
 
-        if (requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")) {
+        if (requestTokenHeader != null && requestTokenHeader.startsWith(REQUEST_HEADER_START_WORD)) {
             jwtToken = requestTokenHeader.substring(7);
             username = jwtUtil.getUsernameFromToken(jwtToken);
         }

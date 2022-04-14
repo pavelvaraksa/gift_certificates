@@ -83,11 +83,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 //permissions for guest, user or admin
                 .antMatchers(LOG_IN).permitAll()
-                .antMatchers(REFRESH_TOKEN).permitAll()
                 .antMatchers(HttpMethod.POST, SIGN_UP).permitAll()
                 .antMatchers(HttpMethod.GET, FIND_ALL_CERTIFICATES).permitAll()
                 .antMatchers(HttpMethod.GET, FIND_ALL_TAGS).permitAll()
                 //permissions for user or admin
+                .antMatchers(REFRESH_TOKEN).hasAnyRole("USER", "ADMIN")
                 .antMatchers(HttpMethod.GET, ALL_REQUESTS_FOR_CERTIFICATES).hasAnyRole("USER", "ADMIN")
                 .antMatchers(HttpMethod.POST, MAKE_ORDER).hasAnyRole("USER", "ADMIN")
                 .antMatchers(HttpMethod.GET, FIND_ORDER_BY_ID).hasAnyRole("USER", "ADMIN")

@@ -42,6 +42,11 @@ public class DefaultExceptionHandler {
         return createResponseEntity(ex, locale, ErrorCode.ITEM_NOT_AUTHORIZED_EXCEPTION, HttpStatus.UNAUTHORIZED);
     }
 
+    @ExceptionHandler(ServiceForbiddenException.class)
+    public ResponseEntity<FrameException> handleForbiddenException(ServiceForbiddenException ex, Locale locale) {
+        return createResponseEntity(ex, locale, ErrorCode.ITEM_FORBIDDEN_EXCEPTION, HttpStatus.FORBIDDEN);
+    }
+
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ErrorMessage> handleIncorrectSearchException(MethodArgumentTypeMismatchException ex) {
         return new ResponseEntity<>(new ErrorMessage(400, INCORRECT_SEARCH), HttpStatus.BAD_REQUEST);

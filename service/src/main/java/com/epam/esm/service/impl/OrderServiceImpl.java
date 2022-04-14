@@ -111,6 +111,11 @@ public class OrderServiceImpl implements OrderService {
         }
     }
 
+    @Override
+    public Optional<User> findUserByOrderId(Long id) {
+        return orderRepository.findUserByOrderId(id);
+    }
+
     @Transactional
     @Override
     public Order deleteById(Long id) {

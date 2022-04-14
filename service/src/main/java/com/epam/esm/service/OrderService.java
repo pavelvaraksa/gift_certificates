@@ -1,8 +1,11 @@
 package com.epam.esm.service;
 
 import com.epam.esm.domain.Order;
+import com.epam.esm.domain.User;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Order service layer
@@ -33,4 +36,12 @@ public interface OrderService extends ReadDeleteService<Order, Long> {
      * @return - activated order
      */
     Order activateById(Long id, boolean isCommand);
+
+    /**
+     * Find user by order id
+     *
+     * @param id - order id
+     * @return - user or empty
+     */
+    Optional<User> findUserByOrderId(Long id);
 }

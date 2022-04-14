@@ -1,10 +1,12 @@
 package com.epam.esm.repository;
 
 import com.epam.esm.domain.Order;
+import com.epam.esm.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -38,6 +40,15 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     @Modifying
     @Query("update Order ord set ord.isActive = false where ord.id = ?1")
     void activateById(Long id);
+
+    /**
+     * Find user by order id
+     *
+     * @param id - order id
+     * @return - user or empty
+     */
+    @Query("select ord.user from Order ord where ord.id = ?1")
+    Optional<User> findUserByOrderId(Long id);
 }
 
 
