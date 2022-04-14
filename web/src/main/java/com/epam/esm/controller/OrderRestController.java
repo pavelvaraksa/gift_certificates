@@ -102,7 +102,20 @@ public class OrderRestController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public EntityModel<OrderDto> createOrder(@RequestBody OrderData orderdata) {
-        Order newOrder = orderService.save(orderdata.userId, orderdata.certificateId);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentPrincipalName = authentication.getName();
+        Optional<User> user = userService.findByLogin(currentPrincipalName);
+        String role = roleRepository.findRoleByUserId(user.get().getId());
+        Order newOrder;
+
+        if (role.equals("ROLE_USER") && user.get().getId().equals(orderdata.userId)) {
+            newOrder = orderService.save(orderdata.userId, orderdata.certificateId);
+        } else if (role.equals("ROLE_ADMIN")) {
+            newOrder = orderService.save(orderdata.userId, orderdata.certificateId);
+        } else {
+            throw new ServiceForbiddenException(USER_RESOURCE_FORBIDDEN);
+        }
+
         return EntityModel.of(modelMapper.map(newOrder, OrderDto.class),
                 linkTo(methodOn(OrderRestController.class).findOrderById(newOrder.getId())).withRel("find by id"),
                 linkTo(methodOn(OrderRestController.class).deleteOrder(newOrder.getId())).withRel("delete by id"));

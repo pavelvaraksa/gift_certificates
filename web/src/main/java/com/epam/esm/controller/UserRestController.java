@@ -102,12 +102,25 @@ public class UserRestController {
     @GetMapping("/search")
     @ResponseStatus(HttpStatus.OK)
     public EntityModel<UserDto> findUserByLogin(@RequestParam(value = "login") String login) {
-        Optional<User> user = userService.findByLogin(login);
-        return EntityModel.of(modelMapper.map(user.get(), UserDto.class),
-                linkTo(methodOn(UserRestController.class).findUserById(user.get().getId())).withRel("find by id"),
-                linkTo(methodOn(UserRestController.class).findUserByLogin(user.get().getLogin())).withRel("find by login"),
-                linkTo(methodOn(UserRestController.class).updateUser(user.get().getId(), user.get())).withRel("update by id"),
-                linkTo(methodOn(UserRestController.class).deleteUser(user.get().getId())).withRel("delete by id"));
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentPrincipalName = authentication.getName();
+        Optional<User> user = userService.findByLogin(currentPrincipalName);
+        String role = roleRepository.findRoleByUserId(user.get().getId());
+        Optional<User> searchUser;
+
+        if (role.equals("ROLE_USER") && user.get().getLogin().equals(login)) {
+            searchUser = userService.findByLogin(login);
+        } else if (role.equals("ROLE_ADMIN")) {
+            searchUser = userService.findByLogin(login);
+        } else {
+            throw new ServiceForbiddenException(USER_RESOURCE_FORBIDDEN);
+        }
+
+        return EntityModel.of(modelMapper.map(searchUser.get(), UserDto.class),
+                linkTo(methodOn(UserRestController.class).findUserById(searchUser.get().getId())).withRel("find by id"),
+                linkTo(methodOn(UserRestController.class).findUserByLogin(searchUser.get().getLogin())).withRel("find by login"),
+                linkTo(methodOn(UserRestController.class).updateUser(searchUser.get().getId(), searchUser.get())).withRel("update by id"),
+                linkTo(methodOn(UserRestController.class).deleteUser(searchUser.get().getId())).withRel("delete by id"));
     }
 
     /**
@@ -136,7 +149,20 @@ public class UserRestController {
     @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public EntityModel<UserDto> updateUser(@PathVariable Long id, @RequestBody User user) {
-        User updatedUser = userService.updateById(id, user);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentPrincipalName = authentication.getName();
+        Optional<User> searchUser = userService.findByLogin(currentPrincipalName);
+        String role = roleRepository.findRoleByUserId(searchUser.get().getId());
+        User updatedUser;
+
+        if (role.equals("ROLE_USER") && searchUser.get().getId().equals(id)) {
+            updatedUser = userService.updateById(id, user);
+        } else if (role.equals("ROLE_ADMIN")) {
+            updatedUser = userService.updateById(id, user);
+        } else {
+            throw new ServiceForbiddenException(USER_RESOURCE_FORBIDDEN);
+        }
+
         return EntityModel.of(modelMapper.map(updatedUser, UserDto.class),
                 linkTo(methodOn(UserRestController.class).findUserById(id)).withRel("find by id"),
                 linkTo(methodOn(UserRestController.class).findUserByLogin(updatedUser.getLogin())).withRel("find by login"),
