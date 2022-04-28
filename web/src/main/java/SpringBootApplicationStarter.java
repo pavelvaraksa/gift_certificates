@@ -1,6 +1,6 @@
 import com.epam.esm.config.BeanConfig;
-import com.epam.esm.security.config.JwtConfig;
-import com.epam.esm.security.config.WebSecurityConfig;
+import com.epam.esm.config.JwtConfig;
+import com.epam.esm.config.WebSecurityConfig;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;

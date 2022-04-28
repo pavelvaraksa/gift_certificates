@@ -3,6 +3,7 @@ package com.epam.esm.controller;
 import com.epam.esm.domain.Order;
 import com.epam.esm.domain.User;
 import com.epam.esm.dto.OrderDto;
+import com.epam.esm.dto.OrderSaveDto;
 import com.epam.esm.exception.ServiceForbiddenException;
 import com.epam.esm.repository.RoleRepository;
 import com.epam.esm.service.OrderService;
@@ -101,7 +102,7 @@ public class OrderRestController {
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public EntityModel<OrderDto> createOrder(@RequestBody OrderData orderdata) {
+    public EntityModel<OrderSaveDto> createOrder(@RequestBody OrderData orderdata) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentPrincipalName = authentication.getName();
         Optional<User> user = userService.findByLogin(currentPrincipalName);
@@ -116,7 +117,7 @@ public class OrderRestController {
             throw new ServiceForbiddenException(USER_RESOURCE_FORBIDDEN);
         }
 
-        return EntityModel.of(modelMapper.map(newOrder, OrderDto.class),
+        return EntityModel.of(modelMapper.map(newOrder, OrderSaveDto.class),
                 linkTo(methodOn(OrderRestController.class).findOrderById(newOrder.getId())).withRel("find by id"),
                 linkTo(methodOn(OrderRestController.class).deleteOrder(newOrder.getId())).withRel("delete by id"));
     }

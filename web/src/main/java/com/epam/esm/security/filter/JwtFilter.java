@@ -1,12 +1,19 @@
 package com.epam.esm.security.filter;
 
+import com.epam.esm.security.exception.CustomAccessDeniedHandler;
 import com.epam.esm.security.util.JwtUtil;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.SignatureException;
+import io.jsonwebtoken.UnsupportedJwtException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -28,22 +35,34 @@ public class JwtFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
     private final String REQUEST_HEADER = "Authorization";
     private final String REQUEST_HEADER_START_WORD = "Bearer ";
+    private final String NULL_VALUE = null;
+
+    @Bean
+    public AccessDeniedHandler accessDeniedHandle() {
+        return new CustomAccessDeniedHandler();
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
-
         String requestTokenHeader = request.getHeader(REQUEST_HEADER);
-        String username = null;
-        String jwtToken = null;
+        String username = NULL_VALUE;
+        String jwtToken = NULL_VALUE;
 
         if (requestTokenHeader != null && requestTokenHeader.startsWith(REQUEST_HEADER_START_WORD)) {
             jwtToken = requestTokenHeader.substring(7);
-            username = jwtUtil.getUsernameFromToken(jwtToken);
+
+            try {
+                username = jwtUtil.getUsernameFromToken(jwtToken);
+            } catch (SignatureException | MalformedJwtException | UnsupportedJwtException | ExpiredJwtException ex) {
+                log.error(ex.getMessage());
+                response.setContentType("application/json;charset=UTF-8");
+            }
         }
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
+
             if (jwtUtil.validateToken(jwtToken, userDetails)) {
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                         userDetails.getUsername(), "", userDetails.getAuthorities());

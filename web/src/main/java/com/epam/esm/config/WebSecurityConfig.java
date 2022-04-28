@@ -1,10 +1,11 @@
-package com.epam.esm.security.config;
+package com.epam.esm.config;
 
 import com.epam.esm.security.exception.CustomAccessDeniedHandler;
 import com.epam.esm.security.exception.CustomEntryPoint;
 import com.epam.esm.security.filter.JwtFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.oauth2.client.EnableOAuth2Sso;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -26,6 +27,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
+@EnableOAuth2Sso
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private final UserDetailsService userDetailsService;
     private final PasswordEncoder passwordEncoder;
@@ -48,10 +50,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     //permissions for guest
     private static final String LOG_IN = "/auth/login";
-    private static final String REFRESH_TOKEN = "/auth/refresh";
     private static final String SIGN_UP = "/users";
     private static final String FIND_ALL_CERTIFICATES = "/certificates";
     private static final String FIND_ALL_TAGS = "/tags";
+    private static final String REFRESH_TOKEN = "/auth/refresh";
 
     @Autowired
     public void configureAuthentication(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
@@ -86,8 +88,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST, SIGN_UP).permitAll()
                 .antMatchers(HttpMethod.GET, FIND_ALL_CERTIFICATES).permitAll()
                 .antMatchers(HttpMethod.GET, FIND_ALL_TAGS).permitAll()
+                .antMatchers(REFRESH_TOKEN).permitAll()
                 //permissions for user or admin
-                .antMatchers(REFRESH_TOKEN).hasAnyRole("USER", "ADMIN")
                 .antMatchers(HttpMethod.GET, ALL_REQUESTS_FOR_CERTIFICATES).hasAnyRole("USER", "ADMIN")
                 .antMatchers(HttpMethod.POST, MAKE_ORDER).hasAnyRole("USER", "ADMIN")
                 .antMatchers(HttpMethod.GET, FIND_ORDER_BY_ID).hasAnyRole("USER", "ADMIN")
