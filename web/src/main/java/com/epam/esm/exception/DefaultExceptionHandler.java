@@ -47,6 +47,7 @@ public class DefaultExceptionHandler {
         return createResponseEntity(ex, locale, ErrorCode.ITEM_FORBIDDEN_EXCEPTION, HttpStatus.FORBIDDEN);
     }
 
+
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ErrorMessage> handleIncorrectSearchException(MethodArgumentTypeMismatchException ex) {
         return new ResponseEntity<>(new ErrorMessage(400, INCORRECT_SEARCH), HttpStatus.BAD_REQUEST);
@@ -66,7 +67,6 @@ public class DefaultExceptionHandler {
     public ResponseEntity<ErrorMessage> handlePSQLException(PSQLException ex) {
         return new ResponseEntity<>(new ErrorMessage(400, INCORRECT_SEARCH), HttpStatus.BAD_REQUEST);
     }
-
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ResponseEntity<ErrorMessage> handleNotSupportException(HttpRequestMethodNotSupportedException ex) {
         return new ResponseEntity<>(new ErrorMessage(405, NOT_ALLOWED), HttpStatus.METHOD_NOT_ALLOWED);

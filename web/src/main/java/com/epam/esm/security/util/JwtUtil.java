@@ -1,6 +1,6 @@
 package com.epam.esm.security.util;
 
-import com.epam.esm.config.JwtConfig;
+import com.epam.esm.security.config.JwtConfig;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;

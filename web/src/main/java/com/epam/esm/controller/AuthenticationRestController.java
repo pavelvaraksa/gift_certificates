@@ -8,6 +8,9 @@ import com.epam.esm.security.domain.AuthRequest;
 import com.epam.esm.security.domain.AuthResponse;
 import com.epam.esm.security.domain.RefreshTokenRequest;
 import com.epam.esm.security.util.JwtUtil;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.SignatureException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
@@ -93,20 +96,22 @@ public class AuthenticationRestController {
     @ResponseStatus(HttpStatus.OK)
     public AuthResponse refreshToken(@RequestBody RefreshTokenRequest refreshTokenRequest) {
         String refreshToken = refreshTokenRequest.getRefreshToken();
+
+        try {
+            jwtUtil.getUsernameFromRefreshToken(refreshToken);
+        } catch (SignatureException | MalformedJwtException | ExpiredJwtException | IllegalArgumentException ex) {
+            log.error("User was not authorized." + ex.getMessage());
+            throw new ServiceNotAuthorized(USER_NOT_AUTHORIZED);
+        }
+
         String userNameFromRefreshToken = jwtUtil.getUsernameFromRefreshToken(refreshToken);
         Optional<User> user = userRepository.findByLogin(userNameFromRefreshToken);
         String token = jwtUtil.generateToken(userDetailsService.loadUserByUsername(user.get().getLogin()));
-        String userNameFromAccessToken = jwtUtil.getUsernameFromToken(token);
 
-        if (userNameFromRefreshToken != null && userNameFromRefreshToken.equals(userNameFromAccessToken)) {
-            return AuthResponse.builder()
-                    .login(user.get().getLogin())
-                    .role(String.valueOf(user.get().getRoles()).toLowerCase())
-                    .accessToken(token)
-                    .build();
-        }
-
-        log.error("User with login " + user.get().getLogin() + " was not authorized");
-        throw new ServiceNotAuthorized(USER_NOT_AUTHORIZED);
+        return AuthResponse.builder()
+                .login(user.get().getLogin())
+                .role(String.valueOf(user.get().getRoles()).toLowerCase())
+                .accessToken(token)
+                .build();
     }
 }

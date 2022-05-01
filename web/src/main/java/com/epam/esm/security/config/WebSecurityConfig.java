@@ -1,4 +1,4 @@
-package com.epam.esm.config;
+package com.epam.esm.security.config;
 
 import com.epam.esm.security.exception.CustomAccessDeniedHandler;
 import com.epam.esm.security.exception.CustomEntryPoint;
@@ -47,6 +47,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private static final String FIND_ORDER_BY_ID = "/orders/**";
     private static final String ALL_REQUESTS_FOR_TAGS = "/tags/**";
     private static final String FIND_USER_BY_ID_OR_LOGIN_OR_UPDATE_OR_DELETE = "/users/**";
+    private static final String LOGOUT = "/logout";
 
     //permissions for guest
     private static final String LOG_IN = "/auth/login";
@@ -67,12 +68,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    public AuthenticationEntryPoint authenticationEntryPoint(){
+    public AuthenticationEntryPoint authenticationEntryPoint() {
         return new CustomEntryPoint();
     }
 
     @Bean
-    public AccessDeniedHandler accessDeniedHandler(){
+    public AccessDeniedHandler accessDeniedHandler() {
         return new CustomAccessDeniedHandler();
     }
 
@@ -97,6 +98,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, FIND_USER_BY_ID_OR_LOGIN_OR_UPDATE_OR_DELETE).hasAnyRole("USER", "ADMIN")
                 .antMatchers(HttpMethod.PATCH, ACTIVATE_USER).hasRole("ADMIN")
                 .antMatchers(HttpMethod.PATCH, FIND_USER_BY_ID_OR_LOGIN_OR_UPDATE_OR_DELETE).hasAnyRole("USER", "ADMIN")
+                .antMatchers(HttpMethod.GET, LOGOUT).hasAnyRole("USER", "ADMIN")
                 //permissions for admin
                 .antMatchers(HttpMethod.POST, CREATE_CERTIFICATE).hasRole("ADMIN")
                 .antMatchers(HttpMethod.PATCH, ALL_REQUESTS_FOR_CERTIFICATES).hasRole("ADMIN")
