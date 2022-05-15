@@ -24,24 +24,6 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     Set<Order> findAllByUserId(Long id);
 
     /**
-     * Find exist order by id
-     *
-     * @param id - order id
-     * @return - order
-     */
-    @Query("select ord from Order ord where ord.id = ?1")
-    Order findByExistId(Long id);
-
-    /**
-     * Activate order by id
-     *
-     * @param id - order id
-     */
-    @Modifying
-    @Query("update Order ord set ord.isActive = false where ord.id = ?1")
-    void activateById(Long id);
-
-    /**
      * Find user by order id
      *
      * @param id - order id

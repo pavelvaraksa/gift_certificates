@@ -97,13 +97,11 @@ public class UserServiceImpl implements UserService {
         Optional<User> userByLogin = userRepository.findByLogin(user.getLogin());
 
         if (userByLogin.isPresent()) {
-            log.error("User with login " + user.getLogin() + " already exists");
+            log.error("User with login " + userByLogin + " already exists");
             throw new ServiceExistException(USER_EXIST);
         }
 
-        if (user.getLogin() == null) {
-            user.setLogin(userById.get().getLogin());
-        }
+        user.setLogin(userById.get().getLogin());
 
         if (user.getFirstName() == null) {
             user.setFirstName(userById.get().getFirstName());
@@ -126,7 +124,7 @@ public class UserServiceImpl implements UserService {
         }
 
         user.setId(userById.get().getId());
-        userRepository.updateById(user.getLogin(), user.getFirstName(), user.getLastName(), user.getPassword(), user.getId());
+        userRepository.updateById(user.getFirstName(), user.getLastName(), user.getPassword(), user.getId());
         Set<Order> orderSet = orderRepository.findAllByUserId(user.getId());
         user.setOrder(orderSet);
         log.info("User with login " + user.getLogin() + " updated");

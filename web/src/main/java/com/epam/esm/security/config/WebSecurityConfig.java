@@ -76,7 +76,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
-                 httpSecurity
+        httpSecurity
                 .csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
@@ -88,6 +88,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, FIND_ALL_TAGS).permitAll()
                 .antMatchers(REFRESH_TOKEN).permitAll()
                 //permissions for user or admin
+                .antMatchers(HttpMethod.GET, FIND_ALL_USERS).hasRole("ADMIN")
                 .antMatchers(HttpMethod.GET, ALL_REQUESTS_FOR_CERTIFICATES).hasAnyRole("USER", "ADMIN")
                 .antMatchers(HttpMethod.POST, MAKE_ORDER).hasAnyRole("USER", "ADMIN")
                 .antMatchers(HttpMethod.GET, FIND_ORDER_BY_ID).hasAnyRole("USER", "ADMIN")
@@ -100,10 +101,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.DELETE, ALL_REQUESTS_FOR_CERTIFICATES).hasRole("ADMIN")
                 .antMatchers(HttpMethod.GET, FIND_ALL_ORDERS).hasRole("ADMIN")
                 .antMatchers(HttpMethod.DELETE, ACTIVATE_OR_DELETE_ORDER).hasRole("ADMIN")
+                .antMatchers(HttpMethod.GET, ALL_REQUESTS_FOR_TAGS).hasRole("ADMIN")
                 .antMatchers(HttpMethod.POST, CREATE_TAG).hasRole("ADMIN")
                 .antMatchers(HttpMethod.PATCH, ALL_REQUESTS_FOR_TAGS).hasRole("ADMIN")
                 .antMatchers(HttpMethod.DELETE, ALL_REQUESTS_FOR_TAGS).hasRole("ADMIN")
-                .antMatchers(HttpMethod.GET, FIND_ALL_USERS).hasRole("ADMIN")
                 .antMatchers(HttpMethod.DELETE, FIND_USER_BY_ID_OR_LOGIN_OR_UPDATE_OR_DELETE).hasRole("ADMIN")
                 .and()
                 .exceptionHandling().authenticationEntryPoint(authenticationEntryPoint())

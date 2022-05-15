@@ -28,7 +28,7 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public List<Tag> findAll() {
-        return tagRepository.findAll();
+        return tagRepository.findAllTags();
     }
 
     @Override
@@ -71,7 +71,7 @@ public class TagServiceImpl implements TagService {
         Optional<Tag> tagByName = tagRepository.findByName(tagName);
 
         if (tagByName.isPresent()) {
-            log.error("Tag name " + tag.getName() + " already exists");
+            log.error("Tag name " + tagByName + " already exists");
             throw new ServiceExistException(TAG_EXIST);
         }
 
@@ -86,7 +86,7 @@ public class TagServiceImpl implements TagService {
 
     @Transactional
     @Override
-    public Tag activateById(Long id, boolean isCommand) {
+    public Tag activateById(Long id) {
         Optional<Tag> tag = tagRepository.findById(id);
 
         if (tag.isEmpty()) {

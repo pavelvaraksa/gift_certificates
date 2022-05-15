@@ -4,7 +4,6 @@ import com.epam.esm.domain.User;
 import com.epam.esm.exception.ServiceNotAuthorized;
 import com.epam.esm.repository.RoleRepository;
 import com.epam.esm.repository.UserRepository;
-import com.epam.esm.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.core.GrantedAuthority;

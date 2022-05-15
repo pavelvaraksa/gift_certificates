@@ -6,16 +6,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * Authentication data response
+ * Refresh token response data
  */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AuthResponse {
+public class RefreshTokenResponse {
     private String login;
 
     private String accessToken;
-
-    private String refreshToken;
 }

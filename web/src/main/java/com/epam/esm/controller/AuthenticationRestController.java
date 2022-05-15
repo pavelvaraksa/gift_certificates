@@ -7,6 +7,7 @@ import com.epam.esm.repository.UserRepository;
 import com.epam.esm.security.domain.AuthRequest;
 import com.epam.esm.security.domain.AuthResponse;
 import com.epam.esm.security.domain.RefreshTokenRequest;
+import com.epam.esm.security.domain.RefreshTokenResponse;
 import com.epam.esm.security.util.JwtUtil;
 import com.epam.esm.service.UserService;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -87,7 +88,6 @@ public class AuthenticationRestController {
 
         return AuthResponse.builder()
                 .login(request.getLogin())
-                .role(String.valueOf(authenticate.getAuthorities()).toLowerCase())
                 .accessToken(jwtUtil.generateToken(userDetailsService.loadUserByUsername(request.getLogin())))
                 .refreshToken(jwtUtil.generateRefreshToken(userDetailsService.loadUserByUsername(request.getLogin())))
                 .build();
@@ -101,12 +101,12 @@ public class AuthenticationRestController {
      */
     @PostMapping("/refresh")
     @ResponseStatus(HttpStatus.OK)
-    public AuthResponse refreshToken(@RequestBody RefreshTokenRequest refreshTokenRequest) {
+    public RefreshTokenResponse refreshToken(@RequestBody RefreshTokenRequest refreshTokenRequest) {
         String refreshToken = refreshTokenRequest.getRefreshToken();
 
         try {
             jwtUtil.getUsernameFromRefreshToken(refreshToken);
-        } catch (SignatureException | MalformedJwtException | ExpiredJwtException | IllegalArgumentException ex) {
+        } catch (IllegalArgumentException | SignatureException | MalformedJwtException | ExpiredJwtException ex) {
             log.error("User was not authorized." + ex.getMessage());
             throw new ServiceNotAuthorized(USER_NOT_AUTHORIZED);
         }
@@ -115,9 +115,8 @@ public class AuthenticationRestController {
         Optional<User> user = userService.findByLogin(userNameFromRefreshToken);
         String token = jwtUtil.generateToken(userDetailsService.loadUserByUsername(user.get().getLogin()));
 
-        return AuthResponse.builder()
+        return RefreshTokenResponse.builder()
                 .login(user.get().getLogin())
-                .role(String.valueOf(user.get().getRoles()).toLowerCase())
                 .accessToken(token)
                 .build();
     }

@@ -1,6 +1,7 @@
 package com.epam.esm.controller;
 
 import com.epam.esm.domain.Tag;
+import com.epam.esm.dto.TagDeletedDto;
 import com.epam.esm.dto.TagDto;
 import com.epam.esm.repository.TagRepository;
 import com.epam.esm.service.TagService;
@@ -52,6 +53,29 @@ public class TagRestController {
                     linkTo(methodOn(TagRestController.class).findTagByName(tag.getName())).withRel("find by name"),
                     linkTo(methodOn(TagRestController.class).deleteTag(tag.getId())).withRel("delete by id"));
             items.add(tagDto);
+        }
+
+        return CollectionModel.of(items, linkTo(methodOn(TagRestController.class)
+                .findAllTags()).withRel("find all tags"));
+    }
+
+    /**
+     * Find all tags
+     *
+     * @return - list of tags or empty list
+     */
+    @GetMapping("/active")
+    @ResponseStatus(HttpStatus.OK)
+    public CollectionModel<TagDeletedDto> findAllTagsForAdmin() {
+        List<Tag> tags = tagService.findAll();
+        List<TagDeletedDto> items = new ArrayList<>();
+
+        for (Tag tag : tags) {
+            TagDeletedDto tagDeletedDto = modelMapper.map(tag, TagDeletedDto.class);
+            tagDeletedDto.add(linkTo(methodOn(TagRestController.class).findTagById(tag.getId())).withRel("find by id"),
+                    linkTo(methodOn(TagRestController.class).findTagByName(tag.getName())).withRel("find by name"),
+                    linkTo(methodOn(TagRestController.class).deleteTag(tag.getId())).withRel("delete by id"));
+            items.add(tagDeletedDto);
         }
 
         return CollectionModel.of(items, linkTo(methodOn(TagRestController.class)
@@ -129,14 +153,12 @@ public class TagRestController {
     /**
      * Activate tag by id
      *
-     * @param id        - tag id
-     * @param isCommand - command for activate
+     * @param id - tag id
      */
     @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public EntityModel<TagDto> activateGiftCertificate(@PathVariable Long id,
-                                                       @RequestParam(value = "isCommand", defaultValue = "false") boolean isCommand) {
-        Tag activatedTag = tagService.activateById(id, isCommand);
+    public EntityModel<TagDto> activateGiftCertificate(@PathVariable Long id) {
+        Tag activatedTag = tagService.activateById(id);
         return EntityModel.of(modelMapper.map(activatedTag, TagDto.class),
                 linkTo(methodOn(TagRestController.class).findTagById(id)).withRel("find by id"),
                 linkTo(methodOn(TagRestController.class).findTagByName(activatedTag.getName())).withRel("find by name"),

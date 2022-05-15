@@ -14,6 +14,14 @@ import java.util.Optional;
  */
 public interface TagRepository extends JpaRepository<Tag, Long> {
     /**
+     * Find all tags
+     *
+     * @return - tag list
+     */
+    @Query("select tag from Tag tag where tag.isActive = false")
+    List<Tag> findAllTags();
+
+    /**
      * Find tags by gift certificate id
      *
      * @param id - gift certificate id

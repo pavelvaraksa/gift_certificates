@@ -29,10 +29,9 @@ public interface TagService extends CreateService<Tag>, ReadDeleteService<Tag, L
      * Activate tag
      *
      * @param id        - tag id
-     * @param isCommand - command for activate
      * @return - activated tag
      */
-    Tag activateById(Long id, boolean isCommand);
+    Tag activateById(Long id);
 
     /**
      * Find most widely used tag
