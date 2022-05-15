@@ -5,7 +5,6 @@ import com.epam.esm.security.exception.CustomEntryPoint;
 import com.epam.esm.security.filter.JwtFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.security.oauth2.client.EnableOAuth2Sso;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -27,7 +26,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
-@EnableOAuth2Sso
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private final UserDetailsService userDetailsService;
     private final PasswordEncoder passwordEncoder;
@@ -47,11 +45,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private static final String FIND_ORDER_BY_ID = "/orders/**";
     private static final String ALL_REQUESTS_FOR_TAGS = "/tags/**";
     private static final String FIND_USER_BY_ID_OR_LOGIN_OR_UPDATE_OR_DELETE = "/users/**";
-    private static final String LOGOUT = "/logout";
 
     //permissions for guest
     private static final String LOG_IN = "/auth/login";
-    private static final String SIGN_UP = "/users";
+    private static final String SIGN_UP = "/registrate";
     private static final String FIND_ALL_CERTIFICATES = "/certificates";
     private static final String FIND_ALL_TAGS = "/tags";
     private static final String REFRESH_TOKEN = "/auth/refresh";
@@ -79,7 +76,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity
+                 httpSecurity
                 .csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
@@ -96,15 +93,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, FIND_ORDER_BY_ID).hasAnyRole("USER", "ADMIN")
                 .antMatchers(HttpMethod.GET, ALL_REQUESTS_FOR_TAGS).hasAnyRole("USER", "ADMIN")
                 .antMatchers(HttpMethod.GET, FIND_USER_BY_ID_OR_LOGIN_OR_UPDATE_OR_DELETE).hasAnyRole("USER", "ADMIN")
-                .antMatchers(HttpMethod.PATCH, ACTIVATE_USER).hasRole("ADMIN")
                 .antMatchers(HttpMethod.PATCH, FIND_USER_BY_ID_OR_LOGIN_OR_UPDATE_OR_DELETE).hasAnyRole("USER", "ADMIN")
-                .antMatchers(HttpMethod.GET, LOGOUT).hasAnyRole("USER", "ADMIN")
                 //permissions for admin
                 .antMatchers(HttpMethod.POST, CREATE_CERTIFICATE).hasRole("ADMIN")
                 .antMatchers(HttpMethod.PATCH, ALL_REQUESTS_FOR_CERTIFICATES).hasRole("ADMIN")
                 .antMatchers(HttpMethod.DELETE, ALL_REQUESTS_FOR_CERTIFICATES).hasRole("ADMIN")
                 .antMatchers(HttpMethod.GET, FIND_ALL_ORDERS).hasRole("ADMIN")
-                .antMatchers(HttpMethod.PATCH, ACTIVATE_OR_DELETE_ORDER).hasRole("ADMIN")
                 .antMatchers(HttpMethod.DELETE, ACTIVATE_OR_DELETE_ORDER).hasRole("ADMIN")
                 .antMatchers(HttpMethod.POST, CREATE_TAG).hasRole("ADMIN")
                 .antMatchers(HttpMethod.PATCH, ALL_REQUESTS_FOR_TAGS).hasRole("ADMIN")

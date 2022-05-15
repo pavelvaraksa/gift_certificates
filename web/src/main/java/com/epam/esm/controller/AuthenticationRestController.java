@@ -8,6 +8,7 @@ import com.epam.esm.security.domain.AuthRequest;
 import com.epam.esm.security.domain.AuthResponse;
 import com.epam.esm.security.domain.RefreshTokenRequest;
 import com.epam.esm.security.util.JwtUtil;
+import com.epam.esm.service.UserService;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureException;
@@ -29,9 +30,9 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Optional;
 
 import static com.epam.esm.exception.MessageException.USER_LOGIN_NOT_FILLED;
+import static com.epam.esm.exception.MessageException.USER_LOGIN_PASSWORD_NOT_MATCH;
 import static com.epam.esm.exception.MessageException.USER_NOT_AUTHORIZED;
 import static com.epam.esm.exception.MessageException.USER_PASSWORD_NOT_FILLED;
-import static com.epam.esm.exception.MessageException.USER_PASSWORD_NOT_MATCH;
 
 @Log4j2
 @RestController
@@ -42,6 +43,7 @@ public class AuthenticationRestController {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final UserDetailsService userDetailsService;
     private final UserRepository userRepository;
+    private final UserService userService;
     private final JwtUtil jwtUtil;
 
     /**
@@ -53,13 +55,16 @@ public class AuthenticationRestController {
     @PostMapping("/login")
     @ResponseStatus(HttpStatus.OK)
     public AuthResponse authenticateUser(@RequestBody AuthRequest request) {
-        Optional<User> user = userRepository.findByLogin(request.getLogin());
         String password = userRepository.findUserPasswordByLogin(request.getLogin());
-        boolean isResult = bCryptPasswordEncoder.matches(request.getPassword(), password);
 
         if (request.getLogin() == null || request.getLogin().isEmpty()) {
             log.error("Login was not filled");
             throw new ServiceValidException(USER_LOGIN_NOT_FILLED);
+        }
+
+        if (userRepository.findByLogin(request.getLogin()).isEmpty()) {
+            log.error("Login was not correct");
+            throw new ServiceValidException(USER_LOGIN_PASSWORD_NOT_MATCH);
         }
 
         if (request.getPassword() == null || request.getPassword().isEmpty()) {
@@ -67,9 +72,11 @@ public class AuthenticationRestController {
             throw new ServiceValidException(USER_PASSWORD_NOT_FILLED);
         }
 
-        if (!isResult && user.isPresent()) {
+        boolean isResult = bCryptPasswordEncoder.matches(request.getPassword(), password);
+
+        if (!isResult) {
             log.error("Password was not correct");
-            throw new ServiceValidException(USER_PASSWORD_NOT_MATCH);
+            throw new ServiceValidException(USER_LOGIN_PASSWORD_NOT_MATCH);
         }
 
         Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
@@ -105,7 +112,7 @@ public class AuthenticationRestController {
         }
 
         String userNameFromRefreshToken = jwtUtil.getUsernameFromRefreshToken(refreshToken);
-        Optional<User> user = userRepository.findByLogin(userNameFromRefreshToken);
+        Optional<User> user = userService.findByLogin(userNameFromRefreshToken);
         String token = jwtUtil.generateToken(userDetailsService.loadUserByUsername(user.get().getLogin()));
 
         return AuthResponse.builder()

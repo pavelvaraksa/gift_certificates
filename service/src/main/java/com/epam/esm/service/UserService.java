@@ -33,13 +33,4 @@ public interface UserService extends CreateService<User>, ReadDeleteService<User
      * @return - operation result (user updated full or partly)
      */
     User updateById(Long id, User user);
-
-    /**
-     * Activate user
-     *
-     * @param id        - user id
-     * @param isCommand - command for activate
-     * @return - activated user
-     */
-    User activateById(Long id, boolean isCommand);
 }

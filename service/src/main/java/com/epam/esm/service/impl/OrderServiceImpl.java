@@ -93,24 +93,6 @@ public class OrderServiceImpl implements OrderService {
         return order;
     }
 
-    @Transactional
-    @Override
-    public Order activateById(Long id, boolean isCommand) {
-        Optional<Order> order = orderRepository.findById(id);
-
-        if (order.isEmpty()) {
-            log.error("Order was not found");
-            throw new ServiceNotFoundException(ORDER_NOT_FOUND);
-        }
-
-        if (order.get().isActive()) {
-            orderRepository.activateById(id);
-            return order.get();
-        } else {
-            throw new ServiceNotFoundException(ORDER_NOT_FOUND);
-        }
-    }
-
     @Override
     public Optional<User> findUserByOrderId(Long id) {
         return orderRepository.findUserByOrderId(id);

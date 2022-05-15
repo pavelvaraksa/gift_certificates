@@ -6,9 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.hibernate.annotations.Filter;
-import org.hibernate.annotations.FilterDef;
-import org.hibernate.annotations.ParamDef;
 import org.hibernate.annotations.SQLDelete;
 
 import javax.persistence.CascadeType;
@@ -31,9 +28,6 @@ import java.util.Set;
 /**
  * User domain
  */
-@SQLDelete(sql = "update user_table set deleted = true where id = ?")
-@FilterDef(name = "userFilter", parameters = @ParamDef(name = "isDeleted", type = "boolean"))
-@Filter(name = "userFilter", condition = "deleted = :isDeleted")
 @Getter
 @Setter
 @ToString

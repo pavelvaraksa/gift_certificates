@@ -123,22 +123,6 @@ public class OrderRestController {
     }
 
     /**
-     * Activate order by id
-     *
-     * @param id        - order id
-     * @param isCommand - command for activate
-     */
-    @PatchMapping("/{id}")
-    @ResponseStatus(HttpStatus.OK)
-    public EntityModel<OrderDto> activateOrder(@PathVariable Long id,
-                                               @RequestParam(value = "isCommand", defaultValue = "false") boolean isCommand) {
-        Order activatedOrder = orderService.activateById(id, isCommand);
-        return EntityModel.of(modelMapper.map(activatedOrder, OrderDto.class),
-                linkTo(methodOn(OrderRestController.class).findOrderById(id)).withRel("find by id"),
-                linkTo(methodOn(OrderRestController.class).deleteOrder(id)).withRel("delete by id"));
-    }
-
-    /**
      * Delete order by id
      *
      * @param id - order id

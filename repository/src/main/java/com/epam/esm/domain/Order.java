@@ -32,9 +32,6 @@ import java.util.Set;
 /**
  * Order domain
  */
-@SQLDelete(sql = "update order_table set deleted = true where id = ?")
-@FilterDef(name = "orderFilter", parameters = @ParamDef(name = "isDeleted", type = "boolean"))
-@Filter(name = "orderFilter", condition = "deleted = :isDeleted")
 @Getter
 @Setter
 @NoArgsConstructor

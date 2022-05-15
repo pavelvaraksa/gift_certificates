@@ -44,7 +44,7 @@ public class JwtFilter extends OncePerRequestFilter {
             try {
                 jwtToken = requestTokenHeader.substring(7);
                 username = jwtUtil.getUsernameFromToken(jwtToken);
-            } catch (SignatureException | MalformedJwtException | ExpiredJwtException | IllegalArgumentException ex) {
+            } catch (IllegalArgumentException | SignatureException | MalformedJwtException | ExpiredJwtException ex) {
                 log.error(ex.getMessage());
                 response.setContentType("application/json;charset=UTF-8");
             }

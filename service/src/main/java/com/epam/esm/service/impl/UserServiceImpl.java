@@ -147,24 +147,6 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public User activateById(Long id, boolean isCommand) {
-        Optional<User> user = userRepository.findById(id);
-
-        if (user.isEmpty()) {
-            log.error("User was not found");
-            throw new ServiceNotFoundException(USER_NOT_FOUND);
-        }
-
-        if (user.get().isActive()) {
-            userRepository.activateById(id);
-            return user.get();
-        } else {
-            throw new ServiceNotFoundException(USER_NOT_FOUND);
-        }
-    }
-
-    @Transactional
-    @Override
     public User deleteById(Long id) {
         Optional<User> user = userRepository.findById(id);
 

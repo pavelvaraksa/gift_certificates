@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -124,23 +123,6 @@ public class UserRestController {
     }
 
     /**
-     * Create user
-     *
-     * @param user - user
-     * @return - user
-     */
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public EntityModel<UserDto> saveUser(@RequestBody User user) {
-        User newUser = userService.save(user);
-        return EntityModel.of(modelMapper.map(newUser, UserDto.class),
-                linkTo(methodOn(UserRestController.class).findUserById(newUser.getId())).withRel("find by id"),
-                linkTo(methodOn(UserRestController.class).findUserByLogin(newUser.getLogin())).withRel("find by login"),
-                linkTo(methodOn(UserRestController.class).updateUser(newUser.getId(), newUser)).withRel("update by id"),
-                linkTo(methodOn(UserRestController.class).deleteUser(newUser.getId())).withRel("delete by id"));
-    }
-
-    /**
      * Update user by id
      *
      * @param id   - user id
@@ -167,24 +149,6 @@ public class UserRestController {
                 linkTo(methodOn(UserRestController.class).findUserById(id)).withRel("find by id"),
                 linkTo(methodOn(UserRestController.class).findUserByLogin(updatedUser.getLogin())).withRel("find by login"),
                 linkTo(methodOn(UserRestController.class).updateUser(id, updatedUser)).withRel("update by id"),
-                linkTo(methodOn(UserRestController.class).deleteUser(id)).withRel("delete by id"));
-    }
-
-    /**
-     * Activate user by id
-     *
-     * @param id        - user id
-     * @param isCommand - command for activate
-     */
-    @PatchMapping("/activate/{id}")
-    @ResponseStatus(HttpStatus.OK)
-    public EntityModel<UserDto> activateGiftCertificate(@PathVariable Long id,
-                                                        @RequestParam(value = "isCommand", defaultValue = "false") boolean isCommand) {
-        User activatedUser = userService.activateById(id, isCommand);
-        return EntityModel.of(modelMapper.map(activatedUser, UserDto.class),
-                linkTo(methodOn(UserRestController.class).findUserById(id)).withRel("find by id"),
-                linkTo(methodOn(UserRestController.class).findUserByLogin(activatedUser.getLogin())).withRel("find by login"),
-                linkTo(methodOn(UserRestController.class).updateUser(id, activatedUser)).withRel("update by id"),
                 linkTo(methodOn(UserRestController.class).deleteUser(id)).withRel("delete by id"));
     }
 

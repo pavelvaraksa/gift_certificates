@@ -29,15 +29,6 @@ public interface OrderService extends ReadDeleteService<Order, Long> {
     Order save(Long user, List<Long> giftCertificate);
 
     /**
-     * Activate order
-     *
-     * @param id        - order id
-     * @param isCommand - command for activate
-     * @return - activated order
-     */
-    Order activateById(Long id, boolean isCommand);
-
-    /**
      * Find user by order id
      *
      * @param id - order id
