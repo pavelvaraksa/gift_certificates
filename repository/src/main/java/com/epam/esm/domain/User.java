@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.hibernate.annotations.SQLDelete;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -52,9 +51,13 @@ public class User implements Serializable {
     @Column(name = "lastname")
     private String lastName;
 
-    @JsonIgnore
-    @Column(name = "deleted")
-    private boolean isActive;
+    public User(Long id, String login, String firstName, String lastName, Set<Role> roles) {
+        this.id = id;
+        this.login = login;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.roles = roles;
+    }
 
     @JsonIgnore
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
@@ -71,16 +74,17 @@ public class User implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return isActive == user.isActive
-                && Objects.equals(id, user.id)
+        return Objects.equals(id, user.id)
                 && Objects.equals(login, user.login)
                 && Objects.equals(password, user.password)
                 && Objects.equals(firstName, user.firstName)
-                && Objects.equals(lastName, user.lastName);
+                && Objects.equals(lastName, user.lastName)
+                && Objects.equals(order, user.order)
+                && Objects.equals(roles, user.roles);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, login, password, firstName, lastName, isActive);
+        return Objects.hash(id, login, password, firstName, lastName);
     }
 }

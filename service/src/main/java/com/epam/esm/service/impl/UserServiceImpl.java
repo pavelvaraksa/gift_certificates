@@ -50,10 +50,6 @@ public class UserServiceImpl implements UserService {
             throw new ServiceNotFoundException(USER_NOT_FOUND);
         }
 
-        if (user.get().isActive()) {
-            throw new ServiceNotFoundException(USER_NOT_FOUND);
-        }
-
         return user;
     }
 
@@ -63,10 +59,6 @@ public class UserServiceImpl implements UserService {
 
         if (user.isEmpty()) {
             log.error("User with login " + login + " was not found");
-            throw new ServiceNotFoundException(USER_NOT_FOUND);
-        }
-
-        if (user.get().isActive()) {
             throw new ServiceNotFoundException(USER_NOT_FOUND);
         }
 
@@ -81,7 +73,7 @@ public class UserServiceImpl implements UserService {
         Optional<User> userLogin = userRepository.findByLogin(login);
 
         if (userLogin.isPresent()) {
-            log.error("User with login " + user.getLogin() + " already exists");
+            log.error("User with login " + login + " already exists");
             throw new ServiceExistException(USER_EXIST);
         }
 
@@ -99,10 +91,6 @@ public class UserServiceImpl implements UserService {
 
         if (userById.isEmpty()) {
             log.error("User was not found");
-            throw new ServiceNotFoundException(USER_NOT_FOUND);
-        }
-
-        if (userById.get().isActive()) {
             throw new ServiceNotFoundException(USER_NOT_FOUND);
         }
 
@@ -152,10 +140,6 @@ public class UserServiceImpl implements UserService {
 
         if (user.isEmpty()) {
             log.error("User was not found");
-            throw new ServiceNotFoundException(USER_NOT_FOUND);
-        }
-
-        if (user.get().isActive()) {
             throw new ServiceNotFoundException(USER_NOT_FOUND);
         }
 

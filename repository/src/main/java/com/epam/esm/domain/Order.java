@@ -7,10 +7,6 @@ import lombok.Setter;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.Filter;
-import org.hibernate.annotations.FilterDef;
-import org.hibernate.annotations.ParamDef;
-import org.hibernate.annotations.SQLDelete;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -52,9 +48,6 @@ public class Order implements Serializable {
     @Column(name = "purchase_date")
     private LocalDateTime purchaseDate;
 
-    @Column(name = "deleted")
-    private boolean isActive;
-
     @Cascade(CascadeType.PERSIST)
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
@@ -70,12 +63,11 @@ public class Order implements Serializable {
     @OneToMany(mappedBy = "order", fetch = FetchType.EAGER)
     private Set<OrderDetails> orderDetails = new HashSet<>();
 
-    public Order(Long id, Double totalPrice, Integer count, LocalDateTime purchaseDate, boolean isActive) {
+    public Order(Long id, Double totalPrice, Integer count, LocalDateTime purchaseDate) {
         this.id = id;
         this.totalPrice = totalPrice;
         this.count = count;
         this.purchaseDate = purchaseDate;
-        this.isActive = isActive;
     }
 
     @Override
@@ -86,12 +78,11 @@ public class Order implements Serializable {
         return Objects.equals(id, order.id)
                 && Objects.equals(totalPrice, order.totalPrice)
                 && Objects.equals(count, order.count)
-                && Objects.equals(purchaseDate, order.purchaseDate)
-                && Objects.equals(isActive, order.isActive);
+                && Objects.equals(purchaseDate, order.purchaseDate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, totalPrice, count, purchaseDate, isActive);
+        return Objects.hash(id, totalPrice, count, purchaseDate);
     }
 }

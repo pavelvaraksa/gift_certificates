@@ -50,10 +50,6 @@ public class OrderServiceImpl implements OrderService {
             throw new ServiceNotFoundException(ORDER_NOT_FOUND);
         }
 
-        if (order.get().isActive()) {
-            throw new ServiceNotFoundException(ORDER_NOT_FOUND);
-        }
-
         return order;
     }
 
@@ -105,10 +101,6 @@ public class OrderServiceImpl implements OrderService {
 
         if (order.isEmpty()) {
             log.error("Order was not found");
-            throw new ServiceNotFoundException(ORDER_NOT_FOUND);
-        }
-
-        if (order.get().isActive()) {
             throw new ServiceNotFoundException(ORDER_NOT_FOUND);
         }
 
