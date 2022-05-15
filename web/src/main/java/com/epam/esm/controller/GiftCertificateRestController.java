@@ -49,6 +49,28 @@ public class GiftCertificateRestController {
         for (GiftCertificate certificate : certificates) {
             GiftCertificateDto certificateDto = modelMapper.map(certificate, GiftCertificateDto.class);
             certificateDto.add(linkTo(methodOn(GiftCertificateRestController.class).findGiftCertificateById(certificate.getId())).withRel("find by id"),
+                    linkTo(methodOn(GiftCertificateRestController.class).findGiftCertificateByName(certificate.getName())).withRel("find by name"));
+            items.add(certificateDto);
+        }
+
+        return CollectionModel.of(items, linkTo(methodOn(GiftCertificateRestController.class).
+                findAllCertificates()).withRel("find all certificates"));
+    }
+
+    /**
+     * Find all certificates
+     *
+     * @return - list of certificates or empty list
+     */
+    @GetMapping("/active")
+    @ResponseStatus(HttpStatus.OK)
+    public CollectionModel<GiftCertificateDto> findAllCertificatesForAdmin(@RequestParam(value = "deleted", required = false) boolean isActive) {
+        List<GiftCertificate> certificates = giftCertificateService.findAllForAdmin(isActive);
+        List<GiftCertificateDto> items = new ArrayList<>();
+
+        for (GiftCertificate certificate : certificates) {
+            GiftCertificateDto certificateDto = modelMapper.map(certificate, GiftCertificateDto.class);
+            certificateDto.add(linkTo(methodOn(GiftCertificateRestController.class).findGiftCertificateById(certificate.getId())).withRel("find by id"),
                     linkTo(methodOn(GiftCertificateRestController.class).findGiftCertificateByName(certificate.getName())).withRel("find by name"),
                     linkTo(methodOn(GiftCertificateRestController.class).updateGiftCertificate(certificate.getId(), certificate)).withRel("update by id"),
                     linkTo(methodOn(GiftCertificateRestController.class).deleteGiftCertificate(certificate.getId())).withRel("delete by id"));
@@ -56,7 +78,7 @@ public class GiftCertificateRestController {
         }
 
         return CollectionModel.of(items, linkTo(methodOn(GiftCertificateRestController.class).
-                findAllCertificates()).withRel("find all certificates"));
+                findAllCertificatesForAdmin(isActive)).withRel("find all certificates"));
     }
 
     /**

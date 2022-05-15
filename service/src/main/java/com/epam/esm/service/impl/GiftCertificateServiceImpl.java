@@ -37,7 +37,17 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     @Override
     public List<GiftCertificate> findAll() {
-        return giftCertificateRepository.findAll();
+        return giftCertificateRepository.findAllCertificatesPositive();
+    }
+
+    @Override
+    public List<GiftCertificate> findAllForAdmin(boolean isActive) {
+
+        if (isActive) {
+            return giftCertificateRepository.findAllCertificatesNegative();
+        }
+
+        return giftCertificateRepository.findAllCertificatesPositive();
     }
 
     @Override

@@ -14,12 +14,20 @@ import java.util.Optional;
  */
 public interface TagRepository extends JpaRepository<Tag, Long> {
     /**
-     * Find all tags
+     * Find all exist tags
      *
      * @return - tag list
      */
     @Query("select tag from Tag tag where tag.isActive = false")
-    List<Tag> findAllTags();
+    List<Tag> findAllTagsPositive();
+
+    /**
+     * Find all deleted tags
+     *
+     * @return - tag list
+     */
+    @Query("select tag from Tag tag where tag.isActive = true")
+    List<Tag> findAllTagsNegative();
 
     /**
      * Find tags by gift certificate id

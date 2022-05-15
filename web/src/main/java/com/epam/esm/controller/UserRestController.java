@@ -50,12 +50,12 @@ public class UserRestController {
         List<UserDto> items = new ArrayList<>();
 
         for (User user : listUser) {
-            UserDto userDto = modelMapper.map(user, UserDto.class);
-            userDto.add(linkTo(methodOn(UserRestController.class).findUserById(user.getId())).withRel("find by id"),
+            UserDto userDtoWithOrder = modelMapper.map(user, UserDto.class);
+            userDtoWithOrder.add(linkTo(methodOn(UserRestController.class).findUserById(user.getId())).withRel("find by id"),
                     linkTo(methodOn(UserRestController.class).findUserByLogin(user.getLogin())).withRel("find by login"),
                     linkTo(methodOn(UserRestController.class).updateUser(user.getId(), user)).withRel("update by id"),
                     linkTo(methodOn(UserRestController.class).deleteUser(user.getId())).withRel("delete by id"));
-            items.add(userDto);
+            items.add(userDtoWithOrder);
         }
 
         return CollectionModel.of(items, linkTo(methodOn(UserRestController.class)

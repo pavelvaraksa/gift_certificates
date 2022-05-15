@@ -1,6 +1,8 @@
 package com.epam.esm.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -48,6 +50,7 @@ public class Order implements Serializable {
     @Column(name = "purchase_date")
     private LocalDateTime purchaseDate;
 
+    @JsonIgnore
     @Cascade(CascadeType.PERSIST)
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")

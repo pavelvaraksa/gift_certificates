@@ -28,7 +28,17 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public List<Tag> findAll() {
-        return tagRepository.findAllTags();
+        return tagRepository.findAllTagsPositive();
+    }
+
+    @Override
+    public List<Tag> findAllForAdmin(boolean isActive) {
+
+        if (isActive) {
+            return tagRepository.findAllTagsNegative();
+        }
+
+        return tagRepository.findAllTagsPositive();
     }
 
     @Override

@@ -14,6 +14,22 @@ import java.util.Optional;
  */
 public interface GiftCertificateRepository extends JpaRepository<GiftCertificate, Long> {
     /**
+     * Find all exist certificates
+     *
+     * @return - certificate list
+     */
+    @Query("select cert from GiftCertificate cert where cert.isActive = false")
+    List<GiftCertificate> findAllCertificatesPositive();
+
+    /**
+     * Find all deleted certificates
+     *
+     * @return - certificate list
+     */
+    @Query("select cert from GiftCertificate cert where cert.isActive = true")
+    List<GiftCertificate> findAllCertificatesNegative();
+
+    /**
      * Find gift certificate by name
      *
      * @param name - gift certificate name

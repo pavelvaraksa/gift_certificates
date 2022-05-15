@@ -18,6 +18,13 @@ public interface GiftCertificateService extends CreateService<GiftCertificate>, 
     List<GiftCertificate> findAll();
 
     /**
+     * Find all gift certificates
+     *
+     * @return - list of gift certificates or empty list
+     */
+    List<GiftCertificate> findAllForAdmin(boolean isActive);
+
+    /**
      * Find gift certificate by name
      *
      * @param name - gift certificate name

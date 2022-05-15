@@ -6,13 +6,17 @@ import lombok.Setter;
 import org.springframework.hateoas.RepresentationModel;
 
 /**
- * Tag deleted dto
+ * User dto
  */
 @Getter
 @Setter
 @EqualsAndHashCode(callSuper = true)
-public class TagDeletedDto extends RepresentationModel<TagDeletedDto> {
-    private String name;
+public class UserDto extends RepresentationModel<UserDto> {
+    private Long id;
 
-    private boolean deleted;
+    private String login;
+
+    private String firstName;
+
+    private String lastName;
 }

@@ -18,6 +18,13 @@ public interface TagService extends CreateService<Tag>, ReadDeleteService<Tag, L
     List<Tag> findAll();
 
     /**
+     * Find all tags
+     *
+     * @return - list of tags or empty list
+     */
+    List<Tag> findAllForAdmin(boolean isActive);
+
+    /**
      * Find tag by name
      *
      * @param name - tag name

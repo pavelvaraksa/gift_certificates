@@ -22,7 +22,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import static com.epam.esm.exception.MessageException.CERTIFICATE_NOT_FOUND;
 import static com.epam.esm.exception.MessageException.ORDER_NOT_FOUND;
+import static com.epam.esm.exception.MessageException.USER_NOT_FOUND;
 
 /**
  * Order service implementation
@@ -62,6 +64,14 @@ public class OrderServiceImpl implements OrderService {
         Set<OrderDetails> orderDetailsSet = new HashSet<>();
         Order order = new Order();
         Double orderPrice = 0D;
+
+        if (userId == null) {
+            log.error("User with id " + userId + " was not found");
+            throw new ServiceNotFoundException(USER_NOT_FOUND);
+        } else if (giftCertificateId == null) {
+            log.error("User with id " + giftCertificateId + " was not found");
+            throw new ServiceNotFoundException(CERTIFICATE_NOT_FOUND);
+        }
 
         for (Long id : giftCertificateId) {
             giftCertificate = giftCertificateService.findById(id);

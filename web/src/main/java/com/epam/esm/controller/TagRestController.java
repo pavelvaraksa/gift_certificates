@@ -1,7 +1,6 @@
 package com.epam.esm.controller;
 
 import com.epam.esm.domain.Tag;
-import com.epam.esm.dto.TagDeletedDto;
 import com.epam.esm.dto.TagDto;
 import com.epam.esm.repository.TagRepository;
 import com.epam.esm.service.TagService;
@@ -43,8 +42,30 @@ public class TagRestController {
      */
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public CollectionModel<TagDto> findAllTags() {
+    public CollectionModel<TagDto> findAll() {
         List<Tag> tags = tagService.findAll();
+        List<TagDto> items = new ArrayList<>();
+
+        for (Tag tag : tags) {
+            TagDto tagDto = modelMapper.map(tag, TagDto.class);
+            tagDto.add(linkTo(methodOn(TagRestController.class).findTagById(tag.getId())).withRel("find by id"),
+                    linkTo(methodOn(TagRestController.class).findTagByName(tag.getName())).withRel("find by name"));
+            items.add(tagDto);
+        }
+
+        return CollectionModel.of(items, linkTo(methodOn(TagRestController.class)
+                .findAll()).withRel("find all tags"));
+    }
+
+    /**
+     * Find all tags
+     *
+     * @return - list of tags or empty list
+     */
+    @GetMapping("/active")
+    @ResponseStatus(HttpStatus.OK)
+    public CollectionModel<TagDto> findAllForAdmin(@RequestParam(value = "deleted", required = false) boolean isActive) {
+        List<Tag> tags = tagService.findAllForAdmin(isActive);
         List<TagDto> items = new ArrayList<>();
 
         for (Tag tag : tags) {
@@ -56,30 +77,7 @@ public class TagRestController {
         }
 
         return CollectionModel.of(items, linkTo(methodOn(TagRestController.class)
-                .findAllTags()).withRel("find all tags"));
-    }
-
-    /**
-     * Find all tags
-     *
-     * @return - list of tags or empty list
-     */
-    @GetMapping("/active")
-    @ResponseStatus(HttpStatus.OK)
-    public CollectionModel<TagDeletedDto> findAllTagsForAdmin() {
-        List<Tag> tags = tagService.findAll();
-        List<TagDeletedDto> items = new ArrayList<>();
-
-        for (Tag tag : tags) {
-            TagDeletedDto tagDeletedDto = modelMapper.map(tag, TagDeletedDto.class);
-            tagDeletedDto.add(linkTo(methodOn(TagRestController.class).findTagById(tag.getId())).withRel("find by id"),
-                    linkTo(methodOn(TagRestController.class).findTagByName(tag.getName())).withRel("find by name"),
-                    linkTo(methodOn(TagRestController.class).deleteTag(tag.getId())).withRel("delete by id"));
-            items.add(tagDeletedDto);
-        }
-
-        return CollectionModel.of(items, linkTo(methodOn(TagRestController.class)
-                .findAllTags()).withRel("find all tags"));
+                .findAllForAdmin(isActive)).withRel("find all tags"));
     }
 
     /**
