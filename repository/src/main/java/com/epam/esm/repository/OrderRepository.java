@@ -31,6 +31,15 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
      */
     @Query("select ord.user from Order ord where ord.id = ?1")
     Optional<User> findUserByOrderId(Long id);
+
+    /**
+     * Delete order by id
+     *
+     * @param id - order id
+     */
+    @Modifying
+    @Query("delete from Order ord where ord.id = ?1")
+    void deleteOrderById(Long id);
 }
 
 

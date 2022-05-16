@@ -142,7 +142,7 @@ public class UserServiceImpl implements UserService {
         }
 
         log.info("User with id " + id + " deleted");
-        userRepository.deleteById(id);
+        userRepository.deleteUserById(id);
         return user.get();
     }
 }

@@ -58,6 +58,12 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     @Override
     public Order save(Long userId, List<Long> giftCertificateId) {
+
+        if (userId == null) {
+            log.error("User with id " + userId + " was not found");
+            throw new ServiceNotFoundException(USER_NOT_FOUND);
+        }
+
         Optional<User> user = userService.findById(userId);
         Optional<GiftCertificate> giftCertificate;
         OrderDetails orderDetails = new OrderDetails();
@@ -65,10 +71,7 @@ public class OrderServiceImpl implements OrderService {
         Order order = new Order();
         Double orderPrice = 0D;
 
-        if (userId == null) {
-            log.error("User with id " + userId + " was not found");
-            throw new ServiceNotFoundException(USER_NOT_FOUND);
-        } else if (giftCertificateId == null) {
+        if (giftCertificateId == null) {
             log.error("User with id " + giftCertificateId + " was not found");
             throw new ServiceNotFoundException(CERTIFICATE_NOT_FOUND);
         }
@@ -115,7 +118,7 @@ public class OrderServiceImpl implements OrderService {
         }
 
         log.info("Order with id " + id + " deleted");
-        orderRepository.deleteById(id);
+        orderRepository.deleteOrderById(id);
         return order.get();
     }
 }
