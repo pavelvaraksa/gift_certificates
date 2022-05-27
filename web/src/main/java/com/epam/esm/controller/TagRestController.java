@@ -1,11 +1,13 @@
 package com.epam.esm.controller;
 
 import com.epam.esm.domain.Tag;
+import com.epam.esm.domain.User;
 import com.epam.esm.dto.TagDto;
+import com.epam.esm.exception.ServiceForbiddenException;
+import com.epam.esm.repository.RoleRepository;
 import com.epam.esm.repository.TagRepository;
 import com.epam.esm.service.TagService;
-import com.epam.esm.util.ColumnTagName;
-import com.epam.esm.util.SortType;
+import com.epam.esm.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Pageable;
@@ -13,6 +15,8 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -27,8 +31,8 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
+import static com.epam.esm.exception.MessageException.USER_RESOURCE_FORBIDDEN;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
@@ -38,36 +42,31 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class TagRestController {
     public final TagService tagService;
     public final TagRepository tagRepository;
+    public final UserService userService;
+    private final RoleRepository roleRepository;
     private final ModelMapper modelMapper;
 
     /**
-     * Find tags with pagination, sorting and info about deleted tags
+     * Find all tags
      *
-     * @param pageable  - pagination config
-     * @param column    - tag column
-     * @param sort      - sort type
-     * @param isDeleted - info about deleted tags
      * @return - list of tags or empty list
      */
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public CollectionModel<TagDto> findAllTags(@PageableDefault(size = 2) Pageable pageable,
-                                               @RequestParam(value = "column", defaultValue = "ID") Set<ColumnTagName> column,
-                                               @RequestParam(value = "sort", defaultValue = "ASC") SortType sort,
-                                               @RequestParam(value = "isDeleted", defaultValue = "false") boolean isDeleted) {
-        List<Tag> tags = tagService.findAll(pageable, column, sort, isDeleted);
-        List<TagDto> items = new ArrayList<>();
+    public CollectionModel<TagDto> findAll(@PageableDefault(sort = {"id"}) Pageable pageable) {
+        return takeHateoasForUserWithAllTags(pageable);
+    }
 
-        for (Tag tag : tags) {
-            TagDto tagDto = modelMapper.map(tag, TagDto.class);
-            tagDto.add(linkTo(methodOn(TagRestController.class).findTagById(tag.getId())).withRel("find by id"),
-                    linkTo(methodOn(TagRestController.class).findTagByName(tag.getName())).withRel("find by name"),
-                    linkTo(methodOn(TagRestController.class).deleteTag(tag.getId())).withRel("delete by id"));
-            items.add(tagDto);
-        }
-
-        return CollectionModel.of(items, linkTo(methodOn(TagRestController.class)
-                .findAllTags(pageable, column, sort, isDeleted)).withRel("find all tags"));
+    /**
+     * Find all tags
+     *
+     * @return - list of tags or empty list
+     */
+    @GetMapping("/active")
+    @ResponseStatus(HttpStatus.OK)
+    public CollectionModel<TagDto> findAllForAdmin(@RequestParam(value = "deleted", required = false) boolean isActive,
+                                                   @PageableDefault(sort = {"id"}) Pageable pageable) {
+        return takeHateoasForAdminWithAllTags(isActive, pageable);
     }
 
     /**
@@ -79,11 +78,19 @@ public class TagRestController {
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public EntityModel<TagDto> findTagById(@PathVariable Long id) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentPrincipalName = authentication.getName();
+        Optional<User> user = userService.findByLogin(currentPrincipalName);
+        String role = roleRepository.findRoleByUserId(user.get().getId());
         Optional<Tag> tag = tagService.findById(id);
-        return EntityModel.of(modelMapper.map(tag.get(), TagDto.class),
-                linkTo(methodOn(TagRestController.class).findTagById(id)).withRel("find by id"),
-                linkTo(methodOn(TagRestController.class).findTagByName(tag.get().getName())).withRel("find by name"),
-                linkTo(methodOn(TagRestController.class).deleteTag(id)).withRel("delete by id"));
+
+        if (role.equals("ROLE_USER")) {
+            return takeHateoasForUser(tag.get());
+        } else if (role.equals("ROLE_ADMIN")) {
+            return takeHateoasForAdmin(tag.get());
+        } else {
+            throw new ServiceForbiddenException(USER_RESOURCE_FORBIDDEN);
+        }
     }
 
     /**
@@ -95,11 +102,19 @@ public class TagRestController {
     @GetMapping("/search")
     @ResponseStatus(HttpStatus.OK)
     public EntityModel<TagDto> findTagByName(@RequestParam(value = "name", required = false) String name) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentPrincipalName = authentication.getName();
+        Optional<User> user = userService.findByLogin(currentPrincipalName);
+        String role = roleRepository.findRoleByUserId(user.get().getId());
         Optional<Tag> tag = tagService.findByName(name);
-        return EntityModel.of(modelMapper.map(tag.get(), TagDto.class),
-                linkTo(methodOn(TagRestController.class).findTagById(tag.get().getId())).withRel("find by id"),
-                linkTo(methodOn(TagRestController.class).findTagByName(tag.get().getName())).withRel("find by name"),
-                linkTo(methodOn(TagRestController.class).deleteTag(tag.get().getId())).withRel("delete by id"));
+
+        if (role.equals("ROLE_USER")) {
+            return takeHateoasForUser(tag.get());
+        } else if (role.equals("ROLE_ADMIN")) {
+            return takeHateoasForAdmin(tag.get());
+        } else {
+            throw new ServiceForbiddenException(USER_RESOURCE_FORBIDDEN);
+        }
     }
 
     /**
@@ -112,10 +127,7 @@ public class TagRestController {
     @ResponseStatus(HttpStatus.OK)
     public EntityModel<TagDto> createTag(@RequestBody Tag tag) {
         Tag newTag = tagService.save(tag);
-        return EntityModel.of(modelMapper.map(newTag, TagDto.class),
-                linkTo(methodOn(TagRestController.class).findTagById(newTag.getId())).withRel("find by id"),
-                linkTo(methodOn(TagRestController.class).findTagByName(newTag.getName())).withRel("find by name"),
-                linkTo(methodOn(TagRestController.class).deleteTag(newTag.getId())).withRel("delete by id"));
+        return takeHateoasForAdmin(newTag);
     }
 
     /**
@@ -126,28 +138,35 @@ public class TagRestController {
     @GetMapping("/widelyUsed")
     @ResponseStatus(HttpStatus.OK)
     public EntityModel<TagDto> findMostWidelyUsed() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentPrincipalName = authentication.getName();
+        Optional<User> user = userService.findByLogin(currentPrincipalName);
+        String role = roleRepository.findRoleByUserId(user.get().getId());
         Tag tag = tagService.findMostWidelyUsed();
-        return EntityModel.of(modelMapper.map(tag, TagDto.class),
-                linkTo(methodOn(TagRestController.class).findTagById(tag.getId())).withRel("find by id"),
-                linkTo(methodOn(TagRestController.class).findTagByName(tag.getName())).withRel("find by name"),
-                linkTo(methodOn(TagRestController.class).deleteTag(tag.getId())).withRel("delete by id"));
+
+        if (tag == null) {
+            return EntityModel.of(modelMapper.map(Optional.ofNullable(tag), TagDto.class));
+        }
+
+        if (role.equals("ROLE_USER")) {
+            return takeHateoasForUser(tag);
+        } else if (role.equals("ROLE_ADMIN")) {
+            return takeHateoasForAdmin(tag);
+        } else {
+            throw new ServiceForbiddenException(USER_RESOURCE_FORBIDDEN);
+        }
     }
 
     /**
      * Activate tag by id
      *
-     * @param id        - tag id
-     * @param isCommand - command for activate
+     * @param id - tag id
      */
     @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public EntityModel<TagDto> activateGiftCertificate(@PathVariable Long id,
-                                                       @RequestParam(value = "isCommand", defaultValue = "false") boolean isCommand) {
-        Tag activatedTag = tagService.activateById(id, isCommand);
-        return EntityModel.of(modelMapper.map(activatedTag, TagDto.class),
-                linkTo(methodOn(TagRestController.class).findTagById(id)).withRel("find by id"),
-                linkTo(methodOn(TagRestController.class).findTagByName(activatedTag.getName())).withRel("find by name"),
-                linkTo(methodOn(TagRestController.class).deleteTag(id)).withRel("delete by id"));
+    public EntityModel<TagDto> activateGiftCertificate(@PathVariable Long id) {
+        Tag activatedTag = tagService.activateById(id);
+        return takeHateoasForAdmin(activatedTag);
     }
 
     /**
@@ -161,5 +180,51 @@ public class TagRestController {
         Tag deletedTag = tagService.deleteById(id);
         return EntityModel.of(modelMapper.map(deletedTag, TagDto.class));
     }
+
+    private CollectionModel<TagDto> takeHateoasForAdminWithAllTags(boolean isActive, Pageable pageable) {
+        List<Tag> tags = tagService.findAllForAdmin(isActive, pageable);
+        List<TagDto> items = new ArrayList<>();
+
+        for (Tag tag : tags) {
+            TagDto tagDto = modelMapper.map(tag, TagDto.class);
+            tagDto.add(linkTo(methodOn(TagRestController.class).findTagById(tag.getId())).withRel("find by id"),
+                    linkTo(methodOn(TagRestController.class).findTagByName(tag.getName())).withRel("find by name"),
+                    linkTo(methodOn(TagRestController.class).deleteTag(tag.getId())).withRel("delete by id"));
+            items.add(tagDto);
+        }
+
+        return CollectionModel.of(items, linkTo(methodOn(TagRestController.class)
+                .findAllForAdmin(isActive, pageable)).withRel("find all tags"));
+    }
+
+    private CollectionModel<TagDto> takeHateoasForUserWithAllTags(Pageable pageable) {
+        List<Tag> tags = tagService.findAll(pageable);
+        List<TagDto> items = new ArrayList<>();
+
+        for (Tag tag : tags) {
+            TagDto tagDto = modelMapper.map(tag, TagDto.class);
+            tagDto.add(linkTo(methodOn(TagRestController.class).findTagById(tag.getId())).withRel("find by id"),
+                    linkTo(methodOn(TagRestController.class).findTagByName(tag.getName())).withRel("find by name"));
+            items.add(tagDto);
+        }
+
+        return CollectionModel.of(items, linkTo(methodOn(TagRestController.class)
+                .findAll(pageable)).withRel("find all tags"));
+    }
+
+    private EntityModel<TagDto> takeHateoasForAdmin(Tag tag) {
+        return EntityModel.of(modelMapper.map(tag, TagDto.class),
+                linkTo(methodOn(TagRestController.class).findTagById(tag.getId())).withRel("find by id"),
+                linkTo(methodOn(TagRestController.class).findTagByName(tag.getName())).withRel("find by name"),
+                linkTo(methodOn(TagRestController.class).deleteTag(tag.getId())).withRel("delete by id"));
+    }
+
+    private EntityModel<TagDto> takeHateoasForUser(Tag tag) {
+        return EntityModel.of(modelMapper.map(tag, TagDto.class),
+                linkTo(methodOn(TagRestController.class).findTagById(tag.getId())).withRel("find by id"),
+                linkTo(methodOn(TagRestController.class).findTagByName(tag.getName())).withRel("find by name"));
+    }
 }
+
+
 

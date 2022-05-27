@@ -14,6 +14,8 @@ import static com.epam.esm.exception.MessageException.USER_LASTNAME_INCORRECT;
 import static com.epam.esm.exception.MessageException.USER_LASTNAME_NOT_FILLED;
 import static com.epam.esm.exception.MessageException.USER_LOGIN_INCORRECT;
 import static com.epam.esm.exception.MessageException.USER_LOGIN_NOT_FILLED;
+import static com.epam.esm.exception.MessageException.USER_PASSWORD_INCORRECT;
+import static com.epam.esm.exception.MessageException.USER_PASSWORD_NOT_FILLED;
 
 @Log4j2
 @Component
@@ -30,8 +32,9 @@ public class UserValidator {
         String login = user.getLogin();
         String firstName = user.getFirstName();
         String lastName = user.getLastName();
+        String password = user.getPassword();
 
-        return isLoginValid(login) && isUserFirstNameValid(firstName) && isUserLastNameValid(lastName);
+        return isLoginValid(login) && isUserFirstNameValid(firstName) && isUserLastNameValid(lastName) && isUserPasswordValid(password);
     }
 
     private static boolean isLoginValid(String login) {
@@ -65,6 +68,18 @@ public class UserValidator {
         } else if (!isMatcherValid(REGEXP_VALUE, lastName)) {
             log.error("Entered user lastname was not correct.Use words,numbers,underscore and hyphen");
             throw new ServiceValidException(USER_LASTNAME_INCORRECT);
+        }
+
+        return true;
+    }
+
+    private static boolean isUserPasswordValid(String password) {
+        if (password == null) {
+            log.error("Password was not filled");
+            throw new ServiceValidException(USER_PASSWORD_NOT_FILLED);
+        } else if (!isMatcherValid(REGEXP_VALUE, password)) {
+            log.error("Entered user password was not correct.Use words,numbers,underscore and hyphen");
+            throw new ServiceValidException(USER_PASSWORD_INCORRECT);
         }
 
         return true;

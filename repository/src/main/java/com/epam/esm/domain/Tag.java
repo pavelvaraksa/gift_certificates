@@ -4,9 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.Filter;
-import org.hibernate.annotations.FilterDef;
-import org.hibernate.annotations.ParamDef;
 import org.hibernate.annotations.SQLDelete;
 
 import javax.persistence.CascadeType;
@@ -29,8 +26,6 @@ import java.util.Set;
  * Tag domain
  */
 @SQLDelete(sql = "update tag set deleted = true where id = ?")
-@FilterDef(name = "tagFilter", parameters = @ParamDef(name = "isDeleted", type = "boolean"))
-@Filter(name = "tagFilter", condition = "deleted = :isDeleted")
 @Getter
 @Setter
 @AllArgsConstructor
@@ -48,7 +43,7 @@ public class Tag implements Serializable {
     @Column(name = "deleted")
     private boolean isActive;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE})
     @JoinTable(name = "gift_certificate_to_tag",
             joinColumns = {@JoinColumn(name = "tag_id")},
             inverseJoinColumns = {@JoinColumn(name = "gift_certificate_id")})

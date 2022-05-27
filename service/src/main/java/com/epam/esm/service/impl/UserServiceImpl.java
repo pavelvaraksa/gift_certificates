@@ -1,23 +1,31 @@
 package com.epam.esm.service.impl;
 
+import com.epam.esm.domain.Order;
+import com.epam.esm.domain.Role;
 import com.epam.esm.domain.User;
 import com.epam.esm.exception.ServiceExistException;
 import com.epam.esm.exception.ServiceNotFoundException;
+import com.epam.esm.exception.ServiceValidException;
+import com.epam.esm.repository.OrderRepository;
+import com.epam.esm.repository.RoleRepository;
 import com.epam.esm.repository.UserRepository;
 import com.epam.esm.service.UserService;
-import com.epam.esm.util.ColumnUserName;
-import com.epam.esm.util.SortType;
 import com.epam.esm.validator.UserValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
 import static com.epam.esm.exception.MessageException.USER_EXIST;
+import static com.epam.esm.exception.MessageException.USER_NOT_BLOCKED;
+import static com.epam.esm.exception.MessageException.USER_NOT_DELETED;
 import static com.epam.esm.exception.MessageException.USER_NOT_FOUND;
 
 /**
@@ -28,10 +36,13 @@ import static com.epam.esm.exception.MessageException.USER_NOT_FOUND;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private final OrderRepository orderRepository;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final RoleRepository roleRepository;
 
     @Override
-    public List<User> findAll(Pageable pageable, Set<ColumnUserName> column, SortType sort, boolean isDeleted) {
-        return userRepository.findAll(pageable, column, sort, isDeleted);
+    public List<User> findAll(Pageable pageable) {
+        return userRepository.findAll();
     }
 
     @Override
@@ -40,10 +51,6 @@ public class UserServiceImpl implements UserService {
 
         if (user.isEmpty()) {
             log.error("User with id " + id + " was not found");
-            throw new ServiceNotFoundException(USER_NOT_FOUND);
-        }
-
-        if (user.get().isActive()) {
             throw new ServiceNotFoundException(USER_NOT_FOUND);
         }
 
@@ -59,13 +66,10 @@ public class UserServiceImpl implements UserService {
             throw new ServiceNotFoundException(USER_NOT_FOUND);
         }
 
-        if (user.get().isActive()) {
-            throw new ServiceNotFoundException(USER_NOT_FOUND);
-        }
-
         return user;
     }
 
+    @Transactional
     @Override
     public User save(User user) {
         UserValidator.isUserValid(user);
@@ -73,14 +77,18 @@ public class UserServiceImpl implements UserService {
         Optional<User> userLogin = userRepository.findByLogin(login);
 
         if (userLogin.isPresent()) {
-            log.error("User with login " + user.getLogin() + " already exist");
+            log.error("User with login " + login + " already exists");
             throw new ServiceExistException(USER_EXIST);
         }
 
-        log.info("User with login  " + user.getLogin() + " saved");
+        Optional<Role> roleUser = roleRepository.findById(2L);
+        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+        user.setRoles(Collections.singleton(roleUser.get()));
+        log.info("User with login " + user.getLogin() + " saved");
         return userRepository.save(user);
     }
 
+    @Transactional
     @Override
     public User updateById(Long id, User user) {
         Optional<User> userById = userRepository.findById(id);
@@ -90,20 +98,14 @@ public class UserServiceImpl implements UserService {
             throw new ServiceNotFoundException(USER_NOT_FOUND);
         }
 
-        if (userById.get().isActive()) {
-            throw new ServiceNotFoundException(USER_NOT_FOUND);
-        }
-
         Optional<User> userByLogin = userRepository.findByLogin(user.getLogin());
 
         if (userByLogin.isPresent()) {
-            log.error("User with login " + user.getLogin() + " already exist");
+            log.error("User with login " + userByLogin + " already exists");
             throw new ServiceExistException(USER_EXIST);
         }
 
-        if (user.getLogin() == null) {
-            user.setLogin(userById.get().getLogin());
-        }
+        user.setLogin(userById.get().getLogin());
 
         if (user.getFirstName() == null) {
             user.setFirstName(userById.get().getFirstName());
@@ -113,46 +115,75 @@ public class UserServiceImpl implements UserService {
             user.setLastName(userById.get().getLastName());
         }
 
-        UserValidator.isUserValid(user);
-        user.setId(userById.get().getId());
-        userRepository.updateById(user);
-        Optional<User> updatedUserById = userRepository.findById(user.getId());
+        if (user.getPassword() == null) {
+            user.setPassword("password");
+        }
 
+        UserValidator.isUserValid(user);
+
+        if (user.getPassword().equals("password")) {
+            user.setPassword(userById.get().getPassword());
+        } else {
+            user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+        }
+
+        user.setId(userById.get().getId());
+        userRepository.updateById(user.getFirstName(), user.getLastName(), user.getPassword(), user.getId());
+        Set<Order> orderSet = orderRepository.findAllByUserId(user.getId());
+        user.setOrder(orderSet);
         log.info("User with login " + user.getLogin() + " updated");
-        return updatedUserById.get();
+        return user;
     }
 
+    @Transactional
     @Override
-    public User activateById(Long id, boolean isCommand) {
+    public boolean blockedById(Long id) {
         Optional<User> user = userRepository.findById(id);
+        String userRole;
 
         if (user.isEmpty()) {
             log.error("User was not found");
             throw new ServiceNotFoundException(USER_NOT_FOUND);
         }
 
-        if (user.get().isActive()) {
-            return userRepository.activateById(id);
+        userRole = roleRepository.findRoleByUserId(id);
+
+        if (user.get().getId().equals(id) && userRole.equals("ROLE_ADMIN")) {
+            log.error("Admin must not be deleted");
+            throw new ServiceValidException(USER_NOT_BLOCKED);
+        }
+
+        if (!user.get().isBlocked()) {
+            userRepository.blockedById(id);
+            return true;
+        } else if (user.get().isBlocked()) {
+            userRepository.unblockedById(id);
+            return false;
         } else {
             throw new ServiceNotFoundException(USER_NOT_FOUND);
         }
     }
 
+    @Transactional
     @Override
     public User deleteById(Long id) {
         Optional<User> user = userRepository.findById(id);
+        String userRole;
 
         if (user.isEmpty()) {
             log.error("User was not found");
             throw new ServiceNotFoundException(USER_NOT_FOUND);
         }
 
-        if (user.get().isActive()) {
-            throw new ServiceNotFoundException(USER_NOT_FOUND);
+        userRole = roleRepository.findRoleByUserId(id);
+
+        if (user.get().getId().equals(id) && userRole.equals("ROLE_ADMIN")) {
+            log.error("Admin must not be deleted");
+            throw new ServiceValidException(USER_NOT_DELETED);
         }
 
         log.info("User with id " + id + " deleted");
-        userRepository.deleteById(id);
+        userRepository.deleteUserById(id);
         return user.get();
     }
 }

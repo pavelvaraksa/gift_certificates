@@ -5,10 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.Filter;
-import org.hibernate.annotations.FilterDef;
-import org.hibernate.annotations.ParamDef;
-import org.hibernate.annotations.SQLDelete;
+import lombok.ToString;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -17,6 +14,9 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.io.Serializable;
@@ -27,11 +27,9 @@ import java.util.Set;
 /**
  * User domain
  */
-@SQLDelete(sql = "update user_table set deleted = true where id = ?")
-@FilterDef(name = "userFilter", parameters = @ParamDef(name = "isDeleted", type = "boolean"))
-@Filter(name = "userFilter", condition = "deleted = :isDeleted")
 @Getter
 @Setter
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
@@ -44,19 +42,35 @@ public class User implements Serializable {
     @Column
     private String login;
 
+    @Column
+    private String password;
+
     @Column(name = "firstname")
     private String firstName;
 
     @Column(name = "lastname")
     private String lastName;
 
-    @JsonIgnore
-    @Column(name = "deleted")
-    private boolean isActive;
+    @Column(name = "blocked")
+    private boolean isBlocked;
+
+    public User(Long id, String login, String firstName, String lastName, Set<Role> roles) {
+        this.id = id;
+        this.login = login;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.roles = roles;
+    }
 
     @JsonIgnore
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
     private Set<Order> order = new HashSet<>();
+
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    @JoinTable(name = "user_roles",
+            joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},
+            inverseJoinColumns = {@JoinColumn(name = "role_id", referencedColumnName = "id")})
+    private Set<Role> roles = new HashSet<>();
 
     @Override
     public boolean equals(Object o) {
@@ -65,14 +79,15 @@ public class User implements Serializable {
         User user = (User) o;
         return Objects.equals(id, user.id)
                 && Objects.equals(login, user.login)
+                && Objects.equals(password, user.password)
                 && Objects.equals(firstName, user.firstName)
                 && Objects.equals(lastName, user.lastName)
-                && Objects.equals(isActive, user.isActive)
-                && Objects.equals(order, user.order);
+                && Objects.equals(order, user.order)
+                && Objects.equals(roles, user.roles);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, login, firstName, lastName, isActive, order);
+        return Objects.hash(id, login, password, firstName, lastName);
     }
 }

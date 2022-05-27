@@ -1,40 +1,32 @@
 package com.epam.esm.service;
 
 import com.epam.esm.domain.Tag;
-import com.epam.esm.util.ColumnTagName;
-import com.epam.esm.util.SortType;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 /**
  * Tag service layer
  * Works with tag repository layer
  */
-public interface TagService {
+public interface TagService extends CreateService<Tag>, ReadDeleteService<Tag, Long> {
     /**
-     * Find tags with pagination, sorting and info about deleted tags
+     * Find all tags
      *
-     * @param pageable  - pagination config
-     * @param column    - tag column
-     * @param sort      - sort type
-     * @param isDeleted - info about deleted tags
      * @return - list of tags or empty list
      */
-    List<Tag> findAll(Pageable pageable, Set<ColumnTagName> column, SortType sort, boolean isDeleted);
+    List<Tag> findAll(Pageable pageable);
 
     /**
-     * Find a tag by id.
+     * Find all tags
      *
-     * @param id - tag id
-     * @return - optional of found tag
+     * @return - list of tags or empty list
      */
-    Optional<Tag> findById(Long id);
+    List<Tag> findAllForAdmin(boolean isActive, Pageable pageable);
 
     /**
-     * Find a tag name
+     * Find tag by name
      *
      * @param name - tag name
      * @return - optional of found tag
@@ -42,21 +34,12 @@ public interface TagService {
     Optional<Tag> findByName(String name);
 
     /**
-     * Create a tag
-     *
-     * @param tag - create a tag
-     * @return - created tag
-     */
-    Tag save(Tag tag);
-
-    /**
-     * Activate a tag
+     * Activate tag
      *
      * @param id        - tag id
-     * @param isCommand - command for activate
      * @return - activated tag
      */
-    Tag activateById(Long id, boolean isCommand);
+    Tag activateById(Long id);
 
     /**
      * Find most widely used tag
@@ -64,12 +47,4 @@ public interface TagService {
      * @return - tag
      */
     Tag findMostWidelyUsed();
-
-    /**
-     * Delete a tag
-     *
-     * @param id - tag id
-     * @return - tag
-     */
-    Tag deleteById(Long id);
 }

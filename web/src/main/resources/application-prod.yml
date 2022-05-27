@@ -2,10 +2,15 @@ spring:
   datasource:
     hikari:
       jdbc-url: "jdbc:postgresql://localhost:5432/rest_api_advanced_database_prod"
-      maximum-pool-size: 100
+      maximum-pool-size: 10
     driver-class-name: org.postgresql.Driver
     username: postgres
     password: postgres
+  mvc:
+    throw-exception-if-no-handler-found: true
+  web:
+    resources:
+      add-mappings: false
 
 logging:
   pattern:
@@ -15,4 +20,10 @@ logging:
     org.springframework.web: INFO
     org.hibernate: INFO
   file:
-    name: C:/Users/senna/IdeaProjects/gift_certificates/web/src/main/resources/logs.log
+    name: C:/Users/senna/IdeaProjects/gift_certificates/web/src/main/resources/logs.txt
+
+jwtconfig:
+  accessSecret: accessSecret
+  refreshSecret: refreshSecret
+  accessExpiration: 900000
+  refreshExpiration: 10

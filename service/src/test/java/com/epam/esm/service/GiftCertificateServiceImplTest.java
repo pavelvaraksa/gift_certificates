@@ -80,7 +80,7 @@ public class GiftCertificateServiceImplTest {
         Mockito.when(giftCertificateRepository.findByName("Certificate_4")).thenReturn(Optional.empty());
         Mockito.when(giftCertificateRepository.save(giftCertificate)).thenReturn(giftCertificate);
         Mockito.when(tagRepository.findByName("tag_4")).thenReturn(Optional.ofNullable(tag));
-        Mockito.when(giftCertificateToTagRepository.isExistLink(4L, 4L)).thenReturn(true);
+        Mockito.when(giftCertificateToTagRepository.existsByGiftCertificateAndTag(4L, 4L)).thenReturn(true);
         assertNotNull(giftCertificateService.save(giftCertificate));
     }
 
@@ -92,7 +92,7 @@ public class GiftCertificateServiceImplTest {
                 existsGiftCertificateThree
         );
 
-        Mockito.when(giftCertificateRepository.findAll(null, null, null, false)).thenReturn(giftCertificates);
+        Mockito.when(giftCertificateRepository.findAll()).thenReturn(giftCertificates);
 
         existsGiftCertificateOne.setTag(existsTagsOne);
         existsGiftCertificateTwo.setTag(existsTagsTwo);
@@ -103,7 +103,7 @@ public class GiftCertificateServiceImplTest {
                 existsGiftCertificateTwo,
                 existsGiftCertificateThree);
 
-        List<GiftCertificate> actualGiftCertificates = giftCertificateService.findAll(null, null, null, false);
+        List<GiftCertificate> actualGiftCertificates = giftCertificateService.findAll();
         assertEquals(expectedGiftCertificates, actualGiftCertificates);
     }
 

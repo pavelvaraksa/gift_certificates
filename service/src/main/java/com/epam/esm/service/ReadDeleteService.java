@@ -1,8 +1,12 @@
-package com.epam.esm.repository;
+package com.epam.esm.service;
 
 import java.util.Optional;
 
-public interface CrdRepository<K, V> {
+/**
+ * Read/delete interface layer
+ * Works with service layer
+ */
+public interface ReadDeleteService<V, K> {
     /**
      * Find object by id
      *
@@ -12,17 +16,10 @@ public interface CrdRepository<K, V> {
     Optional<V> findById(K key);
 
     /**
-     * Save object
-     *
-     * @param object- create object
-     * @return - created object
-     */
-    V save(V object);
-
-    /**
      * Delete object
      *
      * @param key - object id
+     * @return - deleted object
      */
     V deleteById(K key);
 }

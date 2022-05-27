@@ -8,6 +8,7 @@ import lombok.Setter;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.Table;
 import java.io.Serializable;
 import java.util.Objects;
@@ -21,6 +22,7 @@ import java.util.Objects;
 @Setter
 @Entity
 @Table(name = "gift_certificate_to_tag")
+@IdClass(GiftCertificateToTagId.class)
 public class GiftCertificateToTag implements Serializable {
     @Id
     @Column(name = "gift_certificate_id")

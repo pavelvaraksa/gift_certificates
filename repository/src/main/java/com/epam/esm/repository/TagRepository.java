@@ -1,29 +1,34 @@
 package com.epam.esm.repository;
 
 import com.epam.esm.domain.Tag;
-import com.epam.esm.util.ColumnTagName;
-import com.epam.esm.util.SortType;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 /**
- * Tag repository interface layer
+ * Tag repository layer
  * Works with database
  */
-public interface TagRepository extends CrdRepository<Long, Tag> {
+public interface TagRepository extends JpaRepository<Tag, Long> {
     /**
-     * Find tags with pagination, sorting and info about deleted tags
+     * Find all exist tags
      *
-     * @param pageable  - pagination config
-     * @param column    - tag column
-     * @param sort      - sort type
-     * @param isDeleted - info about deleted tags
-     * @return - list of tags or empty list
+     * @return - tag list
      */
-    List<Tag> findAll(Pageable pageable, Set<ColumnTagName> column, SortType sort, boolean isDeleted);
+    @Query("select tag from Tag tag where tag.isActive = false")
+    List<Tag> findAllTagsPositive(Pageable pageable);
+
+    /**
+     * Find all deleted tags
+     *
+     * @return - tag list
+     */
+    @Query("select tag from Tag tag where tag.isActive = true")
+    List<Tag> findAllTagsNegative(Pageable pageable);
 
     /**
      * Find tags by gift certificate id
@@ -31,6 +36,7 @@ public interface TagRepository extends CrdRepository<Long, Tag> {
      * @param id - gift certificate id
      * @return - list of tags or empty list
      */
+    @Query("select tag from Tag tag join GiftCertificateToTag gctt on tag.id = gctt.tag where gctt.giftCertificate = ?1")
     List<Tag> findAllByCertificateId(Long id);
 
     /**
@@ -45,14 +51,23 @@ public interface TagRepository extends CrdRepository<Long, Tag> {
      * Activate tag by id
      *
      * @param id - tag id
-     * @return - activated tag
      */
-    Tag activateById(Long id);
+    @Modifying
+    @Query("update Tag tag set tag.isActive = false where tag.id = ?1")
+    void activateById(Long id);
 
     /**
      * Find most widely used tag
      *
      * @return - tag
      */
+    @Query(value = "select tg.id, tg.name, tg.deleted from tag tg " +
+            "join gift_certificate_to_tag gctt on tg.id = gctt.tag_id " +
+            "join gift_certificate gc on gc.id = gctt.gift_certificate_id " +
+            "join order_details od on gc.id = od.gift_certificate_id " +
+            "join order_table ot on ot.id = od.order_id " +
+            "group by tg.id order by count(tg.id) desc, max(ot.price) desc limit 1", nativeQuery = true)
     Tag findMostWidelyUsed();
 }
+
+

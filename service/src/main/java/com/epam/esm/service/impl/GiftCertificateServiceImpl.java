@@ -9,20 +9,18 @@ import com.epam.esm.repository.GiftCertificateRepository;
 import com.epam.esm.repository.GiftCertificateToTagRepository;
 import com.epam.esm.repository.TagRepository;
 import com.epam.esm.service.GiftCertificateService;
-import com.epam.esm.util.ColumnCertificateName;
-import com.epam.esm.util.SortType;
 import com.epam.esm.validator.GiftCertificateValidator;
 import com.epam.esm.validator.TagValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import static com.epam.esm.exception.MessageException.CERTIFICATE_EXIST;
 import static com.epam.esm.exception.MessageException.CERTIFICATE_NOT_FOUND;
@@ -39,8 +37,18 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     private final TagRepository tagRepository;
 
     @Override
-    public List<GiftCertificate> findAll(Pageable pageable, Set<ColumnCertificateName> column, SortType sort, boolean isDeleted) {
-        return giftCertificateRepository.findAll(pageable, column, sort, isDeleted);
+    public List<GiftCertificate> findAll(Pageable pageable) {
+        return giftCertificateRepository.findAllCertificatesPositive(pageable);
+    }
+
+    @Override
+    public List<GiftCertificate> findAllForAdmin(boolean isActive, Pageable pageable) {
+
+        if (isActive) {
+            return giftCertificateRepository.findAllCertificatesNegative(pageable);
+        }
+
+        return giftCertificateRepository.findAllCertificatesPositive(pageable);
     }
 
     @Override
@@ -111,6 +119,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         return giftCertificates;
     }
 
+    @Transactional
     @Override
     public GiftCertificate save(GiftCertificate giftCertificate) {
         GiftCertificateValidator.isGiftCertificateValid(giftCertificate);
@@ -135,11 +144,11 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         giftCertificate.getTag().forEach(tag -> {
             if (TagValidator.isTagValid(tag)) {
                 String tagName = tag.getName();
-                Optional<Tag> optionalTag2 = tagRepository.findByName(tagName);
+                Optional<Tag> optionalTag = tagRepository.findByName(tagName);
 
-                if (optionalTag2.isPresent()) {
-                    Tag existTag = optionalTag2.get();
-                    boolean isExistLink = certificateTagLink.isExistLink(newGiftCertificate.getId(), existTag.getId());
+                if (optionalTag.isPresent()) {
+                    Tag existTag = optionalTag.get();
+                    boolean isExistLink = certificateTagLink.existsByGiftCertificateAndTag(newGiftCertificate.getId(), existTag.getId());
 
                     if (!isExistLink) {
                         GiftCertificateToTag certificateToTag = new GiftCertificateToTag(newGiftCertificate.getId(), existTag.getId());
@@ -156,6 +165,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         return giftCertificate;
     }
 
+    @Transactional
     @Override
     public GiftCertificate updateById(Long id, GiftCertificate giftCertificate) {
         Optional<GiftCertificate> giftCertificateById = giftCertificateRepository.findById(id);
@@ -200,11 +210,15 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         giftCertificate.setTag(existTags);
 
         log.info("Gift certificate with name " + giftCertificate.getName() + " updated");
-        return giftCertificateRepository.updateById(giftCertificate);
+        giftCertificateRepository.updateById(giftCertificate.getName(), giftCertificate.getDescription(),
+                giftCertificate.getCurrentPrice(), giftCertificate.getDuration(), giftCertificate.getId());
+
+        return giftCertificate;
     }
 
+    @Transactional
     @Override
-    public GiftCertificate activateById(Long id, boolean isCommand) {
+    public GiftCertificate activateById(Long id) {
         Optional<GiftCertificate> giftCertificate = giftCertificateRepository.findById(id);
 
         if (giftCertificate.isEmpty()) {
@@ -213,12 +227,14 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         }
 
         if (giftCertificate.get().isActive()) {
-            return giftCertificateRepository.activateById(id);
+            giftCertificateRepository.activateById(id);
+            return giftCertificate.get();
         } else {
             throw new ServiceNotFoundException(CERTIFICATE_NOT_FOUND);
         }
     }
 
+    @Transactional
     @Override
     public GiftCertificate deleteById(Long id) {
         Optional<GiftCertificate> giftCertificate = giftCertificateRepository.findById(id);

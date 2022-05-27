@@ -5,9 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.Filter;
-import org.hibernate.annotations.FilterDef;
-import org.hibernate.annotations.ParamDef;
 import org.hibernate.annotations.SQLDelete;
 
 import javax.persistence.CascadeType;
@@ -33,8 +30,6 @@ import java.util.Set;
  * Gift certificate domain
  */
 @SQLDelete(sql = "update gift_certificate set deleted = true where id = ?")
-@FilterDef(name = "certificateFilter", parameters = @ParamDef(name = "isDeleted", type = "boolean"))
-@Filter(name = "certificateFilter", condition = "deleted = :isDeleted")
 @Getter
 @Setter
 @AllArgsConstructor
@@ -67,7 +62,7 @@ public class GiftCertificate implements Serializable {
     @Column(name = "deleted")
     private boolean isActive;
 
-    @ManyToMany(mappedBy = "certificateList", fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToMany(mappedBy = "certificateList", fetch = FetchType.EAGER, cascade = {CascadeType.MERGE})
     List<Tag> tag = new ArrayList<>();
 
     @JsonIgnore

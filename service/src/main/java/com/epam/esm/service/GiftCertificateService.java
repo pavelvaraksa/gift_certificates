@@ -1,40 +1,32 @@
 package com.epam.esm.service;
 
 import com.epam.esm.domain.GiftCertificate;
-import com.epam.esm.util.ColumnCertificateName;
-import com.epam.esm.util.SortType;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 /**
  * Gift certificate service layer
  * Works with gift certificate repository layer
  */
-public interface GiftCertificateService {
+public interface GiftCertificateService extends CreateService<GiftCertificate>, ReadDeleteService<GiftCertificate, Long> {
     /**
-     * Find gift certificates with pagination, sorting and info about deleted gift certificates
+     * Find all gift certificates
      *
-     * @param pageable  - pagination config
-     * @param column    - certificate column
-     * @param sort      - sort type
-     * @param isDeleted - info about deleted certificates
      * @return - list of gift certificates or empty list
      */
-    List<GiftCertificate> findAll(Pageable pageable, Set<ColumnCertificateName> column, SortType sort, boolean isDeleted);
+    List<GiftCertificate> findAll(Pageable pageable);
 
     /**
-     * Find a gift certificate by id
+     * Find all gift certificates
      *
-     * @param id - gift certificate id
-     * @return - optional of found gift certificate
+     * @return - list of gift certificates or empty list
      */
-    Optional<GiftCertificate> findById(Long id);
+    List<GiftCertificate> findAllForAdmin(boolean isActive, Pageable pageable);
 
     /**
-     * Find a gift certificate by name
+     * Find gift certificate by name
      *
      * @param name - gift certificate name
      * @return - optional of found gift certificate
@@ -50,15 +42,7 @@ public interface GiftCertificateService {
     List<GiftCertificate> findByTagName(List<String> name);
 
     /**
-     * Create a gift certificate
-     *
-     * @param giftCertificate - create a gift certificate
-     * @return - created gift certificate
-     */
-    GiftCertificate save(GiftCertificate giftCertificate);
-
-    /**
-     * Update a gift certificate
+     * Update gift certificate
      *
      * @param id              - gift certificate id
      * @param giftCertificate - updated gift certificate
@@ -67,19 +51,10 @@ public interface GiftCertificateService {
     GiftCertificate updateById(Long id, GiftCertificate giftCertificate);
 
     /**
-     * Activate a gift certificate
-     *
-     * @param id        - gift certificate id
-     * @param isCommand - command for activate
-     * @return - activated gift certificate
-     */
-    GiftCertificate activateById(Long id, boolean isCommand);
-
-    /**
-     * Delete a gift certificate
+     * Activate gift certificate
      *
      * @param id - gift certificate id
-     * @return - gift certificate
+     * @return - activated gift certificate
      */
-    GiftCertificate deleteById(Long id);
+    GiftCertificate activateById(Long id);
 }

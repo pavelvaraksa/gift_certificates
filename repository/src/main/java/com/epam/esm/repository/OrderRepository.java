@@ -1,44 +1,45 @@
 package com.epam.esm.repository;
 
 import com.epam.esm.domain.Order;
-import com.epam.esm.util.ColumnOrderName;
-import com.epam.esm.util.SortType;
-import org.springframework.data.domain.Pageable;
+import com.epam.esm.domain.User;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 
-import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 /**
- * Order repository interface layer
+ * Order repository layer
  * Works with database
  */
-public interface OrderRepository extends CrdRepository<Long, Order> {
+public interface OrderRepository extends JpaRepository<Order, Long> {
     /**
-     * Find orders with pagination, sorting and info about deleted orders
+     * Find orders by user id
      *
-     * @param pageable  - pagination config
-     * @param column    - order column
-     * @param sort      - sort type
-     * @param isDeleted - info about deleted orders
+     * @param id - user id
      * @return - list of orders or empty list
      */
-    List<Order> findAll(Pageable pageable, Set<ColumnOrderName> column, SortType sort, boolean isDeleted);
+    @Query("select ord from Order ord join User user on ord.user.id = user.id where user.id = ?1")
+    Set<Order> findAllByUserId(Long id);
 
     /**
-     * Find exist order by id
+     * Find user by order id
      *
      * @param id - order id
-     * @return - optional of found order
+     * @return - user or empty
      */
-    Order findByExistId(Long id);
+    @Query("select ord.user from Order ord where ord.id = ?1")
+    Optional<User> findUserByOrderId(Long id);
 
     /**
-     * Activate gift order by id
+     * Delete order by id
      *
      * @param id - order id
-     * @return - activated order
      */
-    Order activateById(Long id);
+    @Modifying
+    @Query("delete from Order ord where ord.id = ?1")
+    void deleteOrderById(Long id);
 }
 
 

@@ -1,30 +1,17 @@
 package com.epam.esm.repository;
 
 import com.epam.esm.domain.User;
-import com.epam.esm.util.ColumnUserName;
-import com.epam.esm.util.SortType;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 /**
- * User repository interface layer
+ * User repository layer
  * Works with database
  */
-public interface UserRepository extends CrdRepository<Long, User> {
-    /**
-     * Find users with pagination, sorting and info about deleted users
-     *
-     * @param pageable  - pagination config
-     * @param column    - user column
-     * @param sort      - sort type
-     * @param isDeleted - info about deleted users
-     * @return - list of users or empty list
-     */
-    List<User> findAll(Pageable pageable, Set<ColumnUserName> column, SortType sort, boolean isDeleted);
-
+public interface UserRepository extends JpaRepository<User, Long> {
     /**
      * Find user by login
      *
@@ -34,18 +21,49 @@ public interface UserRepository extends CrdRepository<Long, User> {
     Optional<User> findByLogin(String login);
 
     /**
-     * Update user
+     * Find user password by login
      *
-     * @param user - user
-     * @return - updated user
+     * @param login - user login
+     * @return - user password
      */
-    User updateById(User user);
+    @Query("select u.password from User u where u.login = ?1")
+    String findUserPasswordByLogin(String login);
 
     /**
-     * Activate user by id
+     * Update user by id
+     *
+     * @param firstName - user firstname
+     * @param lastName  - user lastname
+     * @param id        - user id
+     */
+    @Modifying
+    @Query("update User user set user.firstName = ?1, user.lastName = ?2, user.password = ?3 where user.id = ?4")
+    void updateById(String firstName, String lastName, String password, Long id);
+
+    /**
+     * Blocked user by id
      *
      * @param id - user id
-     * @return - activated user
      */
-    User activateById(Long id);
+    @Modifying
+    @Query("update User user set user.isBlocked = true where user.id = ?1")
+    void blockedById(Long id);
+
+    /**
+     * Unblocked user by id
+     *
+     * @param id - user id
+     */
+    @Modifying
+    @Query("update User user set user.isBlocked = false where user.id = ?1")
+    void unblockedById(Long id);
+
+    /**
+     * Delete user by id
+     *
+     * @param id - user id
+     */
+    @Modifying
+    @Query("delete from User user where user.id = ?1")
+    void deleteUserById(Long id);
 }

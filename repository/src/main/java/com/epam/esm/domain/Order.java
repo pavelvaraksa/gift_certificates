@@ -4,13 +4,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.Filter;
-import org.hibernate.annotations.FilterDef;
-import org.hibernate.annotations.ParamDef;
-import org.hibernate.annotations.SQLDelete;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -31,9 +28,6 @@ import java.util.Set;
 /**
  * Order domain
  */
-@SQLDelete(sql = "update order_table set deleted = true where id = ?")
-@FilterDef(name = "orderFilter", parameters = @ParamDef(name = "isDeleted", type = "boolean"))
-@Filter(name = "orderFilter", condition = "deleted = :isDeleted")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -54,28 +48,27 @@ public class Order implements Serializable {
     @Column(name = "purchase_date")
     private LocalDateTime purchaseDate;
 
-    @Column(name = "deleted")
-    private boolean isActive;
-
     @JsonIgnore
-    @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @Cascade(CascadeType.PERSIST)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private User user;
 
     @JsonIgnore
-    @ManyToMany(mappedBy = "order", fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    private Set<GiftCertificate> certificate;
+    @Cascade(CascadeType.PERSIST)
+    @ManyToMany(mappedBy = "order", fetch = FetchType.EAGER)
+    private Set<GiftCertificate> certificate = new HashSet<>();
 
     @JsonIgnore
-    @OneToMany(mappedBy = "order", fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @Cascade(CascadeType.PERSIST)
+    @OneToMany(mappedBy = "order", fetch = FetchType.EAGER)
     private Set<OrderDetails> orderDetails = new HashSet<>();
 
-    public Order(Long id, Double totalPrice, Integer count, LocalDateTime purchaseDate, boolean isActive) {
+    public Order(Long id, Double totalPrice, Integer count, LocalDateTime purchaseDate) {
         this.id = id;
         this.totalPrice = totalPrice;
         this.count = count;
         this.purchaseDate = purchaseDate;
-        this.isActive = isActive;
     }
 
     @Override
@@ -86,12 +79,11 @@ public class Order implements Serializable {
         return Objects.equals(id, order.id)
                 && Objects.equals(totalPrice, order.totalPrice)
                 && Objects.equals(count, order.count)
-                && Objects.equals(purchaseDate, order.purchaseDate)
-                && Objects.equals(isActive, order.isActive);
+                && Objects.equals(purchaseDate, order.purchaseDate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, totalPrice, count, purchaseDate, isActive);
+        return Objects.hash(id, totalPrice, count, purchaseDate);
     }
 }

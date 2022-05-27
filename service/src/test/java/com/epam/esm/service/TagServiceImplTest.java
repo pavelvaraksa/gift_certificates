@@ -8,14 +8,10 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
@@ -45,31 +41,6 @@ public class TagServiceImplTest {
 
         Tag actualTag = tagRepository.save(createdTag);
         assertEquals(expectedTag, actualTag);
-    }
-
-    @Test
-    public void findAllPositive() {
-        List<Tag> expectedTags = Arrays.asList(
-                new Tag(1L, "tag_1", false, null),
-                new Tag(2L, "tag_2", false, null),
-                new Tag(3L, "tag_3", false, null));
-
-        Mockito.when(tagRepository.findAll(null, null, null, false)).thenReturn(expectedTags);
-        List<Tag> actualTags = tagRepository.findAll(null, null, null, false);
-        assertEquals(expectedTags, actualTags);
-    }
-
-    @Test
-    public void findAllNegative() {
-        List<Tag> expectedTags = Arrays.asList(
-                new Tag(1L, "tag_111", false, null),
-                new Tag(2L, "tag_222", false, null),
-                new Tag(3L, "tag_333", false, null));
-
-        Mockito.when(tagRepository.findAll(null, null, null, false)).thenReturn(expectedTags);
-        expectedTags = new ArrayList<>();
-        List<Tag> actualTags = tagRepository.findAll(null, null, null, false);
-        assertNotEquals(expectedTags, actualTags);
     }
 
     @Test

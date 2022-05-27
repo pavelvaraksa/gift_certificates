@@ -10,20 +10,22 @@ import com.epam.esm.repository.OrderRepository;
 import com.epam.esm.service.GiftCertificateService;
 import com.epam.esm.service.OrderService;
 import com.epam.esm.service.UserService;
-import com.epam.esm.util.ColumnOrderName;
-import com.epam.esm.util.SortType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import static com.epam.esm.exception.MessageException.CERTIFICATE_NOT_FOUND;
 import static com.epam.esm.exception.MessageException.ORDER_NOT_FOUND;
+import static com.epam.esm.exception.MessageException.USER_NOT_FOUND;
 
 /**
  * Order service implementation
@@ -38,8 +40,8 @@ public class OrderServiceImpl implements OrderService {
     private final GiftCertificateService giftCertificateService;
 
     @Override
-    public List<Order> findAll(Pageable pageable, Set<ColumnOrderName> column, SortType sort, boolean isDeleted) {
-        return orderRepository.findAll(pageable, column, sort, isDeleted);
+    public List<Order> findAll(Pageable pageable) {
+        return orderRepository.findAll();
     }
 
     @Override
@@ -51,20 +53,29 @@ public class OrderServiceImpl implements OrderService {
             throw new ServiceNotFoundException(ORDER_NOT_FOUND);
         }
 
-        if (order.get().isActive()) {
-            throw new ServiceNotFoundException(ORDER_NOT_FOUND);
-        }
-
         return order;
     }
 
+    @Transactional
     @Override
     public Order save(Long userId, List<Long> giftCertificateId) {
+
+        if (userId == null) {
+            log.error("User with id " + userId + " was not found");
+            throw new ServiceNotFoundException(USER_NOT_FOUND);
+        }
+
         Optional<User> user = userService.findById(userId);
         Optional<GiftCertificate> giftCertificate;
         OrderDetails orderDetails = new OrderDetails();
+        Set<OrderDetails> orderDetailsSet = new HashSet<>();
         Order order = new Order();
         Double orderPrice = 0D;
+
+        if (giftCertificateId == null) {
+            log.error("User with id " + giftCertificateId + " was not found");
+            throw new ServiceNotFoundException(CERTIFICATE_NOT_FOUND);
+        }
 
         for (Long id : giftCertificateId) {
             giftCertificate = giftCertificateService.findById(id);
@@ -85,30 +96,19 @@ public class OrderServiceImpl implements OrderService {
             orderDetails.setActualPrice(giftCertificate.get().getCurrentPrice());
             orderDetails.setOrder(order);
             orderDetails.setCertificate(giftCertificate.get());
+            orderDetailsSet.add(orderDetails);
             orderDetailsRepository.save(orderDetails);
         }
 
-        Long orderId = order.getId();
-        order = orderRepository.findByExistId(orderId);
         return order;
     }
 
     @Override
-    public Order activateById(Long id, boolean isCommand) {
-        Optional<Order> order = orderRepository.findById(id);
-
-        if (order.isEmpty()) {
-            log.error("Order was not found");
-            throw new ServiceNotFoundException(ORDER_NOT_FOUND);
-        }
-
-        if (order.get().isActive()) {
-            return orderRepository.activateById(id);
-        } else {
-            throw new ServiceNotFoundException(ORDER_NOT_FOUND);
-        }
+    public Optional<User> findUserByOrderId(Long id) {
+        return orderRepository.findUserByOrderId(id);
     }
 
+    @Transactional
     @Override
     public Order deleteById(Long id) {
         Optional<Order> order = orderRepository.findById(id);
@@ -118,12 +118,8 @@ public class OrderServiceImpl implements OrderService {
             throw new ServiceNotFoundException(ORDER_NOT_FOUND);
         }
 
-        if (order.get().isActive()) {
-            throw new ServiceNotFoundException(ORDER_NOT_FOUND);
-        }
-
         log.info("Order with id " + id + " deleted");
-        orderRepository.deleteById(id);
+        orderRepository.deleteOrderById(id);
         return order.get();
     }
 }
