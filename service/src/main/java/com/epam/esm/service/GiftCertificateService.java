@@ -1,6 +1,7 @@
 package com.epam.esm.service;
 
 import com.epam.esm.domain.GiftCertificate;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,14 +16,14 @@ public interface GiftCertificateService extends CreateService<GiftCertificate>, 
      *
      * @return - list of gift certificates or empty list
      */
-    List<GiftCertificate> findAll();
+    List<GiftCertificate> findAll(Pageable pageable);
 
     /**
      * Find all gift certificates
      *
      * @return - list of gift certificates or empty list
      */
-    List<GiftCertificate> findAllForAdmin(boolean isActive);
+    List<GiftCertificate> findAllForAdmin(boolean isActive, Pageable pageable);
 
     /**
      * Find gift certificate by name
@@ -52,9 +53,8 @@ public interface GiftCertificateService extends CreateService<GiftCertificate>, 
     /**
      * Activate gift certificate
      *
-     * @param id        - gift certificate id
-     * @param isCommand - command for activate
+     * @param id - gift certificate id
      * @return - activated gift certificate
      */
-    GiftCertificate activateById(Long id, boolean isCommand);
+    GiftCertificate activateById(Long id);
 }

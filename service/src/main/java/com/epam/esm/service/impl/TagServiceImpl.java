@@ -8,6 +8,7 @@ import com.epam.esm.service.TagService;
 import com.epam.esm.validator.TagValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,18 +28,18 @@ public class TagServiceImpl implements TagService {
     private final TagRepository tagRepository;
 
     @Override
-    public List<Tag> findAll() {
-        return tagRepository.findAllTagsPositive();
+    public List<Tag> findAll(Pageable pageable) {
+        return tagRepository.findAllTagsPositive(pageable);
     }
 
     @Override
-    public List<Tag> findAllForAdmin(boolean isActive) {
+    public List<Tag> findAllForAdmin(boolean isActive, Pageable pageable) {
 
         if (isActive) {
-            return tagRepository.findAllTagsNegative();
+            return tagRepository.findAllTagsNegative(pageable);
         }
 
-        return tagRepository.findAllTagsPositive();
+        return tagRepository.findAllTagsPositive(pageable);
     }
 
     @Override

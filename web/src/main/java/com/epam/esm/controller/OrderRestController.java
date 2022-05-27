@@ -10,6 +10,8 @@ import com.epam.esm.service.OrderService;
 import com.epam.esm.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
@@ -48,8 +50,8 @@ public class OrderRestController {
      */
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public CollectionModel<OrderDto> findAllOrders() {
-        List<Order> listOrder = orderService.findAll();
+    public CollectionModel<OrderDto> findAllOrders(@PageableDefault(sort = {"id"}) Pageable pageable) {
+        List<Order> listOrder = orderService.findAll(pageable);
         List<OrderDto> items = new ArrayList<>();
 
         for (Order order : listOrder) {
@@ -60,7 +62,7 @@ public class OrderRestController {
         }
 
         return CollectionModel.of(items, linkTo(methodOn(OrderRestController.class)
-                .findAllOrders()).withRel("find all orders"));
+                .findAllOrders(pageable)).withRel("find all orders"));
     }
 
     /**
@@ -81,15 +83,13 @@ public class OrderRestController {
 
         if (role.equals("ROLE_USER") && searchUserByOrder.isPresent()) {
             order = orderService.findById(id);
+            return takeHateoasForUser(order.get());
         } else if (role.equals("ROLE_ADMIN")) {
             order = orderService.findById(id);
+            return takeHateoasForAdmin(order.get());
         } else {
             throw new ServiceForbiddenException(USER_RESOURCE_FORBIDDEN);
         }
-
-        return EntityModel.of(modelMapper.map(order.get(), OrderDto.class),
-                linkTo(methodOn(OrderRestController.class).findOrderById(order.get().getId())).withRel("find by id"),
-                linkTo(methodOn(OrderRestController.class).deleteOrder(order.get().getId())).withRel("delete by id"));
     }
 
     /**
@@ -109,15 +109,13 @@ public class OrderRestController {
 
         if (role.equals("ROLE_USER") && user.get().getId().equals(orderdata.userId)) {
             newOrder = orderService.save(orderdata.userId, orderdata.certificateId);
+            return takeHateoasSaveForUser(newOrder);
         } else if (role.equals("ROLE_ADMIN")) {
             newOrder = orderService.save(orderdata.userId, orderdata.certificateId);
+            return takeHateoasSaveForAdmin(newOrder);
         } else {
             throw new ServiceForbiddenException(USER_RESOURCE_FORBIDDEN);
         }
-
-        return EntityModel.of(modelMapper.map(newOrder, OrderSaveDto.class),
-                linkTo(methodOn(OrderRestController.class).findOrderById(newOrder.getId())).withRel("find by id"),
-                linkTo(methodOn(OrderRestController.class).deleteOrder(newOrder.getId())).withRel("delete by id"));
     }
 
     /**
@@ -135,5 +133,27 @@ public class OrderRestController {
     private static class OrderData {
         public Long userId;
         public List<Long> certificateId;
+    }
+
+    private EntityModel<OrderSaveDto> takeHateoasSaveForAdmin(Order order) {
+        return EntityModel.of(modelMapper.map(order, OrderSaveDto.class),
+                linkTo(methodOn(OrderRestController.class).findOrderById(order.getId())).withRel("find by id"),
+                linkTo(methodOn(OrderRestController.class).deleteOrder(order.getId())).withRel("delete by id"));
+    }
+
+    private EntityModel<OrderDto> takeHateoasForAdmin(Order order) {
+        return EntityModel.of(modelMapper.map(order, OrderDto.class),
+                linkTo(methodOn(OrderRestController.class).findOrderById(order.getId())).withRel("find by id"),
+                linkTo(methodOn(OrderRestController.class).deleteOrder(order.getId())).withRel("delete by id"));
+    }
+
+    private EntityModel<OrderSaveDto> takeHateoasSaveForUser(Order order) {
+        return EntityModel.of(modelMapper.map(order, OrderSaveDto.class),
+                linkTo(methodOn(OrderRestController.class).findOrderById(order.getId())).withRel("find by id"));
+    }
+
+    private EntityModel<OrderDto> takeHateoasForUser(Order order) {
+        return EntityModel.of(modelMapper.map(order, OrderDto.class),
+                linkTo(methodOn(OrderRestController.class).findOrderById(order.getId())).withRel("find by id"));
     }
 }

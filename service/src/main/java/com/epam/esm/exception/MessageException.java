@@ -31,5 +31,7 @@ public class MessageException {
     public static final String USER_NOT_AUTHORIZED = "user.not.authorized";
     public static final String USER_RESOURCE_FORBIDDEN = "user.resource.forbidden";
     public static final String USER_EXIST = "user.exist";
+    public static final String USER_NOT_DELETED = "user.not.deleted";
+    public static final String USER_NOT_BLOCKED = "user.not.blocked";
     public static final String ORDER_NOT_FOUND = "order.not.found";
 }

@@ -33,10 +33,13 @@ public class RegistrationRestController {
     @ResponseStatus(HttpStatus.CREATED)
     public EntityModel<UserDto> saveUser(@RequestBody User user) {
         User newUser = userService.save(user);
-        return EntityModel.of(modelMapper.map(newUser, UserDto.class),
-                linkTo(methodOn(UserRestController.class).findUserById(newUser.getId())).withRel("find by id"),
-                linkTo(methodOn(UserRestController.class).findUserByLogin(newUser.getLogin())).withRel("find by login"),
-                linkTo(methodOn(UserRestController.class).updateUser(newUser.getId(), newUser)).withRel("update by id"),
-                linkTo(methodOn(UserRestController.class).deleteUser(newUser.getId())).withRel("delete by id"));
+        return takeHateoas(newUser);
+    }
+
+    private EntityModel<UserDto> takeHateoas(User user) {
+        return EntityModel.of(modelMapper.map(user, UserDto.class),
+                linkTo(methodOn(UserRestController.class).findUserById(user.getId())).withRel("find by id"),
+                linkTo(methodOn(UserRestController.class).findUserByLogin(user.getLogin())).withRel("find by login"),
+                linkTo(methodOn(UserRestController.class).updateUser(user.getId(), user)).withRel("update by id"));
     }
 }

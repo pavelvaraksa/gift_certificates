@@ -13,6 +13,7 @@ import com.epam.esm.validator.GiftCertificateValidator;
 import com.epam.esm.validator.TagValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,18 +37,18 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     private final TagRepository tagRepository;
 
     @Override
-    public List<GiftCertificate> findAll() {
-        return giftCertificateRepository.findAllCertificatesPositive();
+    public List<GiftCertificate> findAll(Pageable pageable) {
+        return giftCertificateRepository.findAllCertificatesPositive(pageable);
     }
 
     @Override
-    public List<GiftCertificate> findAllForAdmin(boolean isActive) {
+    public List<GiftCertificate> findAllForAdmin(boolean isActive, Pageable pageable) {
 
         if (isActive) {
-            return giftCertificateRepository.findAllCertificatesNegative();
+            return giftCertificateRepository.findAllCertificatesNegative(pageable);
         }
 
-        return giftCertificateRepository.findAllCertificatesPositive();
+        return giftCertificateRepository.findAllCertificatesPositive(pageable);
     }
 
     @Override
@@ -217,7 +218,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     @Transactional
     @Override
-    public GiftCertificate activateById(Long id, boolean isCommand) {
+    public GiftCertificate activateById(Long id) {
         Optional<GiftCertificate> giftCertificate = giftCertificateRepository.findById(id);
 
         if (giftCertificate.isEmpty()) {

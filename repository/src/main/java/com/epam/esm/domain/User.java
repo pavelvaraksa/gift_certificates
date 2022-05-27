@@ -51,6 +51,9 @@ public class User implements Serializable {
     @Column(name = "lastname")
     private String lastName;
 
+    @Column(name = "blocked")
+    private boolean isBlocked;
+
     public User(Long id, String login, String firstName, String lastName, Set<Role> roles) {
         this.id = id;
         this.login = login;

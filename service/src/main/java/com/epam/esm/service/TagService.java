@@ -1,6 +1,7 @@
 package com.epam.esm.service;
 
 import com.epam.esm.domain.Tag;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,14 +16,14 @@ public interface TagService extends CreateService<Tag>, ReadDeleteService<Tag, L
      *
      * @return - list of tags or empty list
      */
-    List<Tag> findAll();
+    List<Tag> findAll(Pageable pageable);
 
     /**
      * Find all tags
      *
      * @return - list of tags or empty list
      */
-    List<Tag> findAllForAdmin(boolean isActive);
+    List<Tag> findAllForAdmin(boolean isActive, Pageable pageable);
 
     /**
      * Find tag by name

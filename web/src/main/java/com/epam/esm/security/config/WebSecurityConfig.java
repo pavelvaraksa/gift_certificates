@@ -33,11 +33,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     //permissions for admin
     private static final String CREATE_CERTIFICATE = "/certificates";
+    private static final String CREATE_TAG = "/tags";
     private static final String FIND_ALL_CERTIFICATES = "/certificates/active";
+    private static final String FIND_ALL_TAGS = "/tags/active";
     private static final String FIND_ALL_ORDERS = "/orders";
     private static final String ACTIVATE_OR_DELETE_ORDER = "/orders/**";
-    private static final String CREATE_TAG = "/tags";
     private static final String FIND_ALL_USERS = "/users";
+    private static final String BLOCKED_USER = "/users/blocked/**";
 
     //permissions for user or admin
     private static final String MAKE_ORDER = "/orders";
@@ -88,6 +90,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 //permissions for user or admin
                 .antMatchers(HttpMethod.GET, FIND_ALL_USERS).hasRole("ADMIN")
                 .antMatchers(HttpMethod.GET, FIND_ALL_ORDERS).hasRole("ADMIN")
+                .antMatchers(HttpMethod.PATCH, BLOCKED_USER).hasRole("ADMIN")
+                .antMatchers(HttpMethod.GET, FIND_ALL_TAGS).hasRole("ADMIN")
                 .antMatchers(HttpMethod.GET, ALL_REQUESTS_FOR_TAGS).hasAnyRole("USER", "ADMIN")
                 .antMatchers(HttpMethod.POST, MAKE_ORDER).hasAnyRole("USER", "ADMIN")
                 .antMatchers(HttpMethod.GET, FIND_ORDER_BY_ID).hasAnyRole("USER", "ADMIN")

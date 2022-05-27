@@ -5,6 +5,7 @@ import com.epam.esm.domain.Role;
 import com.epam.esm.domain.User;
 import com.epam.esm.exception.ServiceExistException;
 import com.epam.esm.exception.ServiceNotFoundException;
+import com.epam.esm.exception.ServiceValidException;
 import com.epam.esm.repository.OrderRepository;
 import com.epam.esm.repository.RoleRepository;
 import com.epam.esm.repository.UserRepository;
@@ -12,6 +13,7 @@ import com.epam.esm.service.UserService;
 import com.epam.esm.validator.UserValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +24,8 @@ import java.util.Optional;
 import java.util.Set;
 
 import static com.epam.esm.exception.MessageException.USER_EXIST;
+import static com.epam.esm.exception.MessageException.USER_NOT_BLOCKED;
+import static com.epam.esm.exception.MessageException.USER_NOT_DELETED;
 import static com.epam.esm.exception.MessageException.USER_NOT_FOUND;
 
 /**
@@ -37,7 +41,7 @@ public class UserServiceImpl implements UserService {
     private final RoleRepository roleRepository;
 
     @Override
-    public List<User> findAll() {
+    public List<User> findAll(Pageable pageable) {
         return userRepository.findAll();
     }
 
@@ -133,12 +137,49 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public User deleteById(Long id) {
+    public boolean blockedById(Long id) {
         Optional<User> user = userRepository.findById(id);
+        String userRole;
 
         if (user.isEmpty()) {
             log.error("User was not found");
             throw new ServiceNotFoundException(USER_NOT_FOUND);
+        }
+
+        userRole = roleRepository.findRoleByUserId(id);
+
+        if (user.get().getId().equals(id) && userRole.equals("ROLE_ADMIN")) {
+            log.error("Admin must not be deleted");
+            throw new ServiceValidException(USER_NOT_BLOCKED);
+        }
+
+        if (!user.get().isBlocked()) {
+            userRepository.blockedById(id);
+            return true;
+        } else if (user.get().isBlocked()) {
+            userRepository.unblockedById(id);
+            return false;
+        } else {
+            throw new ServiceNotFoundException(USER_NOT_FOUND);
+        }
+    }
+
+    @Transactional
+    @Override
+    public User deleteById(Long id) {
+        Optional<User> user = userRepository.findById(id);
+        String userRole;
+
+        if (user.isEmpty()) {
+            log.error("User was not found");
+            throw new ServiceNotFoundException(USER_NOT_FOUND);
+        }
+
+        userRole = roleRepository.findRoleByUserId(id);
+
+        if (user.get().getId().equals(id) && userRole.equals("ROLE_ADMIN")) {
+            log.error("Admin must not be deleted");
+            throw new ServiceValidException(USER_NOT_DELETED);
         }
 
         log.info("User with id " + id + " deleted");

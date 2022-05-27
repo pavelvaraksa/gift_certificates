@@ -1,9 +1,11 @@
 package com.epam.esm.repository;
 
 import com.epam.esm.domain.GiftCertificate;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.PagingAndSortingRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -12,14 +14,14 @@ import java.util.Optional;
  * Gift certificate repository layer
  * Works with database
  */
-public interface GiftCertificateRepository extends JpaRepository<GiftCertificate, Long> {
+public interface GiftCertificateRepository extends JpaRepository<GiftCertificate, Long>, PagingAndSortingRepository<GiftCertificate, Long> {
     /**
      * Find all exist certificates
      *
      * @return - certificate list
      */
     @Query("select cert from GiftCertificate cert where cert.isActive = false")
-    List<GiftCertificate> findAllCertificatesPositive();
+    List<GiftCertificate> findAllCertificatesPositive(Pageable pageable);
 
     /**
      * Find all deleted certificates
@@ -27,7 +29,7 @@ public interface GiftCertificateRepository extends JpaRepository<GiftCertificate
      * @return - certificate list
      */
     @Query("select cert from GiftCertificate cert where cert.isActive = true")
-    List<GiftCertificate> findAllCertificatesNegative();
+    List<GiftCertificate> findAllCertificatesNegative(Pageable pageable);
 
     /**
      * Find gift certificate by name

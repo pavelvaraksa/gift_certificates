@@ -6,6 +6,11 @@ spring:
     driver-class-name: org.postgresql.Driver
     username: postgres
     password: postgres
+  mvc:
+    throw-exception-if-no-handler-found: true
+  web:
+    resources:
+      add-mappings: false
 
 logging:
   pattern:

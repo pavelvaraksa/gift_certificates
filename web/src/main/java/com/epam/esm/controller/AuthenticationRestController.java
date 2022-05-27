@@ -1,6 +1,7 @@
 package com.epam.esm.controller;
 
 import com.epam.esm.domain.User;
+import com.epam.esm.exception.ServiceForbiddenException;
 import com.epam.esm.exception.ServiceNotAuthorized;
 import com.epam.esm.exception.ServiceValidException;
 import com.epam.esm.repository.UserRepository;
@@ -34,6 +35,7 @@ import static com.epam.esm.exception.MessageException.USER_LOGIN_NOT_FILLED;
 import static com.epam.esm.exception.MessageException.USER_LOGIN_PASSWORD_NOT_MATCH;
 import static com.epam.esm.exception.MessageException.USER_NOT_AUTHORIZED;
 import static com.epam.esm.exception.MessageException.USER_PASSWORD_NOT_FILLED;
+import static com.epam.esm.exception.MessageException.USER_RESOURCE_FORBIDDEN;
 
 @Log4j2
 @RestController
@@ -78,6 +80,13 @@ public class AuthenticationRestController {
         if (!isResult) {
             log.error("Password was not correct");
             throw new ServiceValidException(USER_LOGIN_PASSWORD_NOT_MATCH);
+        }
+
+        Optional<User> searchUser = userService.findByLogin(request.getLogin());
+
+        if (searchUser.get().isBlocked()) {
+            log.error("User was banned");
+            throw new ServiceForbiddenException(USER_RESOURCE_FORBIDDEN);
         }
 
         Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(

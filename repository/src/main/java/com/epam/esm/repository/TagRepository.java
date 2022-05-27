@@ -1,6 +1,7 @@
 package com.epam.esm.repository;
 
 import com.epam.esm.domain.Tag;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -19,7 +20,7 @@ public interface TagRepository extends JpaRepository<Tag, Long> {
      * @return - tag list
      */
     @Query("select tag from Tag tag where tag.isActive = false")
-    List<Tag> findAllTagsPositive();
+    List<Tag> findAllTagsPositive(Pageable pageable);
 
     /**
      * Find all deleted tags
@@ -27,7 +28,7 @@ public interface TagRepository extends JpaRepository<Tag, Long> {
      * @return - tag list
      */
     @Query("select tag from Tag tag where tag.isActive = true")
-    List<Tag> findAllTagsNegative();
+    List<Tag> findAllTagsNegative(Pageable pageable);
 
     /**
      * Find tags by gift certificate id

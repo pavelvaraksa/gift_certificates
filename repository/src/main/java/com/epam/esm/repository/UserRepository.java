@@ -41,6 +41,24 @@ public interface UserRepository extends JpaRepository<User, Long> {
     void updateById(String firstName, String lastName, String password, Long id);
 
     /**
+     * Blocked user by id
+     *
+     * @param id - user id
+     */
+    @Modifying
+    @Query("update User user set user.isBlocked = true where user.id = ?1")
+    void blockedById(Long id);
+
+    /**
+     * Unblocked user by id
+     *
+     * @param id - user id
+     */
+    @Modifying
+    @Query("update User user set user.isBlocked = false where user.id = ?1")
+    void unblockedById(Long id);
+
+    /**
      * Delete user by id
      *
      * @param id - user id

@@ -2,11 +2,14 @@ package com.epam.esm.controller;
 
 import com.epam.esm.domain.User;
 import com.epam.esm.dto.UserDto;
+import com.epam.esm.dto.UserDtoForAdmin;
 import com.epam.esm.exception.ServiceForbiddenException;
 import com.epam.esm.repository.RoleRepository;
 import com.epam.esm.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
@@ -45,21 +48,21 @@ public class UserRestController {
      */
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public CollectionModel<UserDto> findAllUsers() {
-        List<User> listUser = userService.findAll();
-        List<UserDto> items = new ArrayList<>();
+    public CollectionModel<UserDtoForAdmin> findAllUsers(@PageableDefault(sort = {"id"}) Pageable pageable) {
+        List<User> listUser = userService.findAll(pageable);
+        List<UserDtoForAdmin> items = new ArrayList<>();
 
         for (User user : listUser) {
-            UserDto userDtoWithOrder = modelMapper.map(user, UserDto.class);
-            userDtoWithOrder.add(linkTo(methodOn(UserRestController.class).findUserById(user.getId())).withRel("find by id"),
+            UserDtoForAdmin userDto = modelMapper.map(user, UserDtoForAdmin.class);
+            userDto.add(linkTo(methodOn(UserRestController.class).findUserById(user.getId())).withRel("find by id"),
                     linkTo(methodOn(UserRestController.class).findUserByLogin(user.getLogin())).withRel("find by login"),
                     linkTo(methodOn(UserRestController.class).updateUser(user.getId(), user)).withRel("update by id"),
                     linkTo(methodOn(UserRestController.class).deleteUser(user.getId())).withRel("delete by id"));
-            items.add(userDtoWithOrder);
+            items.add(userDto);
         }
 
         return CollectionModel.of(items, linkTo(methodOn(UserRestController.class)
-                .findAllUsers()).withRel("find all users"));
+                .findAllUsers(pageable)).withRel("find all users"));
     }
 
     /**
@@ -79,17 +82,13 @@ public class UserRestController {
 
         if (role.equals("ROLE_USER") && user.get().getId().equals(id)) {
             searchUser = userService.findById(id);
+            return takeHateoasForUser(searchUser.get());
         } else if (role.equals("ROLE_ADMIN")) {
             searchUser = userService.findById(id);
+            return takeHateoasForAdmin(searchUser.get());
         } else {
             throw new ServiceForbiddenException(USER_RESOURCE_FORBIDDEN);
         }
-
-        return EntityModel.of(modelMapper.map(searchUser.get(), UserDto.class),
-                linkTo(methodOn(UserRestController.class).findUserById(id)).withRel("find by id"),
-                linkTo(methodOn(UserRestController.class).findUserByLogin(searchUser.get().getLogin())).withRel("find by login"),
-                linkTo(methodOn(UserRestController.class).updateUser(id, searchUser.get())).withRel("update by id"),
-                linkTo(methodOn(UserRestController.class).deleteUser(id)).withRel("delete by id"));
     }
 
     /**
@@ -109,17 +108,13 @@ public class UserRestController {
 
         if (role.equals("ROLE_USER") && user.get().getLogin().equals(login)) {
             searchUser = userService.findByLogin(login);
+            return takeHateoasForUser(searchUser.get());
         } else if (role.equals("ROLE_ADMIN")) {
             searchUser = userService.findByLogin(login);
+            return takeHateoasForAdmin(searchUser.get());
         } else {
             throw new ServiceForbiddenException(USER_RESOURCE_FORBIDDEN);
         }
-
-        return EntityModel.of(modelMapper.map(searchUser.get(), UserDto.class),
-                linkTo(methodOn(UserRestController.class).findUserById(searchUser.get().getId())).withRel("find by id"),
-                linkTo(methodOn(UserRestController.class).findUserByLogin(searchUser.get().getLogin())).withRel("find by login"),
-                linkTo(methodOn(UserRestController.class).updateUser(searchUser.get().getId(), searchUser.get())).withRel("update by id"),
-                linkTo(methodOn(UserRestController.class).deleteUser(searchUser.get().getId())).withRel("delete by id"));
     }
 
     /**
@@ -139,17 +134,24 @@ public class UserRestController {
 
         if (role.equals("ROLE_USER") && searchUser.get().getId().equals(id)) {
             updatedUser = userService.updateById(id, user);
+            return takeHateoasForUser(updatedUser);
         } else if (role.equals("ROLE_ADMIN")) {
             updatedUser = userService.updateById(id, user);
+            return takeHateoasForAdmin(updatedUser);
         } else {
             throw new ServiceForbiddenException(USER_RESOURCE_FORBIDDEN);
         }
+    }
 
-        return EntityModel.of(modelMapper.map(updatedUser, UserDto.class),
-                linkTo(methodOn(UserRestController.class).findUserById(id)).withRel("find by id"),
-                linkTo(methodOn(UserRestController.class).findUserByLogin(updatedUser.getLogin())).withRel("find by login"),
-                linkTo(methodOn(UserRestController.class).updateUser(id, updatedUser)).withRel("update by id"),
-                linkTo(methodOn(UserRestController.class).deleteUser(id)).withRel("delete by id"));
+    /**
+     * Blocked user by id
+     *
+     * @param id - user id
+     */
+    @PatchMapping("/blocked/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public boolean blockedUser(@PathVariable Long id) {
+        return userService.blockedById(id);
     }
 
     /**
@@ -162,5 +164,20 @@ public class UserRestController {
     public EntityModel<UserDto> deleteUser(@PathVariable Long id) {
         User deletedUser = userService.deleteById(id);
         return EntityModel.of(modelMapper.map(deletedUser, UserDto.class));
+    }
+
+    private EntityModel<UserDto> takeHateoasForAdmin(User user) {
+        return EntityModel.of(modelMapper.map(user, UserDto.class),
+                linkTo(methodOn(UserRestController.class).findUserById(user.getId())).withRel("find by id"),
+                linkTo(methodOn(UserRestController.class).findUserByLogin(user.getLogin())).withRel("find by login"),
+                linkTo(methodOn(UserRestController.class).updateUser(user.getId(), user)).withRel("update by id"),
+                linkTo(methodOn(UserRestController.class).deleteUser(user.getId())).withRel("delete by id"));
+    }
+
+    private EntityModel<UserDto> takeHateoasForUser(User user) {
+        return EntityModel.of(modelMapper.map(user, UserDto.class),
+                linkTo(methodOn(UserRestController.class).findUserById(user.getId())).withRel("find by id"),
+                linkTo(methodOn(UserRestController.class).findUserByLogin(user.getLogin())).withRel("find by login"),
+                linkTo(methodOn(UserRestController.class).updateUser(user.getId(), user)).withRel("update by id"));
     }
 }

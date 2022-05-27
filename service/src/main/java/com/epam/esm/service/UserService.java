@@ -1,6 +1,7 @@
 package com.epam.esm.service;
 
 import com.epam.esm.domain.User;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,7 +16,7 @@ public interface UserService extends CreateService<User>, ReadDeleteService<User
      *
      * @return - list of users or empty list
      */
-    List<User> findAll();
+    List<User> findAll(Pageable pageable);
 
     /**
      * Find user by login
@@ -33,4 +34,12 @@ public interface UserService extends CreateService<User>, ReadDeleteService<User
      * @return - operation result (user updated full or partly)
      */
     User updateById(Long id, User user);
+
+    /**
+     * Blocked user by id
+     *
+     * @param id - user id
+     * @return - true or false
+     */
+    boolean blockedById(Long id);
 }
