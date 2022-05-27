@@ -149,7 +149,7 @@ public class UserServiceImpl implements UserService {
         userRole = roleRepository.findRoleByUserId(id);
 
         if (user.get().getId().equals(id) && userRole.equals("ROLE_ADMIN")) {
-            log.error("Admin must not be deleted");
+            log.error("Admin must not be blocked");
             throw new ServiceValidException(USER_NOT_BLOCKED);
         }
 
